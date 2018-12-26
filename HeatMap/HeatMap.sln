@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HeatMap", "HeatMap\HeatMap.vcxproj", "{CFA1F245-3F98-42A1-B44A-41F45DB3D434}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Debug|x64.ActiveCfg = Debug|x64
+		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Debug|x64.Build.0 = Debug|x64
+		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Debug|x86.ActiveCfg = Debug|Win32
+		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Debug|x86.Build.0 = Debug|Win32
+		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Release|x64.ActiveCfg = Release|x64
+		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Release|x64.Build.0 = Release|x64
+		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Release|x86.ActiveCfg = Release|Win32
+		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F125D687-6FD6-470F-A0A3-EC50D734144A}
+	EndGlobalSection
+EndGlobal
