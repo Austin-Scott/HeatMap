@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{CFA1F245-3F98-42A1-B44A-41F45DB3D434}</ProjectGuid>
     <RootNamespace>HeatMap</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -115,13 +115,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GeographicCoordinate.cpp" />
+    <ClCompile Include="HeatMap.cpp" />
+    <ClCompile Include="HeatMapCell.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TrainingCenterXML.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\lodepng\lodepng.h" />
     <ClInclude Include="GeographicCoordinate.h" />
     <ClInclude Include="HeatMap.h" />
     <ClInclude Include="HeatMapCell.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="rapidxml.hpp" />
     <ClInclude Include="TrainingCenterXML.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
