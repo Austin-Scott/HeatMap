@@ -76,9 +76,59 @@ HeatMap::~HeatMap()
 
 void HeatMap::addActivity(TrainingCenterXML & activity)
 {
+	cout << "\t*Recording activity on Heat Map..." << endl;
 	for (int i = 0; i < activity.getTrack().size() - 1; i++) {
 		drawLine(activity.getTrack()[i], activity.getTrack()[i + 1]);
 	}
+}
+
+void HeatMap::normalizeMap()
+{
+	double max = 0.0;
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			if (cells[x][y].getValue() > max) {
+				max = cells[x][y].getValue();
+			}
+		}
+	}
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			if (cells[x][y].getValue()!=0.0) {
+				cells[x][y].normalizeValue(0.0, max);
+			}
+		}
+	}
+}
+
+Image* HeatMap::renderImage(Color backgroundColor, Color minimumActivityColor, Color maximumActivityColor)
+{
+	unsigned char* data = new unsigned char[width * height * 4];
+	int index = 0;
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			double normalizedValue = cells[x][y].getNormalizedValue();
+			if (normalizedValue <= 0.0) {
+				data[index] = backgroundColor.getR();
+				data[index+1] = backgroundColor.getG();
+				data[index+2] = backgroundColor.getB();
+				data[index+3] = backgroundColor.getA();
+			}
+			else {
+				Color rawColor = minimumActivityColor.lerp(maximumActivityColor, normalizedValue);
+				if (rawColor.getA() != 255) {
+					rawColor = rawColor.blend(backgroundColor);
+				}
+				data[index] = rawColor.getR();
+				data[index + 1] = rawColor.getG();
+				data[index + 2] = rawColor.getB();
+				data[index + 3] = rawColor.getA();
+			}
+
+			index += 4;
+		}
+	}
+	return new Image(width, height, data);
 }
 
 void HeatMap::debugDrawCells()

@@ -115,14 +115,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\lodepng\lodepng.cpp" />
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="GeographicCoordinate.cpp" />
     <ClCompile Include="HeatMap.cpp" />
     <ClCompile Include="HeatMapCell.cpp" />
+    <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TrainingCenterXML.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\lodepng\lodepng.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="GeographicCoordinate.h" />
     <ClInclude Include="HeatMap.h" />
     <ClInclude Include="HeatMapCell.h" />

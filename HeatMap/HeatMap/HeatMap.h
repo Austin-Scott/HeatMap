@@ -2,6 +2,8 @@
 #include "HeatMapCell.h"
 #include "GeographicCoordinate.h"
 #include "TrainingCenterXML.h"
+#include "Image.h"
+#include "Color.h"
 
 #include <iostream>
 
@@ -29,6 +31,8 @@ public:
 	HeatMap(int width, int height, GeographicCoordinate lowerLeft, GeographicCoordinate upperRight);
 	~HeatMap();
 	void addActivity(TrainingCenterXML &activity);
+	void normalizeMap();
+	Image* renderImage(Color backgroundColor, Color minimumActivityColor, Color maximumActivityColor);
 
 	void debugDrawCells();
 };

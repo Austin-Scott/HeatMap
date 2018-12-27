@@ -16,6 +16,6 @@ class TrainingCenterXML {
 private:
 	vector<GeographicCoordinate> track;
 public:
-	TrainingCenterXML(string filename);
+	TrainingCenterXML(string filename, string activityFilter="");
 	const vector<GeographicCoordinate>& getTrack();
 };
