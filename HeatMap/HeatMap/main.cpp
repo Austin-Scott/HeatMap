@@ -18,8 +18,8 @@ int main(int argc, char* argv[]) {
 	4. Render the data into an image and then use LodePNG to encode a png file that can be saved.
 	*/
 	string activityDirectory = "test";
-	string activityFilter = "Running";
-	string backgroundHexColor = "#000000FF";
+	vector<string> activityFilters = { "Running" };
+	string backgroundHexColor = "#00000000";
 	string minimumActivityHexColor = "#FF000080";
 	string maximumActivityHexColor = "#FFFFFFFF";
 	GeographicCoordinate bottomCenter(44.846595, -91.897108);
@@ -27,19 +27,10 @@ int main(int argc, char* argv[]) {
 	int width = 1920;
 	int height = 1080;
 	string renderedImageFilename = "result.png";
+	bool useAntiAliasing = true;
 
 	if (argc == 12) {
-		activityDirectory = argv[1];
-		activityFilter = argv[2];
-		if (activityFilter == "None") activityFilter = "";
-		backgroundHexColor = argv[3];
-		minimumActivityHexColor = argv[4];
-		maximumActivityHexColor = argv[5];
-		bottomCenter = geoCoord(stod(argv[6]), stod(argv[7]));
-		maxLatitude = stod(argv[8]);
-		width = atoi(argv[9]);
-		height = atoi(argv[10]);
-		renderedImageFilename = argv[11];
+		//TODO process cmd-line arguments
 	}
 	else if (argc == 1) {
 		//TODO add interface for entering arguments
@@ -49,6 +40,7 @@ int main(int argc, char* argv[]) {
 			<< "Syntax: \"" << argv[0] << " activityDirectory activityFilter backgroundHexColor minimumActivityHexColor maximumActivityHexColor bottomCenterLatitude bottomCenterLongitude maxLatitude width height renderedImageFilename" << endl;
 		return 1;
 	}
+
 	GeographicCoordinate* boundingBox = computeBoundingBox(bottomCenter, maxLatitude, width, height);
 	cout << "Lat/Lon Bounding Box for Heat Map computed:" << endl
 		<< "\t*Lower left bound: \"";
@@ -60,14 +52,22 @@ int main(int argc, char* argv[]) {
 	HeatMap map(width, height, boundingBox[0], boundingBox[1]);
 	delete[] boundingBox;
 
+	cout << "\nDecompressing any compressed activity files..." << endl << endl;
+	//7z x "{Directory name ending in /}*.gz" -aos "-o{directory name ending in /}"
+	string activityDirectoryWithSlash = activityDirectory;
+	if (activityDirectoryWithSlash.back() != '/' || activityDirectoryWithSlash.back() != '\\')
+		activityDirectoryWithSlash.push_back('/');
+	string command = "7z x \"" + activityDirectoryWithSlash + "*.gz\" -aos \"-o" + activityDirectoryWithSlash + "\"";
+	system(command.c_str());
+
 	cout << "\nBegin adding activity files from " << activityDirectory << "..." << endl << endl;
 	for (auto &p : directory_iterator(activityDirectory)) {
 		string filename = p.path().string();
 		if (filename.substr(filename.length() - 4) == ".tcx") {
 			cout << filename << endl;
-			TrainingCenterXML tcx(filename, activityFilter);
+			TrainingCenterXML tcx(filename, activityFilters);
 			if(tcx.getTrack().size()>0)
-				map.addActivity(tcx, true);
+				map.addActivity(tcx, useAntiAliasing);
 		}
 	}
 

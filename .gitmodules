@@ -1,3 +1,6 @@
 [submodule "lodepng"]
 	path = lodepng
 	url = https://github.com/lvandeve/lodepng.git
+[submodule "nana"]
+	path = nana
+	url = https://github.com/cnjinhao/nana.git

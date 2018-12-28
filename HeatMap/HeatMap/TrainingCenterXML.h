@@ -6,16 +6,19 @@
 #include <iostream>
 
 #include "GeographicCoordinate.h"
+#include "Activity.h"
+
 
 #include "rapidxml.hpp"
+
 
 using namespace std;
 using namespace rapidxml;
 
-class TrainingCenterXML {
+class TrainingCenterXML : public Activity {
 private:
 	vector<GeographicCoordinate> track;
 public:
-	TrainingCenterXML(string filename, string activityFilter="");
+	TrainingCenterXML(string filename, vector<string> activityFilters);
 	const vector<GeographicCoordinate>& getTrack();
 };

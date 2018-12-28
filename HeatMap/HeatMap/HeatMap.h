@@ -36,7 +36,7 @@ private:
 public:
 	HeatMap(int width, int height, GeographicCoordinate lowerLeft, GeographicCoordinate upperRight);
 	~HeatMap();
-	void addActivity(TrainingCenterXML &activity, bool antiAliasing);
+	void addActivity(Activity &activity, bool antiAliasing);
 	void normalizeMap();
 	Image* renderImage(Color backgroundColor, Color minimumActivityColor, Color maximumActivityColor);
 

@@ -216,7 +216,7 @@ HeatMap::~HeatMap()
 	delete[] cells;
 }
 
-void HeatMap::addActivity(TrainingCenterXML & activity, bool antiAliasing)
+void HeatMap::addActivity(Activity & activity, bool antiAliasing)
 {
 	cout << "\t*Recording activity on Heat Map..." << endl;
 	for (int i = 0; i < activity.getTrack().size() - 1; i++) {
