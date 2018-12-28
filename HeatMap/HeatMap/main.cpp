@@ -20,10 +20,10 @@ int main(int argc, char* argv[]) {
 	string activityDirectory = "test";
 	string activityFilter = "Running";
 	string backgroundHexColor = "#000000FF";
-	string minimumActivityHexColor = "#0000FF80";
+	string minimumActivityHexColor = "#FF000080";
 	string maximumActivityHexColor = "#FFFFFFFF";
-	GeographicCoordinate bottomCenter(44.839293, -91.912855);
-	double maxLatitude = 44.920303;
+	GeographicCoordinate bottomCenter(44.846595, -91.897108);
+	double maxLatitude = 44.938059;
 	int width = 1920;
 	int height = 1080;
 	string renderedImageFilename = "result.png";
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
 			cout << filename << endl;
 			TrainingCenterXML tcx(filename, activityFilter);
 			if(tcx.getTrack().size()>0)
-				map.addActivity(tcx);
+				map.addActivity(tcx, true);
 		}
 	}
 

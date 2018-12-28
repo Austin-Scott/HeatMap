@@ -21,7 +21,7 @@ double HeatMapCell::getNormalizedValue()
 	return normalizedValue;
 }
 
-void HeatMapCell::normalizeValue(double min, double max)
+void HeatMapCell::setNormalizedValue(double amount)
 {
-	normalizedValue = (value - min) / (max - min);
+	normalizedValue = amount;
 }

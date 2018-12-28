@@ -8,5 +8,5 @@ public:
 	double getValue();
 	void addToValue(double amount);
 	double getNormalizedValue();
-	void normalizeValue(double min, double max);
+	void setNormalizedValue(double amount);
 };

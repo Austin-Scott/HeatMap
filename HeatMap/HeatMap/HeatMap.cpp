@@ -53,6 +53,148 @@ double HeatMap::rfpart(double value)
 	return 1 - fpart(value);
 }
 
+double HeatMap::sign(double value)
+{
+	if (value < 0.0) return -1.0;
+	if (value > 0.0) return 1.0;
+	return 0.0;
+}
+
+void HeatMap::xiaolinWu(GeographicCoordinate from, GeographicCoordinate to)
+{
+	double x0 = lonToDoubleX(from.getLon());
+	double y0 = latToDoubleY(from.getLat());
+	double x1 = lonToDoubleX(to.getLon());
+	double y1 = latToDoubleY(to.getLat());
+	bool steep = abs(to.getLat() - from.getLat()) > abs(to.getLon() - from.getLon());
+	if (steep) {
+		swap(x0, y0);
+		swap(x1, y1);
+	}
+	if (x0 > x1) {
+		swap(x0, x1);
+		swap(y0, y1);
+	}
+	double dx = x1 - x0;
+	double dy = y1 - y0;
+
+	double gradient = 1.0;
+	if (dx != 0.0) {
+		gradient = dy / dx;
+	}
+
+	double xend = round(x0);
+	double yend = y0 + gradient * (xend - x0);
+	double xgap = rfpart(x0 + 0.5);
+	int xpxl1 = (int)xend;
+	int ypxl1 = (int)floor(yend);
+	if (steep) {
+		drawPoint(ypxl1, xpxl1, rfpart(yend)*xgap);
+		drawPoint(ypxl1 + 1, xpxl1, fpart(yend)*xgap);
+	}
+	else {
+		drawPoint(xpxl1, ypxl1, rfpart(yend)*xgap);
+		drawPoint(xpxl1, ypxl1 + 1, fpart(yend)*xgap);
+	}
+	double intery = yend + gradient;
+
+	xend = round(x1);
+	yend = y1 + gradient * (xend - x1);
+	xgap = fpart(x1 + 0.5);
+	int xpxl2 = (int)xend;
+	int ypxl2 = (int)floor(yend);
+	if (steep) {
+		drawPoint(ypxl2, xpxl2, rfpart(yend)*xgap);
+		drawPoint(ypxl2 + 1, xpxl2, fpart(yend)*xgap);
+	}
+	else {
+		drawPoint(xpxl2, ypxl2, rfpart(yend)*xgap);
+		drawPoint(xpxl2, ypxl2 + 1, fpart(yend)*xgap);
+	}
+
+	if (steep) {
+		for (int x = xpxl1 + 1; x < xpxl2; x++) {
+			drawPoint((int)floor(intery), x, rfpart(intery));
+			drawPoint((int)floor(intery) + 1, x, fpart(intery));
+			intery += gradient;
+		}
+	}
+	else {
+		for (int x = xpxl1 + 1; x < xpxl2; x++) {
+			drawPoint(x, (int)floor(intery), rfpart(intery));
+			drawPoint(x, (int)floor(intery) + 1, fpart(intery));
+			intery += gradient;
+		}
+	}
+}
+
+void HeatMap::bresenham(GeographicCoordinate from, GeographicCoordinate to)
+{
+	int x0 = (int)lonToDoubleX(from.getLon());
+	int y0 = (int)latToDoubleY(from.getLat());
+	int x1 = (int)lonToDoubleX(to.getLon());
+	int y1 = (int)latToDoubleY(to.getLat());
+
+	if (abs(y1 - y0) < abs(x1 - x0)) {
+		if (x0 > x1) {
+			plotLineLow(x1, y1, x0, y0);
+		}
+		else {
+			plotLineLow(x0, y0, x1, y1);
+		}
+	}
+	else {
+		if (y0 > y1) {
+			plotLineHigh(x1, y1, x0, y0);
+		}
+		else {
+			plotLineHigh(x0, y0, x1, y1);
+		}
+	}
+}
+
+void HeatMap::plotLineLow(int x0, int y0, int x1, int y1)
+{
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+	int yi = 1;
+	if (dy < 0) {
+		yi = -1;
+		dy = -dy;
+	}
+	int D = 2 * dy - dx;
+	int y = y0;
+	for (int x = x0; x < x1; x++) {
+		drawPoint(x, y, 1.0);
+		if (D > 0) {
+			y = y + yi;
+			D = D - (2 * dx);
+		}
+		D = D + (2 * dy);
+	}
+}
+
+void HeatMap::plotLineHigh(int x0, int y0, int x1, int y1)
+{
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+	int xi = 1;
+	if (dx < 0) {
+		xi = -1;
+		dx = -dx;
+	}
+	int D = 2 * dx - dy;
+	int x = x0;
+	for (int y = y0; y < y1; y++) {
+		drawPoint(x, y, 1.0);
+		if (D > 0) {
+			x = x + xi;
+			D = D - 2 * dy;
+		}
+		D = D + 2 * dx;
+	}
+}
+
 HeatMap::HeatMap(int width, int height, GeographicCoordinate lowerLeft, GeographicCoordinate upperRight)
 {
 	this->width = width;
@@ -74,30 +216,39 @@ HeatMap::~HeatMap()
 	delete[] cells;
 }
 
-void HeatMap::addActivity(TrainingCenterXML & activity)
+void HeatMap::addActivity(TrainingCenterXML & activity, bool antiAliasing)
 {
 	cout << "\t*Recording activity on Heat Map..." << endl;
 	for (int i = 0; i < activity.getTrack().size() - 1; i++) {
-		drawLine(activity.getTrack()[i], activity.getTrack()[i + 1]);
+		drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], antiAliasing);
 	}
 }
 
 void HeatMap::normalizeMap()
 {
-	double max = 0.0;
+	vector<HeatMapCell*> nonZeroCells;
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			if (cells[x][y].getValue() > max) {
-				max = cells[x][y].getValue();
+			HeatMapCell* currentCell = &cells[x][y];
+			if (currentCell->getValue() > 0.0) {
+				nonZeroCells.push_back(currentCell);
+			}
+			else {
+				currentCell->setNormalizedValue(0.0);
 			}
 		}
 	}
-	for (int x = 0; x < width; x++) {
-		for (int y = 0; y < height; y++) {
-			if (cells[x][y].getValue()!=0.0) {
-				cells[x][y].normalizeValue(0.0, max);
+	sort(nonZeroCells.begin(), nonZeroCells.end(), [](HeatMapCell* a, HeatMapCell* b) {return a->getValue() < b->getValue(); });
+	int topOfTier = -1;
+	for (int i = 0; i < nonZeroCells.size(); i++) {
+		if (topOfTier < i) {
+			topOfTier = i;
+			while (topOfTier < nonZeroCells.size() - 1 && nonZeroCells[topOfTier] == nonZeroCells[topOfTier + 1]) {
+				topOfTier++;
 			}
 		}
+
+		nonZeroCells[i]->setNormalizedValue((double)(topOfTier+1) / (double)nonZeroCells.size());
 	}
 }
 
@@ -164,70 +315,12 @@ void HeatMap::debugDrawCells()
 	cout << "Average nonzero cell value: " << sum / (double)n << endl;
 }
 
-void HeatMap::drawLine(GeographicCoordinate from, GeographicCoordinate to)
+void HeatMap::drawLine(GeographicCoordinate from, GeographicCoordinate to, bool smooth)
 {
-	double x0 = lonToDoubleX(from.getLon());
-	double y0 = latToDoubleY(from.getLat());
-	double x1 = lonToDoubleX(to.getLon());
-	double y1 = latToDoubleY(to.getLat());
-	bool steep = abs(to.getLat() - from.getLat()) > abs(to.getLon() - from.getLon());
-	if (steep) {
-		swap(x0, y0);
-		swap(x1, y1);
-	}
-	if (x0 > x1) {
-		swap(x0, x1);
-		swap(y0, y1);
-	}
-	double dx = x1 - x0;
-	double dy = y1 - y0;
-
-	double gradient = 1.0;
-	if (dx != 0.0) {
-		gradient = dy / dx;
-	}
-
-	double xend = round(x0);
-	double yend = y0 + gradient * (xend - x0);
-	double xgap = rfpart(x0 + 0.5);
-	int xpxl1 = (int)xend;
-	int ypxl1 = (int)floor(yend);
-	if (steep) {
-		drawPoint(ypxl1, xpxl1, rfpart(yend)*xgap);
-		drawPoint(ypxl1 + 1, xpxl1, fpart(yend)*xgap);
+	if (smooth) {
+		xiaolinWu(from, to);
 	}
 	else {
-		drawPoint(xpxl1, ypxl1, rfpart(yend)*xgap);
-		drawPoint(xpxl1, ypxl1 + 1, fpart(yend)*xgap);
-	}
-	double intery = yend + gradient;
-
-	xend = round(x1);
-	yend = y1 + gradient * (xend - x1);
-	xgap = fpart(x1 + 0.5);
-	int xpxl2 = (int)xend;
-	int ypxl2 = (int)floor(yend);
-	if (steep) {
-		drawPoint(ypxl2, xpxl2, rfpart(yend)*xgap);
-		drawPoint(ypxl2 + 1, xpxl2, fpart(yend)*xgap);
-	}
-	else {
-		drawPoint(xpxl2, ypxl2, rfpart(yend)*xgap);
-		drawPoint(xpxl2, ypxl2 + 1, fpart(yend)*xgap);
-	}
-
-	if (steep) {
-		for (int x = xpxl1 + 1; x < xpxl2; x++) {
-			drawPoint((int)floor(intery), x, rfpart(intery));
-			drawPoint((int)floor(intery) + 1, x, fpart(intery));
-			intery += gradient;
-		}
-	}
-	else {
-		for (int x = xpxl1 + 1; x < xpxl2; x++) {
-			drawPoint(x, (int)floor(intery), rfpart(intery));
-			drawPoint(x, (int)floor(intery) + 1, fpart(intery));
-			intery += gradient;
-		}
+		bresenham(from, to);
 	}
 }

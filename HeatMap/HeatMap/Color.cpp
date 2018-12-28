@@ -50,8 +50,14 @@ Color::Color(std::string hexCode)
 
 Color Color::blend(Color other)
 {
-	double alpha = (double)a / 255.0;
-	return lerp(other, alpha);
+	double alpha = 1.0-((double)a / 255.0);
+	if (other.getA()!=255) {
+		return lerp(other, alpha);
+	}
+	else {
+		Color color = lerp(other, alpha);
+		return Color(color.getR(), color.getG(), color.getB(), 255);
+	}
 }
 
 Color Color::lerp(Color other, double alpha)
