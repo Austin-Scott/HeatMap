@@ -129,6 +129,7 @@
     <ClCompile Include="..\..\lodepng\lodepng.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="GeographicCoordinate.cpp" />
+    <ClCompile Include="GPSExchangeFormat.cpp" />
     <ClCompile Include="HeatMap.cpp" />
     <ClCompile Include="HeatMapCell.cpp" />
     <ClCompile Include="Image.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Activity.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="GeographicCoordinate.h" />
+    <ClInclude Include="GPSExchangeFormat.h" />
     <ClInclude Include="HeatMap.h" />
     <ClInclude Include="HeatMapCell.h" />
     <ClInclude Include="Image.h" />

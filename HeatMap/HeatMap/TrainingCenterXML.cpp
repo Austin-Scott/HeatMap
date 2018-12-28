@@ -18,7 +18,6 @@ TrainingCenterXML::TrainingCenterXML(string filename, vector<string> activityFil
 		string fileBuffer(buffer, size);
 		delete[] buffer;
 		
-
 		char* cstring = new char[fileBuffer.length()+1];
 		for (int i = 0; i < fileBuffer.length();i++) {
 			cstring[i] = fileBuffer[i];
