@@ -3,6 +3,7 @@
 #include <filesystem>
 
 #include "TrainingCenterXML.h"
+#include "GPSExchangeFormat.h"
 #include "HeatMap.h"
 
 using namespace std;
@@ -68,6 +69,11 @@ int main(int argc, char* argv[]) {
 			TrainingCenterXML tcx(filename, activityFilters);
 			if(tcx.getTrack().size()>0)
 				map.addActivity(tcx, useAntiAliasing);
+		} else if (filename.substr(filename.length() - 4) == ".gpx") {
+			cout << filename << endl;
+			GPSExchangeFormat gpx(filename);
+			if (gpx.getTrack().size()>0)
+				map.addActivity(gpx, useAntiAliasing);
 		}
 	}
 
