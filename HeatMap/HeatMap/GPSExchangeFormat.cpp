@@ -28,19 +28,45 @@ GPSExchangeFormat::GPSExchangeFormat(string filename)
 
 		xmlDocument.parse<0>(cstring);
 
-		rootNode = xmlDocument.first_node("gpx")->first_node("trk");
+		rootNode = xmlDocument.first_node("gpx");
+		
+		if (rootNode != nullptr) {
 
-		int trackPointCount = 0;
+			xml_node<>* metadata = rootNode->first_node("metadata");
+			if (metadata != nullptr) {
+				metadata = metadata->first_node("time");
+				if (metadata != nullptr) {
+					startDate = Date::parseDateString(metadata->value());
+					if (startDate.isDateSet()) {
+						cout << "\t*Date of activity: " << startDate.toString() << endl;
+					}
+				}
+			}
 
-		for (xml_node<>* lapNode = rootNode->first_node("trkseg"); lapNode; lapNode = lapNode->next_sibling()) {
-			for (xml_node<>* pointNode = lapNode->first_node("trkpt"); pointNode; pointNode = pointNode->next_sibling()) {
-				track.emplace_back(stod(pointNode->first_attribute("lat")->value()), stod(pointNode->first_attribute("lon")->value()));
-				trackPointCount++;
+			rootNode = rootNode->first_node("trk");
+			if (rootNode != nullptr) {
+
+				int trackPointCount = 0;
+
+				for (xml_node<>* lapNode = rootNode->first_node("trkseg"); lapNode; lapNode = lapNode->next_sibling()) {
+					for (xml_node<>* pointNode = lapNode->first_node("trkpt"); pointNode; pointNode = pointNode->next_sibling()) {
+						xml_attribute<>* latAtr = pointNode->first_attribute("lat");
+						xml_attribute<>* lonAtr = pointNode->first_attribute("lon");
+						if (latAtr != nullptr && lonAtr != nullptr) {
+							track.emplace_back(stod(latAtr->value()), stod(latAtr->value()));
+							trackPointCount++;
+						}
+					}
+				}
+
+				cout << "\t*Successfully retrieved " << trackPointCount << " tracking points from file." << endl;
 			}
 		}
-		delete[] cstring;
+		else {
+			cerr << "Error: couldn't find the gpx node in " << filename << "." << endl;
+		}
 
-		cout << "\t*Successfully retrieved " << trackPointCount << " tracking points from file." << endl;
+		delete[] cstring;
 	}
 	else {
 		cerr << "Error: Couldn't open " << filename << " for reading." << endl;
@@ -50,4 +76,19 @@ GPSExchangeFormat::GPSExchangeFormat(string filename)
 const vector<GeographicCoordinate>& GPSExchangeFormat::getTrack()
 {
 	return track;
+}
+
+ActivityType GPSExchangeFormat::getActivityType()
+{
+	return ActivityType::Unknown;
+}
+
+Date GPSExchangeFormat::getStartDate()
+{
+	return startDate;
+}
+
+Speed GPSExchangeFormat::getAverageSpeed()
+{
+	return Speed();
 }

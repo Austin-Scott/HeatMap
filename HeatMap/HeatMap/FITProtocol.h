@@ -16,13 +16,20 @@ using namespace std;
 
 class FITProtocol : public Activity, public fit::MesgListener, public fit::DeveloperFieldDescriptionListener {
 private:
-	bool isAcceptableActivityType;
-	vector<string> filters;
 	vector<GeographicCoordinate> track;
+	ActivityType activityType;
+	Date startDate;
+	Speed averageSpeed;
+
 	double convertSemicirclesToDegrees(double semicircles);
 public:
-	FITProtocol(string filename, vector<string> activityFilters);
+	FITProtocol(string filename);
+
 	const vector<GeographicCoordinate>& getTrack();
+	ActivityType getActivityType();
+	Date getStartDate();
+	Speed getAverageSpeed();
+
 	void OnMesg(fit::Mesg& mesg);
 	void OnDeveloperFieldDescription(const fit::DeveloperFieldDescription& desc);
 };

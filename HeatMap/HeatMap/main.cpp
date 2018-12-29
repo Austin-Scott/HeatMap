@@ -12,36 +12,38 @@ using namespace experimental::filesystem;
 
 
 int main(int argc, char* argv[]) {
-	/*
-	1. Create an nxm array of doubles corresponding to an nxm resulting image. Initialize all with zero.
-	2. For each file in a directory, plot the GPS data using Xiaolin Wu's line algorithm onto the 2d array of doubles.
-		2.1. Use RapidXML to parse the data TCX data files.
-	3. Normalize each cell of the array to a value from [0,1] based on the min and max values.
-	4. Render the data into an image and then use LodePNG to encode a png file that can be saved.
-	*/
+
 	string activityDirectory = "test";
-	vector<string> activityFilters = { "Running" };
+
+
+	bool useAntiAliasing = true;
+
+	bool useActivityFiltering = false;
+	vector<ActivityType> activityFilters = { ActivityType::Running }; //Activities types that should be used, everything else excluded
+
+	bool useDateFiltering = false;
+	bool includeUnknownDates = false;
+	Date startDate(2018, Month::January, 1, 0, 0, 0); //Activities after startDate and before endDate should be used, everything else excluded
+	Date endDate(2018, Month::December, 31, 23, 59, 59);
+
+	bool useAverageSpeedFiltering = false;
+	bool includeUnknownSpeeds = false;
+	Speed slowestSpeed(8.5, SpeedUnits::MinutesPerMile); //Activities with average speeds faster than slowestSpeed and slower than fastestSpeed should be used, everything else excluded
+	Speed fastestSpeed(5, SpeedUnits::MinutesPerMile);
+
+
 	string backgroundHexColor = "#000000FF";
 	string minimumActivityHexColor = "#FF000080";
 	string maximumActivityHexColor = "#FFFFFFFF";
+
 	GeographicCoordinate bottomCenter(44.846595, -91.897108);
 	double maxLatitude = 44.938059;
+
 	int width = 1920;
 	int height = 1080;
-	string renderedImageFilename = "result.png";
-	bool useAntiAliasing = true;
 
-	if (argc == 12) {
-		//TODO process cmd-line arguments
-	}
-	else if (argc == 1) {
-		//TODO add interface for entering arguments
-	}
-	else {
-		cerr << "Error: Incorrect number of arguments passed. Please pass either 1 or 12." << endl
-			<< "Syntax: \"" << argv[0] << " activityDirectory activityFilter backgroundHexColor minimumActivityHexColor maximumActivityHexColor bottomCenterLatitude bottomCenterLongitude maxLatitude width height renderedImageFilename" << endl;
-		return 1;
-	}
+	string renderedImageFilename = "result.png";
+
 
 	GeographicCoordinate* boundingBox = computeBoundingBox(bottomCenter, maxLatitude, width, height);
 	cout << "Lat/Lon Bounding Box for Heat Map computed:" << endl
@@ -67,19 +69,16 @@ int main(int argc, char* argv[]) {
 		string filename = p.path().string();
 		if (filename.substr(filename.length() - 4) == ".tcx") {
 			cout << filename << endl;
-			TrainingCenterXML tcx(filename, activityFilters);
-			if(tcx.getTrack().size()>0)
-				map.addActivity(tcx, useAntiAliasing);
+			TrainingCenterXML tcx(filename);
+			map.addActivity(tcx);
 		} else if (filename.substr(filename.length() - 4) == ".gpx") {
 			cout << filename << endl;
 			GPSExchangeFormat gpx(filename);
-			if (gpx.getTrack().size()>0)
-				map.addActivity(gpx, useAntiAliasing);
+			map.addActivity(gpx);
 		} else if (filename.substr(filename.length() - 4) == ".fit") {
 			cout << filename << endl;
-			FITProtocol fit(filename, activityFilters);
-			if (fit.getTrack().size()>0)
-				map.addActivity(fit, useAntiAliasing);
+			FITProtocol fit(filename);
+			map.addActivity(fit);
 		}
 	}
 
