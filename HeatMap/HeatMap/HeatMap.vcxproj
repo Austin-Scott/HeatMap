@@ -87,6 +87,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -95,6 +96,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -105,6 +107,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -119,6 +122,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -152,6 +156,7 @@
     <ClCompile Include="..\..\fit-sdk\cpp\fit_unicode.cpp" />
     <ClCompile Include="..\..\lodepng\lodepng.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Date.cpp" />
     <ClCompile Include="FITProtocol.cpp" />
     <ClCompile Include="GeographicCoordinate.cpp" />
     <ClCompile Include="GPSExchangeFormat.cpp" />
@@ -165,6 +170,7 @@
     <ClInclude Include="..\..\lodepng\lodepng.h" />
     <ClInclude Include="Activity.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="Date.h" />
     <ClInclude Include="FITProtocol.h" />
     <ClInclude Include="GeographicCoordinate.h" />
     <ClInclude Include="GPSExchangeFormat.h" />
