@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\fit-sdk">
+      <UniqueIdentifier>{de18f8cd-b09a-43be-a2fb-83e02e358552}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -41,6 +44,81 @@
     </ClCompile>
     <ClCompile Include="GPSExchangeFormat.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FITProtocol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_accumulated_field.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_accumulator.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_buffer_encode.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_buffered_mesg_broadcaster.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_buffered_record_mesg_broadcaster.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_crc.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_date_time.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_decode.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_developer_field.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_developer_field_definition.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_developer_field_description.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_encode.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_factory.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_field.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_field_base.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_field_definition.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_mesg.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_mesg_broadcaster.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_mesg_definition.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_mesg_with_event_broadcaster.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_profile.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_protocol_validator.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_unicode.cpp">
+      <Filter>Source Files\fit-sdk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,6 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GPSExchangeFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FITProtocol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

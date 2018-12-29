@@ -4,6 +4,7 @@
 
 #include "TrainingCenterXML.h"
 #include "GPSExchangeFormat.h"
+#include "FITProtocol.h"
 #include "HeatMap.h"
 
 using namespace std;
@@ -20,7 +21,7 @@ int main(int argc, char* argv[]) {
 	*/
 	string activityDirectory = "test";
 	vector<string> activityFilters = { "Running" };
-	string backgroundHexColor = "#00000000";
+	string backgroundHexColor = "#000000FF";
 	string minimumActivityHexColor = "#FF000080";
 	string maximumActivityHexColor = "#FFFFFFFF";
 	GeographicCoordinate bottomCenter(44.846595, -91.897108);
@@ -74,6 +75,11 @@ int main(int argc, char* argv[]) {
 			GPSExchangeFormat gpx(filename);
 			if (gpx.getTrack().size()>0)
 				map.addActivity(gpx, useAntiAliasing);
+		} else if (filename.substr(filename.length() - 4) == ".fit") {
+			cout << filename << endl;
+			FITProtocol fit(filename, activityFilters);
+			if (fit.getTrack().size()>0)
+				map.addActivity(fit, useAntiAliasing);
 		}
 	}
 
