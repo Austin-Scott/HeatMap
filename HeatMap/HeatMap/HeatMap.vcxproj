@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{CFA1F245-3F98-42A1-B44A-41F45DB3D434}</ProjectGuid>
     <RootNamespace>HeatMap</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -70,16 +70,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>../../fit-sdk/cpp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>../../fit-sdk/cpp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>../../fit-sdk/cpp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>../../fit-sdk/cpp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -126,8 +126,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\fit-sdk\cpp\fit.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_accumulated_field.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_accumulator.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_buffered_mesg_broadcaster.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_buffered_record_mesg_broadcaster.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_buffer_encode.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_crc.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_date_time.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_decode.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_developer_field.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_developer_field_definition.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_developer_field_description.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_encode.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_factory.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_field.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_field_base.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_field_definition.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_mesg.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_mesg_broadcaster.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_mesg_definition.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_mesg_with_event_broadcaster.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_profile.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_protocol_validator.cpp" />
+    <ClCompile Include="..\..\fit-sdk\cpp\fit_unicode.cpp" />
     <ClCompile Include="..\..\lodepng\lodepng.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="FITProtocol.cpp" />
     <ClCompile Include="GeographicCoordinate.cpp" />
     <ClCompile Include="GPSExchangeFormat.cpp" />
     <ClCompile Include="HeatMap.cpp" />
@@ -140,6 +165,7 @@
     <ClInclude Include="..\..\lodepng\lodepng.h" />
     <ClInclude Include="Activity.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="FITProtocol.h" />
     <ClInclude Include="GeographicCoordinate.h" />
     <ClInclude Include="GPSExchangeFormat.h" />
     <ClInclude Include="HeatMap.h" />

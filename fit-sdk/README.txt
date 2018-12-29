@@ -1,0 +1,1 @@
+Download the FIT SDK from https://www.thisisant.com/resources/fit and extract the files here. 
