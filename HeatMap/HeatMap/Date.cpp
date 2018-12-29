@@ -35,10 +35,12 @@ int Date::getDaysInMonth(Month month, int year)
 
 Date::Date()
 {
+	isSet = false;
 }
 
 Date::Date(int year, Month month, int day, int hour, int minute, int second)
 {
+	isSet = true;
 	this->year = year;
 	this->month = month;
 	this->day = day;
@@ -49,7 +51,46 @@ Date::Date(int year, Month month, int day, int hour, int minute, int second)
 
 string Date::toString()
 {
-	return string();
+	string monthStr = "";
+	switch (month) {
+	case Month::January:
+		monthStr = "January";
+		break;
+	case Month::February:
+		monthStr = "February";
+		break;
+	case Month::March:
+		monthStr = "March";
+		break;
+	case Month::April:
+		monthStr = "April";
+		break;
+	case Month::May:
+		monthStr = "May";
+		break;
+	case Month::June:
+		monthStr = "June";
+		break;
+	case Month::July:
+		monthStr = "July";
+		break;
+	case Month::August:
+		monthStr = "August";
+		break;
+	case Month::September:
+		monthStr = "September";
+		break;
+	case Month::October:
+		monthStr = "October";
+		break;
+	case Month::November:
+		monthStr = "November";
+		break;
+	case Month::December:
+		monthStr = "December";
+		break;
+	}
+	return monthStr + " " + to_string(day) + ", " + to_string(year) + " " + to_string(hour) + ":" + to_string(minute) + ":" + to_string(second);
 }
 
 bool Date::isMoreRecentThan(Date other)
@@ -149,8 +190,33 @@ Date Date::createDate(int year, Month month, int day, int hour, int minute, int 
 	return Date(year, month, day, hour, minute, second);
 }
 
+Date Date::createDate(time_t seconds)
+{
+	seconds -= 86400;
+	tm* ltm = localtime(&seconds);
+
+	return Date::createDate(ltm->tm_year + 1920, static_cast<Month>(ltm->tm_mon + 1), ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+}
+
 Date Date::parseDateString(string dateString)
 {
+	if (dateString.size() == 24) {
+		Date result(atoi(dateString.substr(0, 4).c_str()), static_cast<Month>(atoi(dateString.substr(5, 2).c_str())), atoi(dateString.substr(8, 2).c_str()), atoi(dateString.substr(11, 2).c_str()), atoi(dateString.substr(14, 2).c_str()), atoi(dateString.substr(17, 2).c_str()));
+		//That was in Zulu time. Convert to local time.
+		struct tm zuluTime;
+		zuluTime.tm_year = result.getYear() - 1900;
+		zuluTime.tm_mon = result.getMonth() - 1;
+		zuluTime.tm_mday = result.getDay();
+		zuluTime.tm_hour = result.getHour();
+		zuluTime.tm_min = result.getMinute();
+		zuluTime.tm_sec = result.getSecond();
+
+		time_t unixTime = mktime(&zuluTime) - _timezone;
+		tm* ltm = localtime(&unixTime); //Convert to the current time zone
+
+		return Date::createDate(ltm->tm_year + 1900, static_cast<Month>(ltm->tm_mon + 1), ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+		
+	}
 	return Date();
 }
 
@@ -161,7 +227,7 @@ bool Date::isValidDate()
 	return true;
 }
 
-Date Date::offsetByNumOfDays(int numOfDays)
+bool Date::isDateSet()
 {
-	return Date();
+	return isSet;
 }

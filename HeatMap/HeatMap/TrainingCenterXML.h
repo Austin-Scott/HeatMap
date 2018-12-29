@@ -18,7 +18,14 @@ using namespace rapidxml;
 class TrainingCenterXML : public Activity {
 private:
 	vector<GeographicCoordinate> track;
+
+	ActivityType activityType;
+	Date startDate;
+	Speed averageSpeed;
 public:
-	TrainingCenterXML(string filename, vector<string> activityFilters);
+	TrainingCenterXML(string filename);
 	const vector<GeographicCoordinate>& getTrack();
+	ActivityType getActivityType();
+	Date getStartDate();
+	Speed getAverageSpeed();
 };

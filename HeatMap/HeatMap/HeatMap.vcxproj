@@ -164,6 +164,7 @@
     <ClCompile Include="HeatMapCell.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Speed.cpp" />
     <ClCompile Include="TrainingCenterXML.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="HeatMapCell.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="rapidxml.hpp" />
+    <ClInclude Include="Speed.h" />
     <ClInclude Include="TrainingCenterXML.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

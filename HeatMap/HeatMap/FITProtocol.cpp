@@ -5,12 +5,12 @@ double FITProtocol::convertSemicirclesToDegrees(double semicircles)
 	return semicircles * (180.0 / pow(2, 31));
 }
 
-FITProtocol::FITProtocol(string filename, vector<string> activityFilters)
+FITProtocol::FITProtocol(string filename)
 {
-	isAcceptableActivityType = true;
-	filters = activityFilters;
 	fit::Decode decode;
 	fit::MesgBroadcaster mesgBroadcaster;
+
+	activityType = ActivityType::Unknown;
 
 	cout << "\t*Loading file into memory..." << endl;
 
@@ -27,9 +27,8 @@ FITProtocol::FITProtocol(string filename, vector<string> activityFilters)
 			catch (const fit::RuntimeException& e) {
 				cerr << "Exception when decoding " << filename << ": " << e.what() << endl;
 			}
-			if (isAcceptableActivityType) {
-				cout << "\t*Successfully retrieved " << track.size() << " tracking points from file." << endl;
-			}
+
+			cout << "\t*Successfully retrieved " << track.size() << " tracking points from file." << endl;
 		}
 		else {
 			cerr << filename << " failed to pass file integrity check." << endl;
@@ -42,9 +41,22 @@ FITProtocol::FITProtocol(string filename, vector<string> activityFilters)
 
 const vector<GeographicCoordinate>& FITProtocol::getTrack()
 {
-	if(isAcceptableActivityType)
-		return track;
-	else return vector<GeographicCoordinate>();
+	return track;
+}
+
+ActivityType FITProtocol::getActivityType()
+{
+	return activityType;
+}
+
+Date FITProtocol::getStartDate()
+{
+	return startDate;
+}
+
+Speed FITProtocol::getAverageSpeed()
+{
+	return Speed();
 }
 
 void FITProtocol::OnMesg(fit::Mesg & mesg)
@@ -74,36 +86,35 @@ void FITProtocol::OnMesg(fit::Mesg & mesg)
 			fit::Field* field = mesg.GetFieldByIndex(i);
 			if (field->GetName() == "sport") {
 				int sportType = (int)field->GetENUMValue(0);
-				if (isAcceptableActivityType) {
-					if (filters.size() == 0) return;
-					bool foundActivity = false;
-					for (string filter : filters) {
-						if (filter == "Running" && sportType == FIT_ACTIVITY_TYPE_RUNNING) {
-							foundActivity = true;
-							break;
-						}
-						else if (filter == "Walking" && sportType == FIT_ACTIVITY_TYPE_WALKING) {
-							foundActivity = true;
-							break;
-						}
-						else if (filter == "Cycling" && sportType == FIT_ACTIVITY_TYPE_CYCLING) {
-							foundActivity = true;
-							break;
-						}
-						else if (filter == "Swimming" && sportType == FIT_ACTIVITY_TYPE_SWIMMING) {
-							foundActivity = true;
-							break;
-						}
-					}
-					if (!foundActivity) {
-						cout << "\t*Activity excluded from Heat Map due to filter." << endl;
-						isAcceptableActivityType = false;
-					}
+				if (sportType == FIT_ACTIVITY_TYPE_RUNNING) {
+					activityType = ActivityType::Running;
+					cout << "\t*Activity type: Running" << endl;
+				}
+				else if (sportType == FIT_ACTIVITY_TYPE_WALKING) {
+					activityType = ActivityType::Walking;
+					cout << "\t*Activity type: Walking" << endl;
+				}
+				else if (sportType == FIT_ACTIVITY_TYPE_CYCLING) {
+					activityType = ActivityType::Cycling;
+					cout << "\t*Activity type: Cycling" << endl;
+				}
+				else if (sportType == FIT_ACTIVITY_TYPE_SWIMMING) {
+					activityType = ActivityType::Swimming;
+					cout << "\t*Activity type: Swimming" << endl;
 				}
 			}
 			else if (field->GetName() == "start_time") {
 				//UINT32 data field giving seconds since UTC 00:00 Dec 31 1989 as measured when the activity started
-				//field->GetUINT32Value(0)
+				startDate = Date::createDate(field->GetUINT32Value(0));
+				cout << "\t*Date of activity: " << startDate.toString() << endl;
+			}
+			else if (field->GetName() == "avg_speed") {
+				string units = field->GetUnits();
+				if (units == "m/s") {
+					double speed = field->GetFLOAT64Value(0);
+					cout << "\t*Average speed: " << speed << " m/s" << endl;
+					averageSpeed.setSpeed(speed, SpeedUnits::MetersPerSecond);
+				}
 			}
 		}
 	}

@@ -216,11 +216,13 @@ HeatMap::~HeatMap()
 	delete[] cells;
 }
 
-void HeatMap::addActivity(Activity & activity, bool antiAliasing)
+void HeatMap::addActivity(Activity & activity)
 {
-	cout << "\t*Recording activity on Heat Map..." << endl;
-	for (int i = 0; i < activity.getTrack().size() - 1; i++) {
-		drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], antiAliasing);
+	if (activity.getTrack().size() > 1) {
+		cout << "\t*Recording activity on Heat Map..." << endl;
+		for (int i = 0; i < activity.getTrack().size() - 1; i++) {
+			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], true);
+		}
 	}
 }
 

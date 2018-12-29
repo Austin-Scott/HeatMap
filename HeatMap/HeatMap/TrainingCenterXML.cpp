@@ -1,6 +1,6 @@
 #include "TrainingCenterXML.h"
 
-TrainingCenterXML::TrainingCenterXML(string filename, vector<string> activityFilters)
+TrainingCenterXML::TrainingCenterXML(string filename)
 {
 	xml_document<> xmlDocument;
 	xml_node<>* rootNode;
@@ -28,41 +28,66 @@ TrainingCenterXML::TrainingCenterXML(string filename, vector<string> activityFil
 
 		xmlDocument.parse<0>(cstring);
 
-		rootNode = xmlDocument.first_node("TrainingCenterDatabase")->first_node("Activities")->first_node("Activity");
+		rootNode = xmlDocument.first_node("TrainingCenterDatabase");
+		if (rootNode != nullptr) {
+			rootNode = rootNode->first_node("Activities");
+			if (rootNode != nullptr) {
+				rootNode = rootNode->first_node("Activity");
+				if (rootNode != nullptr) {
 
-		string sportName = rootNode->first_attribute("Sport")->value();
-		cout << "\t*Activity type: " << sportName << endl;
+					activityType = ActivityType::Unknown;
+					xml_attribute<>* sportAtr = rootNode->first_attribute("Sport");
+					if (sportAtr != nullptr) {
+						string sportName = sportAtr->value();
 
-		bool activityFound = false;
-		for (string activityFilter : activityFilters) {
-			if (activityFilter == sportName) {
-				activityFound = true;
-				break;
-			}
-		}
-		if (activityFilters.size() > 0 && activityFound == false) {
-			cout << "\t*Activity excluded from Heat Map due to filter." << endl;
-			return;
-		}
+						if (sportName == "Running") {
+							activityType = ActivityType::Running;
+							cout << "\t*Activity type: " << sportName << endl;
+						}
+						else if (sportName == "Walking") {
+							activityType = ActivityType::Walking;
+							cout << "\t*Activity type: " << sportName << endl;
+						}
+						else if (sportName == "Cycling") {
+							activityType = ActivityType::Cycling;
+							cout << "\t*Activity type: " << sportName << endl;
+						}
+						else if (sportName == "Swimming") {
+							activityType = ActivityType::Swimming;
+							cout << "\t*Activity type: " << sportName << endl;
+						}
+					}
 
-		int trackPointCount = 0;
 
-		for (xml_node<>* lapNode = rootNode->first_node("Lap"); lapNode; lapNode = lapNode->next_sibling()) {
-			xml_node<>* currentTrack = lapNode->first_node("Track");
-			if (!currentTrack) continue;
-			for (xml_node<>* pointNode = currentTrack->first_node("Trackpoint"); pointNode; pointNode = pointNode->next_sibling()) {
-				xml_node<>* currentPosition = pointNode->first_node("Position");
-				if (currentPosition != nullptr) {
-					xml_node<>* lat = currentPosition->first_node("LatitudeDegrees");
-					xml_node<>* lon = currentPosition->first_node("LongitudeDegrees");
-					track.emplace_back(stod(lat->value()), stod(lon->value()));
-					trackPointCount++;
+					for (xml_node<>* lapNode = rootNode->first_node("Lap"); lapNode; lapNode = lapNode->next_sibling()) {
+						if (!startDate.isDateSet()) {
+							xml_attribute<>* timeAtr = lapNode->first_attribute("StartTime");
+							if (timeAtr != nullptr) {
+								startDate = Date::parseDateString(timeAtr->value());
+								if (startDate.isDateSet()) {
+									cout << "\t*Date of activity: " << startDate.toString() << endl;
+								}
+							}
+						}
+						xml_node<>* currentTrack = lapNode->first_node("Track");
+						if (currentTrack==nullptr) continue;
+
+						for (xml_node<>* pointNode = currentTrack->first_node("Trackpoint"); pointNode; pointNode = pointNode->next_sibling()) {
+							xml_node<>* currentPosition = pointNode->first_node("Position");
+							if (currentPosition != nullptr) {
+								xml_node<>* lat = currentPosition->first_node("LatitudeDegrees");
+								xml_node<>* lon = currentPosition->first_node("LongitudeDegrees");
+								if (lat != nullptr && lon != nullptr) {
+									track.emplace_back(stod(lat->value()), stod(lon->value()));
+								}
+							}
+						}
+					}
+					cout << "\t*Successfully retrieved " << track.size() << " tracking points from file." << endl;
 				}
 			}
 		}
 		delete[] cstring;
-
-		cout << "\t*Successfully retrieved " << trackPointCount << " tracking points from file." << endl;
 	}
 	else {
 		cerr << "Error: Couldn't open " << filename << " for reading." << endl;
@@ -72,4 +97,19 @@ TrainingCenterXML::TrainingCenterXML(string filename, vector<string> activityFil
 const vector<GeographicCoordinate>& TrainingCenterXML::getTrack()
 {
 	return track;
+}
+
+ActivityType TrainingCenterXML::getActivityType()
+{
+	return activityType;
+}
+
+Date TrainingCenterXML::getStartDate()
+{
+	return startDate;
+}
+
+Speed TrainingCenterXML::getAverageSpeed()
+{
+	return averageSpeed;
 }
