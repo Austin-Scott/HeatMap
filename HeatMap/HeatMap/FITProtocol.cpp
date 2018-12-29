@@ -73,7 +73,7 @@ void FITProtocol::OnMesg(fit::Mesg & mesg)
 		for (FIT_UINT16 i = 0; i < (FIT_UINT16)mesg.GetNumFields(); i++) {
 			fit::Field* field = mesg.GetFieldByIndex(i);
 			if (field->GetName() == "sport") {
-				int sportType = (int)field->GetFLOAT64Value(0);
+				int sportType = (int)field->GetENUMValue(0);
 				if (isAcceptableActivityType) {
 					if (filters.size() == 0) return;
 					bool foundActivity = false;
@@ -100,6 +100,10 @@ void FITProtocol::OnMesg(fit::Mesg & mesg)
 						isAcceptableActivityType = false;
 					}
 				}
+			}
+			else if (field->GetName() == "start_time") {
+				//UINT32 data field giving seconds since UTC 00:00 Dec 31 1989 as measured when the activity started
+				//field->GetUINT32Value(0)
 			}
 		}
 	}
