@@ -8,7 +8,7 @@ Show your friends and family what you've accomplished on foot or by bike by crea
 | Format | GPS Tracks | Date Filtering | Activity Type Filtering | Average Speed Filtering | 
 | --- | --- | --- | --- | --- |
 | .tcx | Yes | Yes | Yes | Yes |
-| .gpx | Yes | Yes *(If found in meta-data)* | **No** | Yes *(Computed from GPS data)* |
+| .gpx | Yes | Yes *(If found in meta-data)* | **No** | **No** |
 | .fit | Yes | Yes | Yes | Yes |
 
 Files with the extensions ".tcx.gz", ".gpx.gz", and ".fit.gz" that are commonly found in Strava account archives are simply compressed versions of the above file types. This application will automatically decompress and read any files found in these formats.
