@@ -58,31 +58,56 @@ TrainingCenterXML::TrainingCenterXML(string filename)
 						}
 					}
 
+					bool foundAverageSpeed = true;
+					double cumulativeDistanceMeters = 0.0;
+					double cumulativeTimeSeconds = 0.0;
 
 					for (xml_node<>* lapNode = rootNode->first_node("Lap"); lapNode; lapNode = lapNode->next_sibling()) {
-						if (!startDate.isDateSet()) {
-							xml_attribute<>* timeAtr = lapNode->first_attribute("StartTime");
-							if (timeAtr != nullptr) {
-								startDate = Date::parseDateString(timeAtr->value());
-								if (startDate.isDateSet()) {
-									cout << "\t*Date of activity: " << startDate.toString() << endl;
+						if (strcmp(lapNode->name(), "Lap")==0) {
+							if (!startDate.isDateSet()) {
+								xml_attribute<>* timeAtr = lapNode->first_attribute("StartTime");
+								if (timeAtr != nullptr) {
+									startDate = Date::parseDateString(timeAtr->value());
+									if (startDate.isDateSet()) {
+										cout << "\t*Date of activity: " << startDate.toString() << endl;
+									}
 								}
 							}
-						}
-						xml_node<>* currentTrack = lapNode->first_node("Track");
-						if (currentTrack==nullptr) continue;
+							if (foundAverageSpeed) {
+								xml_node<>* timeNode = lapNode->first_node("TotalTimeSeconds");
+								xml_node<>* distanceNode = lapNode->first_node("DistanceMeters");
+								if (timeNode != nullptr && distanceNode != nullptr) {
+									cumulativeTimeSeconds += stod(timeNode->value());
+									cumulativeDistanceMeters += stod(distanceNode->value());
+								}
+								else {
+									foundAverageSpeed = false;
+									//Something went wrong with the calculation. Abort attempt.
+								}
+							}
 
-						for (xml_node<>* pointNode = currentTrack->first_node("Trackpoint"); pointNode; pointNode = pointNode->next_sibling()) {
-							xml_node<>* currentPosition = pointNode->first_node("Position");
-							if (currentPosition != nullptr) {
-								xml_node<>* lat = currentPosition->first_node("LatitudeDegrees");
-								xml_node<>* lon = currentPosition->first_node("LongitudeDegrees");
-								if (lat != nullptr && lon != nullptr) {
-									track.emplace_back(stod(lat->value()), stod(lon->value()));
+							xml_node<>* currentTrack = lapNode->first_node("Track");
+							if (currentTrack == nullptr) continue;
+
+							for (xml_node<>* pointNode = currentTrack->first_node("Trackpoint"); pointNode; pointNode = pointNode->next_sibling()) {
+								xml_node<>* currentPosition = pointNode->first_node("Position");
+								if (currentPosition != nullptr) {
+									xml_node<>* lat = currentPosition->first_node("LatitudeDegrees");
+									xml_node<>* lon = currentPosition->first_node("LongitudeDegrees");
+									if (lat != nullptr && lon != nullptr) {
+										track.emplace_back(stod(lat->value()), stod(lon->value()));
+									}
 								}
 							}
 						}
 					}
+
+					if (foundAverageSpeed && cumulativeTimeSeconds!=0.0) {
+						double speed = cumulativeDistanceMeters / cumulativeTimeSeconds;
+						averageSpeed = Speed(speed, SpeedUnits::MetersPerSecond);
+						cout << "\t*Average speed: " << speed << " m/s" << endl;
+					}
+
 					cout << "\t*Successfully retrieved " << track.size() << " tracking points from file." << endl;
 				}
 			}
