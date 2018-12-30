@@ -10,41 +10,8 @@
 using namespace std;
 using namespace experimental::filesystem;
 
-
-int main(int argc, char* argv[]) {
-
-	string activityDirectory = "test";
-
-
-	bool useAntiAliasing = true;
-
-	bool useActivityFiltering = false;
-	vector<ActivityType> activityFilters = { ActivityType::Running }; //Activities types that should be used, everything else excluded
-
-	bool useDateFiltering = false;
-	bool includeUnknownDates = false;
-	Date startDate(2018, Month::January, 1, 0, 0, 0); //Activities after startDate and before endDate should be used, everything else excluded
-	Date endDate(2018, Month::December, 31, 23, 59, 59);
-
-	bool useAverageSpeedFiltering = true;
-	bool includeUnknownSpeeds = false;
-	Speed slowestSpeed(8.5, SpeedUnits::MinutesPerMile); //Activities with average speeds faster than slowestSpeed and slower than fastestSpeed should be used, everything else excluded
-	Speed fastestSpeed(5.75, SpeedUnits::MinutesPerMile);
-
-
-	string backgroundHexColor = "#000000FF";
-	string minimumActivityHexColor = "#FF000080";
-	string maximumActivityHexColor = "#FFFFFFFF";
-
-	GeographicCoordinate bottomCenter(44.846595, -91.897108);
-	double maxLatitude = 44.938059;
-
-	int width = 1920;
-	int height = 1080;
-
-	string renderedImageFilename = "result.png";
-
-
+void generateHeatMap(string activityDirectory, bool useAntiAliasing, bool useActivityFiltering, vector<ActivityType> activityFilters, bool useDateFiltering, bool includeUnknownDates, Date startDate, Date endDate, bool useAverageSpeedFiltering, bool includeUnknownSpeeds, Speed slowestSpeed, Speed fastestSpeed, string backgroundHexColor, string minimumActivityHexColor, string maximumActivityHexColor, GeographicCoordinate bottomCenter, double maxLatitude, int width, int height, string renderedImageFilename) {
+	
 	GeographicCoordinate* boundingBox = computeBoundingBox(bottomCenter, maxLatitude, width, height);
 	cout << "Lat/Lon Bounding Box for Heat Map computed:" << endl
 		<< "\t*Lower left bound: \"";
@@ -83,11 +50,13 @@ int main(int argc, char* argv[]) {
 			cout << filename << endl;
 			TrainingCenterXML tcx(filename);
 			map.addActivity(tcx);
-		} else if (filename.substr(filename.length() - 4) == ".gpx") {
+		}
+		else if (filename.substr(filename.length() - 4) == ".gpx") {
 			cout << filename << endl;
 			GPSExchangeFormat gpx(filename);
 			map.addActivity(gpx);
-		} else if (filename.substr(filename.length() - 4) == ".fit") {
+		}
+		else if (filename.substr(filename.length() - 4) == ".fit") {
 			cout << filename << endl;
 			FITProtocol fit(filename);
 			map.addActivity(fit);
@@ -106,5 +75,41 @@ int main(int argc, char* argv[]) {
 	delete result;
 
 	cout << "...done!" << endl;
+}
+
+int main(int argc, char* argv[]) {
+
+	string activityDirectory = "test";
+
+	bool useAntiAliasing = true;
+
+	bool useActivityFiltering = false;
+	vector<ActivityType> activityFilters = { ActivityType::Running }; //Activities types that should be used, everything else excluded
+
+	bool useDateFiltering = false;
+	bool includeUnknownDates = false;
+	Date startDate(2018, Month::January, 1, 0, 0, 0); //Activities after startDate and before endDate should be used, everything else excluded
+	Date endDate(2018, Month::December, 31, 23, 59, 59);
+
+	bool useAverageSpeedFiltering = true;
+	bool includeUnknownSpeeds = false;
+	Speed slowestSpeed(8.5, SpeedUnits::MinutesPerMile); //Activities with average speeds faster than slowestSpeed and slower than fastestSpeed should be used, everything else excluded
+	Speed fastestSpeed(5.75, SpeedUnits::MinutesPerMile);
+
+
+	string backgroundHexColor = "#000000FF";
+	string minimumActivityHexColor = "#FF000080";
+	string maximumActivityHexColor = "#FFFFFFFF";
+
+	GeographicCoordinate bottomCenter(44.846595, -91.897108);
+	double maxLatitude = 44.938059;
+
+	int width = 1920;
+	int height = 1080;
+
+	string renderedImageFilename = "result.png";
+
+	generateHeatMap(activityDirectory, useAntiAliasing, useActivityFiltering, activityFilters, useDateFiltering, includeUnknownDates, startDate, endDate, useAverageSpeedFiltering, includeUnknownSpeeds, slowestSpeed, fastestSpeed, backgroundHexColor, minimumActivityHexColor, maximumActivityHexColor, bottomCenter, maxLatitude, width, height, renderedImageFilename);
+	
 	system("pause");
 }
