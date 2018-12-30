@@ -56,7 +56,7 @@ Date FITProtocol::getStartDate()
 
 Speed FITProtocol::getAverageSpeed()
 {
-	return Speed();
+	return averageSpeed;
 }
 
 void FITProtocol::OnMesg(fit::Mesg & mesg)

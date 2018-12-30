@@ -26,10 +26,10 @@ int main(int argc, char* argv[]) {
 	Date startDate(2018, Month::January, 1, 0, 0, 0); //Activities after startDate and before endDate should be used, everything else excluded
 	Date endDate(2018, Month::December, 31, 23, 59, 59);
 
-	bool useAverageSpeedFiltering = false;
+	bool useAverageSpeedFiltering = true;
 	bool includeUnknownSpeeds = false;
 	Speed slowestSpeed(8.5, SpeedUnits::MinutesPerMile); //Activities with average speeds faster than slowestSpeed and slower than fastestSpeed should be used, everything else excluded
-	Speed fastestSpeed(5, SpeedUnits::MinutesPerMile);
+	Speed fastestSpeed(5.75, SpeedUnits::MinutesPerMile);
 
 
 	string backgroundHexColor = "#000000FF";
@@ -53,8 +53,20 @@ int main(int argc, char* argv[]) {
 	boundingBox[1].printCoordinate();
 	cout << "\"" << endl;
 
-	HeatMap map(width, height, boundingBox[0], boundingBox[1]);
+	HeatMap map(width, height, boundingBox[0], boundingBox[1], useAntiAliasing);
 	delete[] boundingBox;
+
+	if (useActivityFiltering) {
+		map.setActivityTypeFilter(activityFilters);
+	}
+
+	if (useDateFiltering) {
+		map.setDateFilter(startDate, endDate, includeUnknownDates);
+	}
+
+	if (useAverageSpeedFiltering) {
+		map.setAverageSpeedFilter(slowestSpeed, fastestSpeed, includeUnknownSpeeds);
+	}
 
 	cout << "\nDecompressing any compressed activity files..." << endl << endl;
 	//7z x "{Directory name ending in /}*.gz" -aos "-o{directory name ending in /}"

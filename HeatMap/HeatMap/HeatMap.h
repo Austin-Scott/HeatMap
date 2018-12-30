@@ -18,6 +18,21 @@ private:
 
 	HeatMapCell** cells;
 
+	bool useAntiAliasing;
+
+	bool useActivityFiltering;
+	vector<ActivityType> activityFilters;
+
+	bool useDateFiltering;
+	bool includeUnknownDates;
+	Date startDate;
+	Date endDate;
+
+	bool useAverageSpeedFiltering;
+	bool includeUnknownSpeeds;
+	Speed slowestSpeed;
+	Speed fastestSpeed;
+
 	double latToDoubleY(double lat);
 	double lonToDoubleX(double lon);
 	int latToIntY(double lat);
@@ -34,8 +49,13 @@ private:
 	void plotLineLow(int x0, int y0, int x1, int y1);
 	void plotLineHigh(int x0, int y0, int x1, int y1);
 public:
-	HeatMap(int width, int height, GeographicCoordinate lowerLeft, GeographicCoordinate upperRight);
+	HeatMap(int width, int height, GeographicCoordinate lowerLeft, GeographicCoordinate upperRight, bool useAntiAliasing);
 	~HeatMap();
+
+	void setActivityTypeFilter(vector<ActivityType> activityFilters);
+	void setDateFilter(Date startDate, Date endDate, bool includeUnknownDates = false);
+	void setAverageSpeedFilter(Speed slowestSpeed, Speed fastestSpeed, bool includeUnknownSpeeds = false);
+
 	void addActivity(Activity &activity);
 	void normalizeMap();
 	Image* renderImage(Color backgroundColor, Color minimumActivityColor, Color maximumActivityColor);
