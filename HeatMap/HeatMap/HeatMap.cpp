@@ -195,12 +195,18 @@ void HeatMap::plotLineHigh(int x0, int y0, int x1, int y1)
 	}
 }
 
-HeatMap::HeatMap(int width, int height, GeographicCoordinate lowerLeft, GeographicCoordinate upperRight)
+HeatMap::HeatMap(int width, int height, GeographicCoordinate lowerLeft, GeographicCoordinate upperRight, bool useAntiAliasing)
 {
 	this->width = width;
 	this->height = height;
 	this->lowerLeft = lowerLeft;
 	this->upperRight = upperRight;
+
+	this->useAntiAliasing = useAntiAliasing;
+
+	useActivityFiltering = false;
+	useDateFiltering = false;
+	useAverageSpeedFiltering = false;
 
 	cells = new HeatMapCell*[width];
 	for (int i = 0; i < width; i++) {
@@ -216,12 +222,75 @@ HeatMap::~HeatMap()
 	delete[] cells;
 }
 
+void HeatMap::setActivityTypeFilter(vector<ActivityType> activityFilters)
+{
+	if (activityFilters.size() > 0) {
+		useActivityFiltering = true;
+		this->activityFilters = activityFilters;
+	}
+}
+
+void HeatMap::setDateFilter(Date startDate, Date endDate, bool includeUnknownDates)
+{
+	useDateFiltering = true;
+	this->includeUnknownDates = includeUnknownDates;
+	this->startDate = startDate;
+	this->endDate = endDate;
+}
+
+void HeatMap::setAverageSpeedFilter(Speed slowestSpeed, Speed fastestSpeed, bool includeUnknownSpeeds)
+{
+	useAverageSpeedFiltering = true;
+	this->includeUnknownSpeeds = includeUnknownSpeeds;
+	this->slowestSpeed = slowestSpeed;
+	this->fastestSpeed = fastestSpeed;
+}
+
 void HeatMap::addActivity(Activity & activity)
 {
+	if (useActivityFiltering) {
+		bool foundActivityType = false;
+		for (ActivityType t : activityFilters) {
+			if (t == activity.getActivityType()) {
+				foundActivityType = true;
+				break;
+			}
+		}
+		if (!foundActivityType) {
+			cout << "\t*Activity excluded from map due to Activity Type filter." << endl;
+			return;
+		}
+	}
+	if (useDateFiltering) {
+		Date activityDate = activity.getStartDate();
+		if (activityDate.isDateSet()) {
+			if (activityDate.isOlderThan(startDate) || activityDate.isMoreRecentThan(endDate)) {
+				cout << "\t*Activity excluded from map due to Start Date filter." << endl;
+				return;
+			}
+		}
+		else if (!includeUnknownDates) {
+			cout << "\t*Activity excluded from map due to Start Date filter." << endl;
+			return;
+		}
+	}
+	if (useAverageSpeedFiltering) {
+		Speed activitySpeed = activity.getAverageSpeed();
+		if (activitySpeed.isSpeedSet()) {
+			if (activitySpeed.getSpeed() < slowestSpeed.getSpeed() || activitySpeed.getSpeed() > fastestSpeed.getSpeed()) {
+				cout << "\t*Activity excluded from map due to Average Speed filter." << endl;
+				return;
+			}
+		}
+		else if (!includeUnknownSpeeds) {
+			cout << "\t*Activity excluded from map due to Average Speed filter." << endl;
+			return;
+		}
+	}
 	if (activity.getTrack().size() > 1) {
 		cout << "\t*Recording activity on Heat Map..." << endl;
 		for (int i = 0; i < activity.getTrack().size() - 1; i++) {
-			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], true);
+			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], useAntiAliasing);
 		}
 	}
 }
