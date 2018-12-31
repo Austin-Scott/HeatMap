@@ -6,12 +6,12 @@ using namespace std;
 
 double HeatMap::latToDoubleY(double lat)
 {
-	return (1.0-((lat - lowerLeft.getLat()) / (upperRight.getLat() - lowerLeft.getLat())))*(double)height;
+	return (1.0-((lat - configuration.lowerLeft.getLat()) / (configuration.upperRight.getLat() - configuration.lowerLeft.getLat())))*(double)configuration.height;
 }
 
 double HeatMap::lonToDoubleX(double lon)
 {
-	return ((lon - lowerLeft.getLon()) / (upperRight.getLon() - lowerLeft.getLon()))*(double)width;
+	return ((lon - configuration.lowerLeft.getLon()) / (configuration.upperRight.getLon() - configuration.lowerLeft.getLon()))*(double)configuration.width;
 }
 
 int HeatMap::latToIntY(double lat)
@@ -26,7 +26,7 @@ int HeatMap::lonToIntX(double lon)
 
 void HeatMap::drawPoint(int x, int y, double c)
 {
-	if (x > 0 && x <= width && y > 0 && y <= height) {
+	if (x > 0 && x <= configuration.width && y > 0 && y <= configuration.height) {
 		cells[x - 1][y - 1].addToValue(c);
 	}
 }
@@ -195,102 +195,68 @@ void HeatMap::plotLineHigh(int x0, int y0, int x1, int y1)
 	}
 }
 
-HeatMap::HeatMap(int width, int height, GeographicCoordinate lowerLeft, GeographicCoordinate upperRight, bool useAntiAliasing)
+HeatMap::HeatMap(HeatMapConfiguration configuration)
 {
-	this->width = width;
-	this->height = height;
-	this->lowerLeft = lowerLeft;
-	this->upperRight = upperRight;
+	this->configuration = configuration;
 
-	this->useAntiAliasing = useAntiAliasing;
-
-	useActivityFiltering = false;
-	useDateFiltering = false;
-	useAverageSpeedFiltering = false;
-
-	cells = new HeatMapCell*[width];
-	for (int i = 0; i < width; i++) {
-		cells[i] = new HeatMapCell[height];
+	cells = new HeatMapCell*[this->configuration.width];
+	for (int i = 0; i < this->configuration.width; i++) {
+		cells[i] = new HeatMapCell[this->configuration.height];
 	}
 }
 
 HeatMap::~HeatMap()
 {
-	for (int i = 0; i < width; i++) {
+	for (int i = 0; i < configuration.width; i++) {
 		delete[] cells[i];
 	}
 	delete[] cells;
 }
 
-void HeatMap::setActivityTypeFilter(vector<ActivityType> activityFilters)
+bool HeatMap::checkFilter(Activity & activity)
 {
-	if (activityFilters.size() > 0) {
-		useActivityFiltering = true;
-		this->activityFilters = activityFilters;
-	}
-}
-
-void HeatMap::setDateFilter(Date startDate, Date endDate, bool includeUnknownDates)
-{
-	useDateFiltering = true;
-	this->includeUnknownDates = includeUnknownDates;
-	this->startDate = startDate;
-	this->endDate = endDate;
-}
-
-void HeatMap::setAverageSpeedFilter(Speed slowestSpeed, Speed fastestSpeed, bool includeUnknownSpeeds)
-{
-	useAverageSpeedFiltering = true;
-	this->includeUnknownSpeeds = includeUnknownSpeeds;
-	this->slowestSpeed = slowestSpeed;
-	this->fastestSpeed = fastestSpeed;
-}
-
-void HeatMap::addActivity(Activity & activity)
-{
-	if (useActivityFiltering) {
+	if (configuration.useActivityFiltering) {
 		bool foundActivityType = false;
-		for (ActivityType t : activityFilters) {
+		for (ActivityType t : configuration.activityFilters) {
 			if (t == activity.getActivityType()) {
 				foundActivityType = true;
 				break;
 			}
 		}
 		if (!foundActivityType) {
-			cout << "\t*Activity excluded from map due to Activity Type filter." << endl;
-			return;
+			return false;
 		}
 	}
-	if (useDateFiltering) {
+	if (configuration.useDateFiltering) {
 		Date activityDate = activity.getStartDate();
 		if (activityDate.isDateSet()) {
-			if (activityDate.isOlderThan(startDate) || activityDate.isMoreRecentThan(endDate)) {
-				cout << "\t*Activity excluded from map due to Start Date filter." << endl;
-				return;
+			if (activityDate.isOlderThan(configuration.startDate) || activityDate.isMoreRecentThan(configuration.endDate)) {
+				return false;
 			}
 		}
-		else if (!includeUnknownDates) {
-			cout << "\t*Activity excluded from map due to Start Date filter." << endl;
-			return;
+		else if (!configuration.includeUnknownDates) {
+			return false;
 		}
 	}
-	if (useAverageSpeedFiltering) {
+	if (configuration.useAverageSpeedFiltering) {
 		Speed activitySpeed = activity.getAverageSpeed();
 		if (activitySpeed.isSpeedSet()) {
-			if (activitySpeed.getSpeed() < slowestSpeed.getSpeed() || activitySpeed.getSpeed() > fastestSpeed.getSpeed()) {
-				cout << "\t*Activity excluded from map due to Average Speed filter." << endl;
-				return;
+			if (activitySpeed.getSpeed() < configuration.slowestSpeed.getSpeed() || activitySpeed.getSpeed() > configuration.fastestSpeed.getSpeed()) {
+				return false;
 			}
 		}
-		else if (!includeUnknownSpeeds) {
-			cout << "\t*Activity excluded from map due to Average Speed filter." << endl;
-			return;
+		else if (!configuration.includeUnknownSpeeds) {
+			return false;
 		}
 	}
-	if (activity.getTrack().size() > 1) {
-		cout << "\t*Recording activity on Heat Map..." << endl;
+	return true;
+}
+
+void HeatMap::addActivity(Activity & activity)
+{
+	if (checkFilter(activity) && activity.getTrack().size() > 1) {
 		for (int i = 0; i < activity.getTrack().size() - 1; i++) {
-			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], useAntiAliasing);
+			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], configuration.useAntiAliasing);
 		}
 	}
 }
@@ -298,8 +264,8 @@ void HeatMap::addActivity(Activity & activity)
 void HeatMap::normalizeMap()
 {
 	vector<HeatMapCell*> nonZeroCells;
-	for (int x = 0; x < width; x++) {
-		for (int y = 0; y < height; y++) {
+	for (int x = 0; x < configuration.width; x++) {
+		for (int y = 0; y < configuration.height; y++) {
 			HeatMapCell* currentCell = &cells[x][y];
 			if (currentCell->getValue() > 0.0) {
 				nonZeroCells.push_back(currentCell);
@@ -323,23 +289,23 @@ void HeatMap::normalizeMap()
 	}
 }
 
-Image* HeatMap::renderImage(Color backgroundColor, Color minimumActivityColor, Color maximumActivityColor)
+Image* HeatMap::renderImage()
 {
-	unsigned char* data = new unsigned char[width * height * 4];
+	unsigned char* data = new unsigned char[configuration.width * configuration.height * 4];
 	int index = 0;
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
+	for (int y = 0; y < configuration.height; y++) {
+		for (int x = 0; x < configuration.width; x++) {
 			double normalizedValue = cells[x][y].getNormalizedValue();
 			if (normalizedValue <= 0.0) {
-				data[index] = backgroundColor.getR();
-				data[index+1] = backgroundColor.getG();
-				data[index+2] = backgroundColor.getB();
-				data[index+3] = backgroundColor.getA();
+				data[index] = configuration.backgroundColor.getR();
+				data[index+1] = configuration.backgroundColor.getG();
+				data[index+2] = configuration.backgroundColor.getB();
+				data[index+3] = configuration.backgroundColor.getA();
 			}
 			else {
-				Color rawColor = minimumActivityColor.lerp(maximumActivityColor, normalizedValue);
+				Color rawColor = configuration.minimumActivityColor.lerp(configuration.maximumActivityColor, normalizedValue);
 				if (rawColor.getA() != 255) {
-					rawColor = rawColor.blend(backgroundColor);
+					rawColor = rawColor.blend(configuration.backgroundColor);
 				}
 				data[index] = rawColor.getR();
 				data[index + 1] = rawColor.getG();
@@ -350,40 +316,7 @@ Image* HeatMap::renderImage(Color backgroundColor, Color minimumActivityColor, C
 			index += 4;
 		}
 	}
-	return new Image(width, height, data);
-}
-
-void HeatMap::debugDrawCells()
-{
-	double min = cells[0][0].getValue();
-	double max = min;
-	double sum = 0.0;
-	int n = 0;
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			double value = cells[x][y].getValue();
-			if (value == 0.0) {
-				cout << " ";
-			} else if (value < 0.5) {
-				cout << "`";
-			} else if (value < 1.0) {
-				cout << "*";
-			}
-			else {
-				cout << "+";
-			}
-			if (value != 0.0) {
-				if (value > max) max = value;
-				if (value < min) min = value;
-				sum += value;
-				n++;
-			}
-		}
-		cout << endl;
-	}
-	cout << "Max cell value: " << max << endl;
-	cout << "Min cell value: " << min << endl;
-	cout << "Average nonzero cell value: " << sum / (double)n << endl;
+	return new Image(configuration.width, configuration.height, data);
 }
 
 void HeatMap::drawLine(GeographicCoordinate from, GeographicCoordinate to, bool smooth)

@@ -6,59 +6,81 @@
 #include "GPSExchangeFormat.h"
 #include "FITProtocol.h"
 #include "HeatMap.h"
+#include "HeatMapConfiguration.h"
 
 using namespace std;
 using namespace experimental::filesystem;
 
-void generateHeatMap(string activityDirectory, bool useAntiAliasing, bool useActivityFiltering, vector<ActivityType> activityFilters, bool useDateFiltering, bool includeUnknownDates, Date startDate, Date endDate, bool useAverageSpeedFiltering, bool includeUnknownSpeeds, Speed slowestSpeed, Speed fastestSpeed, string backgroundHexColor, string minimumActivityHexColor, string maximumActivityHexColor, GeographicCoordinate bottomCenter, double maxLatitude, int width, int height, string renderedImageFilename) {
+void printActivityInfo(Activity &activity, bool includedOnMap) {
+	cout << activity.getFilename() << endl;
+	Date startDate = activity.getStartDate();
+	if (startDate.isDateSet()) {
+		cout << "\t*Activity recorded on: " << startDate.toString() << endl;
+	}
+	ActivityType activityType = activity.getActivityType();
+	switch (activityType) {
+	case ActivityType::Running:
+		cout << "\t*Activity type: Running" << endl;
+		break;
+	case ActivityType::Cycling:
+		cout << "\t*Activity type: Cycling" << endl;
+		break;
+	case ActivityType::Walking:
+		cout << "\t*Activity type: Walking" << endl;
+		break;
+	case ActivityType::Swimming:
+		cout << "\t*Activity type: Swimming" << endl;
+		break;
+	default:
+		cout << "\t*Activity type: Unknown" << endl;
+	}
+	Speed averageSpeed = activity.getAverageSpeed();
+	if (averageSpeed.isSpeedSet()) {
+		cout << "\t*Average speed: " << averageSpeed.getSpeed(SpeedUnits::MetersPerSecond) << " m/s" << endl;
+	}
+	cout << "\t*GPS track: " << activity.getTrack().size() << " points" << endl;
+
+	if (includedOnMap) {
+		cout << "\t+Included on Heat Map" << endl;
+	}
+	else {
+		cout << "\t-Excluded from Heat Map" << endl;
+	}
+}
+
+Image* generateHeatMapImage(string activityDirectory, bool decompressFiles, HeatMapConfiguration configuration)  {
+	cout << "Lat/Lon Bounding Box for Heat Map:" << endl
+		<< "\t*Lower left bound: \"" << configuration.lowerLeft.toString()
+		<< "\"\n\t*Upper right bound: \"" << configuration.upperRight.toString() << "\"" << endl;
+
+	HeatMap map(configuration);
 	
-	GeographicCoordinate* boundingBox = computeBoundingBox(bottomCenter, maxLatitude, width, height);
-	cout << "Lat/Lon Bounding Box for Heat Map computed:" << endl
-		<< "\t*Lower left bound: \"";
-	boundingBox[0].printCoordinate();
-	cout << "\"\n\t*Upper right bound: \"";
-	boundingBox[1].printCoordinate();
-	cout << "\"" << endl;
-
-	HeatMap map(width, height, boundingBox[0], boundingBox[1], useAntiAliasing);
-	delete[] boundingBox;
-
-	if (useActivityFiltering) {
-		map.setActivityTypeFilter(activityFilters);
+	if (decompressFiles) {
+		cout << "\nDecompressing any compressed activity files..." << endl << endl;
+		//7z x "{Directory name ending in /}*.gz" -aos "-o{directory name ending in /}"
+		string activityDirectoryWithSlash = activityDirectory;
+		if (activityDirectoryWithSlash.back() != '/' || activityDirectoryWithSlash.back() != '\\')
+			activityDirectoryWithSlash.push_back('/');
+		string command = "7z x \"" + activityDirectoryWithSlash + "*.gz\" -aos \"-o" + activityDirectoryWithSlash + "\"";
+		system(command.c_str());
 	}
-
-	if (useDateFiltering) {
-		map.setDateFilter(startDate, endDate, includeUnknownDates);
-	}
-
-	if (useAverageSpeedFiltering) {
-		map.setAverageSpeedFilter(slowestSpeed, fastestSpeed, includeUnknownSpeeds);
-	}
-
-	cout << "\nDecompressing any compressed activity files..." << endl << endl;
-	//7z x "{Directory name ending in /}*.gz" -aos "-o{directory name ending in /}"
-	string activityDirectoryWithSlash = activityDirectory;
-	if (activityDirectoryWithSlash.back() != '/' || activityDirectoryWithSlash.back() != '\\')
-		activityDirectoryWithSlash.push_back('/');
-	string command = "7z x \"" + activityDirectoryWithSlash + "*.gz\" -aos \"-o" + activityDirectoryWithSlash + "\"";
-	system(command.c_str());
 
 	cout << "\nBegin adding activity files from " << activityDirectory << "..." << endl << endl;
 	for (auto &p : directory_iterator(activityDirectory)) {
 		string filename = p.path().string();
 		if (filename.substr(filename.length() - 4) == ".tcx") {
-			cout << filename << endl;
 			TrainingCenterXML tcx(filename);
+			printActivityInfo(tcx, map.checkFilter(tcx));
 			map.addActivity(tcx);
 		}
 		else if (filename.substr(filename.length() - 4) == ".gpx") {
-			cout << filename << endl;
 			GPSExchangeFormat gpx(filename);
+			printActivityInfo(gpx, map.checkFilter(gpx));
 			map.addActivity(gpx);
 		}
 		else if (filename.substr(filename.length() - 4) == ".fit") {
-			cout << filename << endl;
 			FITProtocol fit(filename);
+			printActivityInfo(fit, map.checkFilter(fit));
 			map.addActivity(fit);
 		}
 	}
@@ -67,49 +89,26 @@ void generateHeatMap(string activityDirectory, bool useAntiAliasing, bool useAct
 	map.normalizeMap();
 
 	cout << "Rendering Image..." << endl << endl;
-	Image* result = map.renderImage(Color(backgroundHexColor), Color(minimumActivityHexColor), Color(maximumActivityHexColor));
-
-	cout << "Saving Image as \"" << renderedImageFilename << "\"..." << endl << endl;
-	result->saveImage(renderedImageFilename);
-
-	delete result;
+	Image* result = map.renderImage();
 
 	cout << "...done!" << endl;
+
+	return result;
 }
 
 int main(int argc, char* argv[]) {
 
 	string activityDirectory = "test";
-
-	bool useAntiAliasing = true;
-
-	bool useActivityFiltering = false;
-	vector<ActivityType> activityFilters = { ActivityType::Running }; //Activities types that should be used, everything else excluded
-
-	bool useDateFiltering = false;
-	bool includeUnknownDates = false;
-	Date startDate(2018, Month::January, 1, 0, 0, 0); //Activities after startDate and before endDate should be used, everything else excluded
-	Date endDate(2018, Month::December, 31, 23, 59, 59);
-
-	bool useAverageSpeedFiltering = true;
-	bool includeUnknownSpeeds = false;
-	Speed slowestSpeed(8.5, SpeedUnits::MinutesPerMile); //Activities with average speeds faster than slowestSpeed and slower than fastestSpeed should be used, everything else excluded
-	Speed fastestSpeed(5.75, SpeedUnits::MinutesPerMile);
-
-
-	string backgroundHexColor = "#000000FF";
-	string minimumActivityHexColor = "#FF000080";
-	string maximumActivityHexColor = "#FFFFFFFF";
-
-	GeographicCoordinate bottomCenter(44.846595, -91.897108);
-	double maxLatitude = 44.938059;
-
-	int width = 1920;
-	int height = 1080;
-
 	string renderedImageFilename = "result.png";
 
-	generateHeatMap(activityDirectory, useAntiAliasing, useActivityFiltering, activityFilters, useDateFiltering, includeUnknownDates, startDate, endDate, useAverageSpeedFiltering, includeUnknownSpeeds, slowestSpeed, fastestSpeed, backgroundHexColor, minimumActivityHexColor, maximumActivityHexColor, bottomCenter, maxLatitude, width, height, renderedImageFilename);
-	
+	HeatMapConfiguration config(1920, 1080);
+	config.computeBoundingBox(geoCoord(44.846595, -91.897108), 44.938059);
+	config.setRenderer(true, Color("#000000FF"), Color("#FF000080"), Color("#FFFFFFFF"));
+
+	Image* heatMapImage = generateHeatMapImage(activityDirectory, true, config);
+
+	heatMapImage->saveImage(renderedImageFilename);
+	delete heatMapImage;
+
 	system("pause");
 }

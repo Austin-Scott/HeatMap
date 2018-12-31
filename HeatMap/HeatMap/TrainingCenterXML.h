@@ -17,6 +17,8 @@ using namespace rapidxml;
 
 class TrainingCenterXML : public Activity {
 private:
+	string filename;
+
 	vector<GeographicCoordinate> track;
 
 	ActivityType activityType;
@@ -28,4 +30,5 @@ public:
 	ActivityType getActivityType();
 	Date getStartDate();
 	Speed getAverageSpeed();
+	string getFilename();
 };

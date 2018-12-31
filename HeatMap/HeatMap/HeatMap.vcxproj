@@ -162,6 +162,7 @@
     <ClCompile Include="GPSExchangeFormat.cpp" />
     <ClCompile Include="HeatMap.cpp" />
     <ClCompile Include="HeatMapCell.cpp" />
+    <ClCompile Include="HeatMapConfiguration.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Speed.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="GPSExchangeFormat.h" />
     <ClInclude Include="HeatMap.h" />
     <ClInclude Include="HeatMapCell.h" />
+    <ClInclude Include="HeatMapConfiguration.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="rapidxml.hpp" />
     <ClInclude Include="Speed.h" />
