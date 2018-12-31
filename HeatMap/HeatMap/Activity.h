@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 #include "GeographicCoordinate.h"
 #include "Date.h"
@@ -15,4 +16,5 @@ public:
 	virtual ActivityType getActivityType() = 0;
 	virtual Date getStartDate() = 0;
 	virtual Speed getAverageSpeed() = 0;
+	virtual string getFilename() = 0;
 };

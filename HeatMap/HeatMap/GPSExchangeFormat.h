@@ -16,6 +16,8 @@ using namespace rapidxml;
 
 class GPSExchangeFormat : public Activity {
 private:
+	string filename;
+
 	vector<GeographicCoordinate> track;
 
 	Date startDate;
@@ -25,4 +27,5 @@ public:
 	ActivityType getActivityType();
 	Date getStartDate();
 	Speed getAverageSpeed();
+	string getFilename();
 };

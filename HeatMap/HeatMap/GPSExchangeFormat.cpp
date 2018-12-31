@@ -2,11 +2,12 @@
 
 GPSExchangeFormat::GPSExchangeFormat(string filename)
 {
+	this->filename = filename;
+
 	xml_document<> xmlDocument;
 	xml_node<>* rootNode;
 	ifstream file(filename, ios::binary);
 	if (file) {
-		cout << "\t*Loading file into memory..." << endl;
 
 		filebuf* fbuf = file.rdbuf();
 		size_t size = fbuf->pubseekoff(0, file.end, file.in);
@@ -24,8 +25,6 @@ GPSExchangeFormat::GPSExchangeFormat(string filename)
 		}
 		cstring[fileBuffer.length()] = '\0';
 
-		cout << "\t*Parsing file..." << endl;
-
 		xmlDocument.parse<0>(cstring);
 
 		rootNode = xmlDocument.first_node("gpx");
@@ -37,9 +36,6 @@ GPSExchangeFormat::GPSExchangeFormat(string filename)
 				metadata = metadata->first_node("time");
 				if (metadata != nullptr) {
 					startDate = Date::parseDateString(metadata->value());
-					if (startDate.isDateSet()) {
-						cout << "\t*Date of activity: " << startDate.toString() << endl;
-					}
 				}
 			}
 
@@ -58,18 +54,16 @@ GPSExchangeFormat::GPSExchangeFormat(string filename)
 						}
 					}
 				}
-
-				cout << "\t*Successfully retrieved " << trackPointCount << " tracking points from file." << endl;
 			}
 		}
 		else {
-			cerr << "Error: couldn't find the gpx node in " << filename << "." << endl;
+			//cerr << "Error: couldn't find the gpx node in " << filename << "." << endl;
 		}
 
 		delete[] cstring;
 	}
 	else {
-		cerr << "Error: Couldn't open " << filename << " for reading." << endl;
+		//cerr << "Error: Couldn't open " << filename << " for reading." << endl;
 	}
 }
 
@@ -90,5 +84,10 @@ Date GPSExchangeFormat::getStartDate()
 
 Speed GPSExchangeFormat::getAverageSpeed()
 {
-	return Speed();
+	return Speed(); //For now we don't support average speeds in GPX files. May be implemented in the future.
+}
+
+string GPSExchangeFormat::getFilename()
+{
+	return filename;
 }

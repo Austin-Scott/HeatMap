@@ -1,4 +1,8 @@
 #pragma once
+#include <string>
+
+using namespace std;
+
 class GeographicCoordinate {
 private:
 	double latitude;
@@ -8,7 +12,6 @@ public:
 	GeographicCoordinate(double latitude, double longitude);
 	double getLat();
 	double getLon();
-	void printCoordinate();
+	string toString();
 };
 GeographicCoordinate geoCoord(double latitude, double longitude);
-GeographicCoordinate* computeBoundingBox(GeographicCoordinate bottomCenter, double maxLatitude, int width, int height);

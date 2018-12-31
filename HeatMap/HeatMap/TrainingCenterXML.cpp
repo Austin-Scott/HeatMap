@@ -2,12 +2,12 @@
 
 TrainingCenterXML::TrainingCenterXML(string filename)
 {
+	this->filename = filename;
+
 	xml_document<> xmlDocument;
 	xml_node<>* rootNode;
 	ifstream file(filename, ios::binary);
 	if (file) {
-		cout << "\t*Loading file into memory..." << endl;
-
 		filebuf* fbuf = file.rdbuf();
 		size_t size = fbuf->pubseekoff(0, file.end, file.in);
 		fbuf->pubseekpos(0, file.in);
@@ -23,8 +23,6 @@ TrainingCenterXML::TrainingCenterXML(string filename)
 			cstring[i] = fileBuffer[i];
 		}
 		cstring[fileBuffer.length()] = '\0';
-
-		cout << "\t*Parsing file..." << endl;
 
 		xmlDocument.parse<0>(cstring);
 
@@ -42,19 +40,15 @@ TrainingCenterXML::TrainingCenterXML(string filename)
 
 						if (sportName == "Running") {
 							activityType = ActivityType::Running;
-							cout << "\t*Activity type: " << sportName << endl;
 						}
 						else if (sportName == "Walking") {
 							activityType = ActivityType::Walking;
-							cout << "\t*Activity type: " << sportName << endl;
 						}
 						else if (sportName == "Cycling") {
 							activityType = ActivityType::Cycling;
-							cout << "\t*Activity type: " << sportName << endl;
 						}
 						else if (sportName == "Swimming") {
 							activityType = ActivityType::Swimming;
-							cout << "\t*Activity type: " << sportName << endl;
 						}
 					}
 
@@ -68,9 +62,6 @@ TrainingCenterXML::TrainingCenterXML(string filename)
 								xml_attribute<>* timeAtr = lapNode->first_attribute("StartTime");
 								if (timeAtr != nullptr) {
 									startDate = Date::parseDateString(timeAtr->value());
-									if (startDate.isDateSet()) {
-										cout << "\t*Date of activity: " << startDate.toString() << endl;
-									}
 								}
 							}
 							if (foundAverageSpeed) {
@@ -105,17 +96,14 @@ TrainingCenterXML::TrainingCenterXML(string filename)
 					if (foundAverageSpeed && cumulativeTimeSeconds!=0.0) {
 						double speed = cumulativeDistanceMeters / cumulativeTimeSeconds;
 						averageSpeed = Speed(speed, SpeedUnits::MetersPerSecond);
-						cout << "\t*Average speed: " << speed << " m/s" << endl;
 					}
-
-					cout << "\t*Successfully retrieved " << track.size() << " tracking points from file." << endl;
 				}
 			}
 		}
 		delete[] cstring;
 	}
 	else {
-		cerr << "Error: Couldn't open " << filename << " for reading." << endl;
+		//cerr << "Error: Couldn't open " << filename << " for reading." << endl;
 	}
 }
 
@@ -137,4 +125,9 @@ Date TrainingCenterXML::getStartDate()
 Speed TrainingCenterXML::getAverageSpeed()
 {
 	return averageSpeed;
+}
+
+string TrainingCenterXML::getFilename()
+{
+	return filename;
 }

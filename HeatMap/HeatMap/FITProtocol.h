@@ -16,6 +16,8 @@ using namespace std;
 
 class FITProtocol : public Activity, public fit::MesgListener, public fit::DeveloperFieldDescriptionListener {
 private:
+	string filename;
+
 	vector<GeographicCoordinate> track;
 	ActivityType activityType;
 	Date startDate;
@@ -29,6 +31,7 @@ public:
 	ActivityType getActivityType();
 	Date getStartDate();
 	Speed getAverageSpeed();
+	string getFilename();
 
 	void OnMesg(fit::Mesg& mesg);
 	void OnDeveloperFieldDescription(const fit::DeveloperFieldDescription& desc);
