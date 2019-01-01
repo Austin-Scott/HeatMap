@@ -3,6 +3,7 @@
 #include <atomic>
 #include <vector>
 #include <future>
+#include <mutex>
 
 #include <nana/gui.hpp>
 #include <nana/gui/timer.hpp>
@@ -20,6 +21,7 @@ class ActivityLoadingGUI : public form {
 private:
 	place layout{ *this };
 	label message{ *this };
+	label statusLabel{ *this };
 	progress bar{ *this };
 	button cancel{ *this };
 
@@ -27,10 +29,14 @@ private:
 
 	future<vector<Activity*>>* fut;
 
+	bool finished;
+
 	atomic<unsigned int>* currentProgress;
 	atomic<bool>* shouldCancel;
 	atomic<bool>* progressKnown;
+	string* statusString;
+	mutex* statusMutex;
 public:
 	ActivityLoadingGUI(form &frm);
-	void present(future<vector<Activity*>>* fut, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown);
+	void present(future<vector<Activity*>>* fut, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, string* statusString, mutex* statusMutex);
 };
