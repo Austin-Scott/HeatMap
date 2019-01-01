@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HeatMap", "HeatMap\HeatMap.vcxproj", "{CFA1F245-3F98-42A1-B44A-41F45DB3D434}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nana", "..\nana\build\vc2017\nana.vcxproj", "{42D0520F-EFA5-4831-84FE-2B9085301C5D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Release|x64.Build.0 = Release|x64
 		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Release|x86.ActiveCfg = Release|Win32
 		{CFA1F245-3F98-42A1-B44A-41F45DB3D434}.Release|x86.Build.0 = Release|Win32
+		{42D0520F-EFA5-4831-84FE-2B9085301C5D}.Debug|x64.ActiveCfg = Debug|x64
+		{42D0520F-EFA5-4831-84FE-2B9085301C5D}.Debug|x64.Build.0 = Debug|x64
+		{42D0520F-EFA5-4831-84FE-2B9085301C5D}.Debug|x86.ActiveCfg = Debug|Win32
+		{42D0520F-EFA5-4831-84FE-2B9085301C5D}.Debug|x86.Build.0 = Debug|Win32
+		{42D0520F-EFA5-4831-84FE-2B9085301C5D}.Release|x64.ActiveCfg = Release|x64
+		{42D0520F-EFA5-4831-84FE-2B9085301C5D}.Release|x64.Build.0 = Release|x64
+		{42D0520F-EFA5-4831-84FE-2B9085301C5D}.Release|x86.ActiveCfg = Release|Win32
+		{42D0520F-EFA5-4831-84FE-2B9085301C5D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

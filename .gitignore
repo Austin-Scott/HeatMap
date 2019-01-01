@@ -6,6 +6,8 @@
 fit-sdk/*
 !fit-sdk/README.txt
 
+temp/*
+
 # User-specific files
 *.suo
 *.user

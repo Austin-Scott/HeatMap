@@ -129,6 +129,12 @@
     <ClCompile Include="HeatMapConfiguration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ActivityDirectoryGUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ActivityLoadingGUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HeatMap.h">
@@ -171,6 +177,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HeatMapConfiguration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ActivityDirectoryGUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ActivityLoadingGUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
