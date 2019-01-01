@@ -86,7 +86,27 @@ TrainingCenterXML::TrainingCenterXML(string filename)
 									xml_node<>* lat = currentPosition->first_node("LatitudeDegrees");
 									xml_node<>* lon = currentPosition->first_node("LongitudeDegrees");
 									if (lat != nullptr && lon != nullptr) {
-										track.emplace_back(stod(lat->value()), stod(lon->value()));
+										double lati = stod(lat->value());
+										double longi = stod(lon->value());
+
+										if (track.size() == 0) {
+											maxLatitude = lati;
+											minLatitude = lati;
+											maxLongitude = longi;
+											minLongitude = longi;
+										}
+										else {
+											if (lati < minLatitude)
+												minLatitude = lati;
+											if (lati > maxLatitude)
+												maxLatitude = lati;
+											if (longi < minLongitude)
+												minLongitude = longi;
+											if (longi > maxLongitude)
+												maxLongitude = longi;
+										}
+
+										track.emplace_back(lati, longi);
 									}
 								}
 							}
@@ -130,4 +150,14 @@ Speed TrainingCenterXML::getAverageSpeed()
 string TrainingCenterXML::getFilename()
 {
 	return filename;
+}
+
+GeographicCoordinate TrainingCenterXML::upperRight()
+{
+	return geoCoord(maxLatitude, maxLongitude);
+}
+
+GeographicCoordinate TrainingCenterXML::lowerLeft()
+{
+	return geoCoord(minLatitude, minLongitude);
 }

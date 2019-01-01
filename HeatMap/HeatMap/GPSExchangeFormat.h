@@ -20,6 +20,11 @@ private:
 
 	vector<GeographicCoordinate> track;
 
+	double maxLatitude;
+	double minLatitude;
+	double maxLongitude;
+	double minLongitude;
+
 	Date startDate;
 public:
 	GPSExchangeFormat(string filename);
@@ -28,4 +33,7 @@ public:
 	Date getStartDate();
 	Speed getAverageSpeed();
 	string getFilename();
+
+	GeographicCoordinate upperRight();
+	GeographicCoordinate lowerLeft();
 };

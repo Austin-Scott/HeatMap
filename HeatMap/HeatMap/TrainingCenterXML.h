@@ -24,6 +24,12 @@ private:
 	ActivityType activityType;
 	Date startDate;
 	Speed averageSpeed;
+
+	double maxLatitude;
+	double minLatitude;
+	double maxLongitude;
+	double minLongitude;
+
 public:
 	TrainingCenterXML(string filename);
 	const vector<GeographicCoordinate>& getTrack();
@@ -31,4 +37,6 @@ public:
 	Date getStartDate();
 	Speed getAverageSpeed();
 	string getFilename();
+	GeographicCoordinate upperRight();
+	GeographicCoordinate lowerLeft();
 };
