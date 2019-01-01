@@ -18,9 +18,9 @@ ActivityDirectoryGUI::ActivityDirectoryGUI() : form(API::make_center(500, 200), 
 	loadButton.events().click([&]() {
 		ActivityLoadingGUI activityLoadingGUI(*this);
 		fut = async(this->workCallback, pathToDirectory.caption(), decompress.checked());
-		activityLoadingGUI.present(&fut, this->currentProgress, this->shouldCancel, this->progressKnown);
+		activityLoadingGUI.present(&fut, this->currentProgress, this->shouldCancel, this->progressKnown, this->statusString, this->statusMutex);
 
-		if (!(*shouldCancel)) {
+		if (!(*this->shouldCancel)) {
 			hide();
 			finishedCallback(fut.get());
 		}
@@ -34,12 +34,14 @@ ActivityDirectoryGUI::ActivityDirectoryGUI() : form(API::make_center(500, 200), 
 	layout.collocate();
 }
 
-void ActivityDirectoryGUI::present(function<vector<Activity*>(string, bool)> workCallback, function<void(vector<Activity*>)> finishedCallback, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown)
+void ActivityDirectoryGUI::present(function<vector<Activity*>(string, bool)> workCallback, function<void(vector<Activity*>)> finishedCallback, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, string* statusString, mutex* statusMutex)
 {
 	this->workCallback = workCallback;
 	this->finishedCallback = finishedCallback;
 	this->currentProgress = currentProgress;
 	this->shouldCancel = shouldCancel;
 	this->progressKnown = progressKnown;
+	this->statusString = statusString;
+	this->statusMutex = statusMutex;
 	show();
 }

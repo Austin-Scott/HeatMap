@@ -113,19 +113,56 @@ void finished(vector<Activity*> activities) {
 		delete p;
 }
 
+void writeSharedString(mutex &m, string* strDest, string strSrc) {
+	m.lock();
+	*strDest = strSrc;
+	m.unlock();
+}
+
+string getOnlyFileName(string path) {
+	if (path.size() == 0)
+		return "";
+
+	size_t backslash = path.find_last_of('\\');
+	size_t forwardslash = path.find_last_of('/');
+	size_t accepted;
+	if (backslash != string::npos && forwardslash != string::npos) {
+		accepted = backslash > forwardslash ? backslash : forwardslash;
+	}
+	else if(backslash == string::npos && forwardslash == string::npos) {
+		return path;
+	}
+	else {
+		if (backslash == string::npos) {
+			accepted = forwardslash;
+		}
+		else {
+			accepted = backslash;
+		}
+	}
+	string result = path.substr(accepted);
+	if (result.front() == '\\' || result.front() == '/') {
+		result.erase(result.begin(), result.begin() + 1);
+	}
+	return result;
+}
+
 atomic<bool> shouldCancel;
 atomic<unsigned int> progressAmount;
 atomic<bool> progressKnown;
+string statusString;
+mutex statusMutex;
 
 vector<Activity*> loadActivities(string activityDirectory, bool shouldDecompress) {
 	progressAmount = 0;
 
 	if (shouldDecompress) {
 		progressKnown = false;
+		writeSharedString(statusMutex, &statusString, "Decompressing files...");
 		cout << "\nDecompressing any compressed activity files..." << endl << endl;
 		//7z x "{Directory name ending in /}*.gz" -aos "-o{directory name ending in /}"
 		string activityDirectoryWithSlash = activityDirectory;
-		if (activityDirectoryWithSlash.back() != '/' || activityDirectoryWithSlash.back() != '\\')
+		if (activityDirectory.size()==0 || activityDirectoryWithSlash.back() != '/' || activityDirectoryWithSlash.back() != '\\')
 			activityDirectoryWithSlash.push_back('/');
 		string command = "7z x \"" + activityDirectoryWithSlash + "*.gz\" -aos \"-o" + activityDirectoryWithSlash + "\"";
 		system(command.c_str());
@@ -135,6 +172,7 @@ vector<Activity*> loadActivities(string activityDirectory, bool shouldDecompress
 		return vector<Activity*>();
 	}
 
+	writeSharedString(statusMutex, &statusString, "Counting activity files...");
 	int totalNumberOfActivities = 0;
 	for (auto &p : directory_iterator(activityDirectory)) {
 		string filename = p.path().string();
@@ -156,14 +194,17 @@ vector<Activity*> loadActivities(string activityDirectory, bool shouldDecompress
 	for (auto &p : directory_iterator(activityDirectory)) {
 		string filename = p.path().string();
 		if (filename.substr(filename.length() - 4) == ".tcx") {
+			writeSharedString(statusMutex, &statusString, "Loading " + getOnlyFileName(filename) + "...");
 			result.push_back(new TrainingCenterXML(filename));
 			filesLoaded++;
 		}
 		else if (filename.substr(filename.length() - 4) == ".gpx") {
+			writeSharedString(statusMutex, &statusString, "Loading " + getOnlyFileName(filename) + "...");
 			result.push_back(new GPSExchangeFormat(filename));
 			filesLoaded++;
 		}
 		else if (filename.substr(filename.length() - 4) == ".fit") {
+			writeSharedString(statusMutex, &statusString, "Loading " + getOnlyFileName(filename) + "...");
 			result.push_back(new FITProtocol(filename));
 			filesLoaded++;
 		}
@@ -197,9 +238,7 @@ int main(int argc, char* argv[]) {
 	
 	ActivityDirectoryGUI activityDirectoryGUI;
 
-	activityDirectoryGUI.present(loadActivities, finished, &progressAmount, &shouldCancel, &progressKnown);
+	activityDirectoryGUI.present(loadActivities, finished, &progressAmount, &shouldCancel, &progressKnown, &statusString, &statusMutex);
 	
 	exec();
-
-	system("pause");
 }

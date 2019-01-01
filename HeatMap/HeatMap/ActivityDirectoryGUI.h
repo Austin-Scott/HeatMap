@@ -3,6 +3,7 @@
 #include <string>
 #include <future>
 #include <atomic>
+#include <mutex>
 
 
 #include <nana/gui.hpp>
@@ -34,9 +35,11 @@ private:
 	atomic<unsigned int>* currentProgress;
 	atomic<bool>* shouldCancel;
 	atomic<bool>* progressKnown;
+	string* statusString;
+	mutex* statusMutex;
 
 	future<vector<Activity*>> fut;
 public:
 	ActivityDirectoryGUI();
-	void present(function<vector<Activity*>(string, bool)> workCallback, function<void(vector<Activity*>)> finishedCallback, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown);
+	void present(function<vector<Activity*>(string, bool)> workCallback, function<void(vector<Activity*>)> finishedCallback, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, string* statusString, mutex* statusMutex);
 };
