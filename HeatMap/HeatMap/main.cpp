@@ -1,6 +1,13 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include <chrono>
+
+#include <nana/gui.hpp>
+#include <nana/gui/widgets/label.hpp>
+#include <nana/gui/widgets/button.hpp>
+#include <nana/gui/filebox.hpp>
+#include <nana/gui/widgets/date_chooser.hpp>
 
 #include "TrainingCenterXML.h"
 #include "GPSExchangeFormat.h"
@@ -8,7 +15,10 @@
 #include "HeatMap.h"
 #include "HeatMapConfiguration.h"
 
+#include "ActivityDirectoryGUI.h"
+
 using namespace std;
+using namespace nana;
 using namespace experimental::filesystem;
 
 void printActivityInfo(Activity &activity, bool includedOnMap) {
@@ -96,8 +106,82 @@ Image* generateHeatMapImage(string activityDirectory, bool decompressFiles, Heat
 	return result;
 }
 
-int main(int argc, char* argv[]) {
+void finished(vector<Activity*> activities) {
+	cout << "Loading finished." << endl;
+	cout << activities.size() << " test activities loaded." << endl;
+	for (auto p : activities)
+		delete p;
+}
 
+atomic<bool> shouldCancel;
+atomic<unsigned int> progressAmount;
+atomic<bool> progressKnown;
+
+vector<Activity*> loadActivities(string activityDirectory, bool shouldDecompress) {
+	progressAmount = 0;
+
+	if (shouldDecompress) {
+		progressKnown = false;
+		cout << "\nDecompressing any compressed activity files..." << endl << endl;
+		//7z x "{Directory name ending in /}*.gz" -aos "-o{directory name ending in /}"
+		string activityDirectoryWithSlash = activityDirectory;
+		if (activityDirectoryWithSlash.back() != '/' || activityDirectoryWithSlash.back() != '\\')
+			activityDirectoryWithSlash.push_back('/');
+		string command = "7z x \"" + activityDirectoryWithSlash + "*.gz\" -aos \"-o" + activityDirectoryWithSlash + "\"";
+		system(command.c_str());
+	}
+
+	if (shouldCancel) {
+		return vector<Activity*>();
+	}
+
+	int totalNumberOfActivities = 0;
+	for (auto &p : directory_iterator(activityDirectory)) {
+		string filename = p.path().string();
+		if (filename.substr(filename.length() - 4) == ".tcx" || filename.substr(filename.length() - 4) == ".gpx" || filename.substr(filename.length() - 4) == ".fit") {
+			totalNumberOfActivities++;
+		}
+	}
+
+	if (shouldCancel) {
+		return vector<Activity*>();
+	}
+
+	vector<Activity*> result;
+
+	progressKnown = true;
+	progressAmount = 0;
+	int filesLoaded = 0;
+	cout << "\nBegin loading activity files from " << activityDirectory << "..." << endl << endl;
+	for (auto &p : directory_iterator(activityDirectory)) {
+		string filename = p.path().string();
+		if (filename.substr(filename.length() - 4) == ".tcx") {
+			result.push_back(new TrainingCenterXML(filename));
+			filesLoaded++;
+		}
+		else if (filename.substr(filename.length() - 4) == ".gpx") {
+			result.push_back(new GPSExchangeFormat(filename));
+			filesLoaded++;
+		}
+		else if (filename.substr(filename.length() - 4) == ".fit") {
+			result.push_back(new FITProtocol(filename));
+			filesLoaded++;
+		}
+		if (shouldCancel) {
+			for (auto p : result) {
+				delete p;
+			}
+			return vector<Activity*>();
+		}
+		if (totalNumberOfActivities != 0) {
+			progressAmount = ((double)filesLoaded / (double)totalNumberOfActivities) * 100;
+		}
+	}
+	return result;
+}
+
+int main(int argc, char* argv[]) {
+	/*
 	string activityDirectory = "test";
 	string renderedImageFilename = "result.png";
 
@@ -109,6 +193,13 @@ int main(int argc, char* argv[]) {
 
 	heatMapImage->saveImage(renderedImageFilename);
 	delete heatMapImage;
+	*/
+	
+	ActivityDirectoryGUI activityDirectoryGUI;
+
+	activityDirectoryGUI.present(loadActivities, finished, &progressAmount, &shouldCancel, &progressKnown);
+	
+	exec();
 
 	system("pause");
 }

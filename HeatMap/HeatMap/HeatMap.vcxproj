@@ -70,16 +70,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>../../fit-sdk/cpp;$(IncludePath)</IncludePath>
+    <IncludePath>../../nana/include;../../fit-sdk/cpp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>../../fit-sdk/cpp;$(IncludePath)</IncludePath>
+    <IncludePath>../../nana/include;../../fit-sdk/cpp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>../../fit-sdk/cpp;$(IncludePath)</IncludePath>
+    <IncludePath>../../nana/include;../../fit-sdk/cpp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>../../fit-sdk/cpp;$(IncludePath)</IncludePath>
+    <IncludePath>../../nana/include;../../fit-sdk/cpp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -97,6 +98,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -108,6 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -123,6 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -155,6 +159,8 @@
     <ClCompile Include="..\..\fit-sdk\cpp\fit_protocol_validator.cpp" />
     <ClCompile Include="..\..\fit-sdk\cpp\fit_unicode.cpp" />
     <ClCompile Include="..\..\lodepng\lodepng.cpp" />
+    <ClCompile Include="ActivityDirectoryGUI.cpp" />
+    <ClCompile Include="ActivityLoadingGUI.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="FITProtocol.cpp" />
@@ -171,6 +177,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\lodepng\lodepng.h" />
     <ClInclude Include="Activity.h" />
+    <ClInclude Include="ActivityDirectoryGUI.h" />
+    <ClInclude Include="ActivityLoadingGUI.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="FITProtocol.h" />
@@ -183,6 +191,11 @@
     <ClInclude Include="rapidxml.hpp" />
     <ClInclude Include="Speed.h" />
     <ClInclude Include="TrainingCenterXML.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\nana\build\vc2017\nana.vcxproj">
+      <Project>{42d0520f-efa5-4831-84fe-2b9085301c5d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
