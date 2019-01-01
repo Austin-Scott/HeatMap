@@ -49,7 +49,27 @@ GPSExchangeFormat::GPSExchangeFormat(string filename)
 						xml_attribute<>* latAtr = pointNode->first_attribute("lat");
 						xml_attribute<>* lonAtr = pointNode->first_attribute("lon");
 						if (latAtr != nullptr && lonAtr != nullptr) {
-							track.emplace_back(stod(latAtr->value()), stod(latAtr->value()));
+							double lat = stod(latAtr->value());
+							double lon = stod(lonAtr->value());
+
+							if (track.size() == 0) {
+								maxLatitude = lat;
+								minLatitude = lat;
+								maxLongitude = lon;
+								minLongitude = lon;
+							}
+							else {
+								if (lat < minLatitude)
+									minLatitude = lat;
+								if (lat > maxLatitude)
+									maxLatitude = lat;
+								if (lon < minLongitude)
+									minLatitude = lon;
+								if (lon > maxLongitude)
+									maxLongitude = lon;
+							}
+
+							track.emplace_back(lat, lon);
 							trackPointCount++;
 						}
 					}
@@ -90,4 +110,14 @@ Speed GPSExchangeFormat::getAverageSpeed()
 string GPSExchangeFormat::getFilename()
 {
 	return filename;
+}
+
+GeographicCoordinate GPSExchangeFormat::upperRight()
+{
+	return geoCoord(maxLatitude, maxLongitude);
+}
+
+GeographicCoordinate GPSExchangeFormat::lowerLeft()
+{
+	return geoCoord(minLatitude, minLongitude);
 }

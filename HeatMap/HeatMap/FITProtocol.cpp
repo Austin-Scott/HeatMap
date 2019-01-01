@@ -61,6 +61,16 @@ string FITProtocol::getFilename()
 	return filename;
 }
 
+GeographicCoordinate FITProtocol::upperRight()
+{
+	return geoCoord(maxLatitude, maxLongitude);
+}
+
+GeographicCoordinate FITProtocol::lowerLeft()
+{
+	return geoCoord(minLatitude, minLongitude);
+}
+
 void FITProtocol::OnMesg(fit::Mesg & mesg)
 {
 	if (mesg.GetName() == "record") {
@@ -80,6 +90,22 @@ void FITProtocol::OnMesg(fit::Mesg & mesg)
 			}
 		}
 		if (foundLon && foundLat) {
+			if (track.size() == 0) {
+				maxLatitude = lat;
+				minLatitude = lat;
+				maxLongitude = lon;
+				minLongitude = lon;
+			}
+			else {
+				if (lat > maxLatitude)
+					maxLatitude = lat;
+				if (lat < minLatitude)
+					minLatitude = lat;
+				if (lon > maxLongitude)
+					maxLongitude = lon;
+				if (lon < minLongitude)
+					minLongitude = lon;
+			}
 			track.emplace_back(lat, lon);
 		}
 	}

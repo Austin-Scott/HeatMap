@@ -23,6 +23,11 @@ private:
 	Date startDate;
 	Speed averageSpeed;
 
+	double maxLatitude;
+	double minLatitude;
+	double maxLongitude;
+	double minLongitude;
+
 	double convertSemicirclesToDegrees(double semicircles);
 public:
 	FITProtocol(string filename);
@@ -32,6 +37,8 @@ public:
 	Date getStartDate();
 	Speed getAverageSpeed();
 	string getFilename();
+	GeographicCoordinate upperRight();
+	GeographicCoordinate lowerLeft();
 
 	void OnMesg(fit::Mesg& mesg);
 	void OnDeveloperFieldDescription(const fit::DeveloperFieldDescription& desc);
