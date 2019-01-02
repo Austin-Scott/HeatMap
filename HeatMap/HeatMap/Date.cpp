@@ -220,6 +220,24 @@ Date Date::parseDateString(string dateString)
 	return Date();
 }
 
+Date Date::fromFormalString(string dateString)
+{
+	if (dateString.length() == 10) {
+		regex e("\\d{4}-\\d{2}-\\d{2}");
+		if (regex_match(dateString, e)) {
+			int year = atoi(dateString.substr(0, 4).c_str());
+			int monthInt = atoi(dateString.substr(5, 2).c_str());
+			Month month = Month::January;
+			if (monthInt >= 1 && monthInt <= 12) {
+				month = static_cast<Month>(monthInt);
+			}
+			int day = atoi(dateString.substr(8, 2).c_str());
+			return Date(year, month, day, 0, 0, 0);
+		}
+	}
+	return Date();
+}
+
 bool Date::isValidDate()
 {
 	if (day < 1 || hour < 0 || minute < 0 || second < 0) return false;
@@ -230,4 +248,11 @@ bool Date::isValidDate()
 bool Date::isDateSet()
 {
 	return isSet;
+}
+
+string Date::toFormalString()
+{
+	if (isSet) {
+		return padZeros(4, year) + "-" + padZeros(2, (int)month) + "-" + padZeros(2, day);
+	}
 }

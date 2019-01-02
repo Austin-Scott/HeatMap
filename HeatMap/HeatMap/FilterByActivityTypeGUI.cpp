@@ -9,6 +9,11 @@ FilterByActivityTypeGUI::FilterByActivityTypeGUI()
 	});
 }
 
+void FilterByActivityTypeGUI::setConfig(HeatMapConfiguration * config)
+{
+	this->config = config;
+}
+
 void FilterByActivityTypeGUI::setSubWindowInteractive(bool value)
 {
 	enabled(value);

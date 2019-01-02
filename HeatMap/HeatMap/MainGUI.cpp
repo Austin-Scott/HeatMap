@@ -4,13 +4,26 @@
 MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<form::appear::minimize>())
 {
 	caption("Heat Map Generator v1.0");
-	layout.div("<><vert weight=80% <><configViewport><configFilters><configRenderer><><renderButton><>><>");
+	layout.div("<><vert weight=80% <><configViewport><<dateFilter><speedFilter><typeFilter>><configRenderer><><renderButton><>><>");
 	configViewport.caption("Configure Viewport");
-	configFilters.caption("Configure Activity Filters");
+	dateFilter.caption("Date");
+	dateFilter.events().click([&]() {
+		filterByDateGUI.show();
+	});
+	speedFilter.caption("Speed");
+	speedFilter.events().click([&]() {
+		filterBySpeedGUI.show();
+	});
+	typeFilter.caption("Type");
+	typeFilter.events().click([&]() {
+		filterByActivityTypeGUI.show();
+	});
 	configRenderer.caption("Configure Renderer");
 	renderButton.caption("Render and Save Heat Map");
 	layout["configViewport"] << configViewport;
-	layout["configFilters"] << configFilters;
+	layout["dateFilter"] << dateFilter;
+	layout["speedFilter"] << speedFilter;
+	layout["typeFilter"] << typeFilter;
 	layout["configRenderer"] << configRenderer;
 	layout["renderButton"] << renderButton;
 	layout.collocate();
@@ -19,7 +32,7 @@ MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<for
 		msgbox prompt(*this, "Exit application", msgbox::yes_no);
 		prompt.icon(msgbox::icon_question) << "Are you sure you want to exit?";
 		if (prompt.show() == msgbox::pick_yes) {
-			time.stop();
+			nanaTime.stop();
 			for (Activity* p : activities) {
 				delete p;
 			}
@@ -30,8 +43,8 @@ MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<for
 		}
 	});
 
-	time.interval(100);
-	time.elapse([&]() {
+	nanaTime.interval(100);
+	nanaTime.elapse([&]() {
 		
 	});
 
@@ -39,9 +52,7 @@ MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<for
 		configViewportGUI.show();
 	});
 
-	configFilters.events().click([&]() {
-		configFiltersGUI.show();
-	});
+	
 
 	configRenderer.events().click([&]() {
 		configRendererGUI.show();
@@ -86,12 +97,20 @@ MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<for
 	heatMapConfiguration.height = 1080;
 	heatMapConfiguration.computeBoundingBox(geoCoord(44.846595, -91.897108), 44.938059);
 	heatMapConfiguration.setRenderer(true, Color("#000000FF"), Color("#FF000080"), Color("#FFFFFFFF"));
+
+	filterByActivityTypeGUI.setConfig(&heatMapConfiguration);
+	filterByDateGUI.setConfig(&heatMapConfiguration);
+	filterBySpeedGUI.setConfig(&heatMapConfiguration);
+	configViewportGUI.setConfig(&heatMapConfiguration);
+	configRendererGUI.setConfig(&heatMapConfiguration);
 }
 
 void MainGUI::setSubWindowInteractive(bool value)
 {
 	configViewportGUI.setSubWindowInteractive(value);
-	configFiltersGUI.setSubWindowInteractive(value);
+	filterByDateGUI.setSubWindowInteractive(value);
+	filterBySpeedGUI.setSubWindowInteractive(value);
+	filterByActivityTypeGUI.setSubWindowInteractive(value);
 	configRendererGUI.setSubWindowInteractive(value);
 }
 

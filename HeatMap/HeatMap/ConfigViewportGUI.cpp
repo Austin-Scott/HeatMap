@@ -5,6 +5,11 @@ void ConfigViewportGUI::setSubWindowInteractive(bool value)
 	enabled(value);
 }
 
+void ConfigViewportGUI::setConfig(HeatMapConfiguration * config)
+{
+	this->config = config;
+}
+
 ConfigViewportGUI::ConfigViewportGUI()
 {
 	caption("Configure Viewport");

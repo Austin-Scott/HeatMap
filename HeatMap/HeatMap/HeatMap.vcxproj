@@ -163,10 +163,10 @@
     <ClCompile Include="ActivityDirectoryGUI.cpp" />
     <ClCompile Include="ActivityLoadingGUI.cpp" />
     <ClCompile Include="Color.cpp" />
-    <ClCompile Include="ConfigFiltersGUI.cpp" />
     <ClCompile Include="ConfigRendererGUI.cpp" />
     <ClCompile Include="ConfigViewportGUI.cpp" />
     <ClCompile Include="Date.cpp" />
+    <ClCompile Include="DatePickerGUI.cpp" />
     <ClCompile Include="FilterByActivityTypeGUI.cpp" />
     <ClCompile Include="FilterByDateGUI.cpp" />
     <ClCompile Include="FilterBySpeedGUI.cpp" />
@@ -189,10 +189,10 @@
     <ClInclude Include="ActivityDirectoryGUI.h" />
     <ClInclude Include="ActivityLoadingGUI.h" />
     <ClInclude Include="Color.h" />
-    <ClInclude Include="ConfigFiltersGUI.h" />
     <ClInclude Include="ConfigRendererGUI.h" />
     <ClInclude Include="ConfigViewportGUI.h" />
     <ClInclude Include="Date.h" />
+    <ClInclude Include="DatePickerGUI.h" />
     <ClInclude Include="FilterByActivityTypeGUI.h" />
     <ClInclude Include="FilterByDateGUI.h" />
     <ClInclude Include="FilterBySpeedGUI.h" />

@@ -5,6 +5,11 @@ void ConfigRendererGUI::setSubWindowInteractive(bool value)
 	enabled(value);
 }
 
+void ConfigRendererGUI::setConfig(HeatMapConfiguration * config)
+{
+	this->config = config;
+}
+
 ConfigRendererGUI::ConfigRendererGUI()
 {
 	caption("Configure Renderer");

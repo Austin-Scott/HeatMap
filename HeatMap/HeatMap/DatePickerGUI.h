@@ -5,17 +5,22 @@
 #include <nana/gui/widgets/spinbox.hpp>
 #include <nana/gui/widgets/checkbox.hpp>
 #include <nana/gui/widgets/group.hpp>
+#include <nana/gui/widgets/date_chooser.hpp>
 
 #include "HeatMapConfiguration.h"
+#include "Date.h"
 
 using namespace std;
 using namespace nana;
 
-class FilterBySpeedGUI : public form {
+class DatePickerGUI : public form {
 private:
-	HeatMapConfiguration* config;
+	place layout{ *this };
+	date_chooser chooser{ *this };
+	button pickDate{ *this };
+	Date selected;
+
 public:
-	FilterBySpeedGUI();
-	void setConfig(HeatMapConfiguration* config);
-	void setSubWindowInteractive(bool value);
+	Date present();
+	DatePickerGUI(form &frm);
 };

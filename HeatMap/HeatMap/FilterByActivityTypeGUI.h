@@ -13,8 +13,9 @@ using namespace nana;
 
 class FilterByActivityTypeGUI : public form {
 private:
-
+	HeatMapConfiguration* config;
 public:
 	FilterByActivityTypeGUI();
+	void setConfig(HeatMapConfiguration* config);
 	void setSubWindowInteractive(bool value);
 };

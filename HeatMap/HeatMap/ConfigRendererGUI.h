@@ -13,8 +13,9 @@ using namespace nana;
 
 class ConfigRendererGUI : public form {
 private:
-
+	HeatMapConfiguration* config;
 public:
 	void setSubWindowInteractive(bool value);
+	void setConfig(HeatMapConfiguration* config);
 	ConfigRendererGUI();
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <regex>
 
 using namespace std;
 
@@ -16,6 +17,16 @@ private:
 	int second=0;
 
 	bool isSet;
+	template<class T>string padZeros(int width, T value) {
+		string result = to_string(value);
+		if (width > result.length()) {
+			result = "";
+		}
+		while (result.length() < width) {
+			result = "0" + result;
+		}
+		return result;
+	}
 public:
 	Date();
 	Date(int year, Month month, int day, int hour, int minute, int second);
@@ -40,10 +51,14 @@ public:
 
 	bool isDateSet();
 
+	string toFormalString(); //form YYYY-MM-DD
+
 	static Date now();
 	static Date createDate(int year, Month month, int day, int hour, int minute, int second);
 	static Date createDate(time_t seconds); //Seconds as reported by Garmin's .fit date stamps
 	static Date parseDateString(string dateString); //dateString in Zulu time. Function creates a Date object in local time.
+
+	static Date fromFormalString(string dateString); //form YYYY-MM-DD
 	
 	static int getDaysInMonth(Month month, int year);
 };
