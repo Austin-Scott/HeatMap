@@ -8,4 +8,8 @@ void ConfigViewportGUI::setSubWindowInteractive(bool value)
 ConfigViewportGUI::ConfigViewportGUI()
 {
 	caption("Configure Viewport");
+	events().unload([&](const arg_unload &arg) {
+		arg.cancel = true;
+		hide();
+	});
 }

@@ -20,9 +20,6 @@ MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<for
 		prompt.icon(msgbox::icon_question) << "Are you sure you want to exit?";
 		if (prompt.show() == msgbox::pick_yes) {
 			time.stop();
-			configViewportGUI.hide();
-			configFiltersGUI.hide();
-			configRendererGUI.hide();
 			for (Activity* p : activities) {
 				delete p;
 			}
