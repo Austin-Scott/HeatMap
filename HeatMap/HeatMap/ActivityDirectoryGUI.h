@@ -15,6 +15,7 @@
 
 #include "Activity.h"
 #include "ActivityLoadingGUI.h"
+#include "MainGUI.h"
 
 using namespace std;
 using namespace nana;
@@ -30,17 +31,19 @@ private:
 	button loadButton{*this};
 
 	function<vector<Activity*>(string, bool)> workCallback;
-	function<void(vector<Activity*>, form*)> finishedCallback;
+	function<void(vector<Activity*>, MainGUI*)> finishedCallback;
 
 	atomic<unsigned int>* currentProgress;
 	atomic<bool>* shouldCancel;
 	atomic<bool>* progressKnown;
 	string* statusString;
 	mutex* statusMutex;
-	form* nextForm;
+	MainGUI* nextForm;
+
+	bool nextPhase;
 
 	future<vector<Activity*>> fut;
 public:
 	ActivityDirectoryGUI();
-	void present(function<vector<Activity*>(string, bool)> workCallback, function<void(vector<Activity*>, form*)> finishedCallback, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, string* statusString, mutex* statusMutex, form* nextForm);
+	void present(function<vector<Activity*>(string, bool)> workCallback, function<void(vector<Activity*>, MainGUI*)> finishedCallback, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, string* statusString, mutex* statusMutex, MainGUI* nextForm);
 };

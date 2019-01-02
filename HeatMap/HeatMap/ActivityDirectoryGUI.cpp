@@ -14,6 +14,11 @@ ActivityDirectoryGUI::ActivityDirectoryGUI() : form(API::make_center(500, 200), 
 			pathToDirectory.caption(folder.value().string());
 		}
 	});
+	events().unload([&]() {
+		if (!nextPhase) {
+			API::exit();
+		}
+	});
 	loadButton.caption("Load Activities");
 	loadButton.events().click([&]() {
 		ActivityLoadingGUI activityLoadingGUI(*this);
@@ -21,7 +26,7 @@ ActivityDirectoryGUI::ActivityDirectoryGUI() : form(API::make_center(500, 200), 
 		activityLoadingGUI.present(&fut, this->currentProgress, this->shouldCancel, this->progressKnown, this->statusString, this->statusMutex);
 
 		if (!(*this->shouldCancel)) {
-			bool nextPhase = true;
+			nextPhase = true;
 			vector<Activity*> activities = fut.get();
 			
 			if (activities.size() == 0) {
@@ -62,9 +67,11 @@ ActivityDirectoryGUI::ActivityDirectoryGUI() : form(API::make_center(500, 200), 
 	layout["decompress"] << decompress;
 	layout["loadButton"] << loadButton;
 	layout.collocate();
+
+	nextPhase = false;
 }
 
-void ActivityDirectoryGUI::present(function<vector<Activity*>(string, bool)> workCallback, function<void(vector<Activity*>, form*)> finishedCallback, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, string* statusString, mutex* statusMutex, form* nextForm)
+void ActivityDirectoryGUI::present(function<vector<Activity*>(string, bool)> workCallback, function<void(vector<Activity*>, MainGUI*)> finishedCallback, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, string* statusString, mutex* statusMutex, MainGUI* nextForm)
 {
 	this->workCallback = workCallback;
 	this->finishedCallback = finishedCallback;

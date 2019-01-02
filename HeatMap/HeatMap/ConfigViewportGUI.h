@@ -15,5 +15,6 @@ class ConfigViewportGUI : public form {
 private:
 
 public:
-
+	void setSubWindowInteractive(bool value);
+	ConfigViewportGUI();
 };

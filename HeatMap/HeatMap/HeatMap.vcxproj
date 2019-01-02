@@ -159,9 +159,13 @@
     <ClCompile Include="..\..\fit-sdk\cpp\fit_protocol_validator.cpp" />
     <ClCompile Include="..\..\fit-sdk\cpp\fit_unicode.cpp" />
     <ClCompile Include="..\..\lodepng\lodepng.cpp" />
+    <ClCompile Include="Activity.cpp" />
     <ClCompile Include="ActivityDirectoryGUI.cpp" />
     <ClCompile Include="ActivityLoadingGUI.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="ConfigFiltersGUI.cpp" />
+    <ClCompile Include="ConfigRendererGUI.cpp" />
+    <ClCompile Include="ConfigViewportGUI.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="FITProtocol.cpp" />
     <ClCompile Include="GeographicCoordinate.cpp" />
@@ -172,6 +176,7 @@
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGUI.cpp" />
+    <ClCompile Include="RenderMapGUI.cpp" />
     <ClCompile Include="Speed.cpp" />
     <ClCompile Include="TrainingCenterXML.cpp" />
   </ItemGroup>
@@ -194,6 +199,7 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="MainGUI.h" />
     <ClInclude Include="rapidxml.hpp" />
+    <ClInclude Include="RenderMapGUI.h" />
     <ClInclude Include="Speed.h" />
     <ClInclude Include="TrainingCenterXML.h" />
   </ItemGroup>

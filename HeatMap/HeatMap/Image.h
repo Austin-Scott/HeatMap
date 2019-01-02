@@ -13,5 +13,5 @@ private:
 public:
 	Image(int width, int height, unsigned char* data);
 	~Image();
-	void saveImage(std::string filename);
+	std::string saveImage(std::string filename);
 };
