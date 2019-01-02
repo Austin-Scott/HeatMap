@@ -15,5 +15,6 @@ class ConfigFiltersGUI : public form {
 private:
 
 public:
-
+	void setSubWindowInteractive(bool value);
+	ConfigFiltersGUI();
 };

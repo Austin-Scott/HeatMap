@@ -20,3 +20,5 @@ public:
 	virtual Speed getAverageSpeed() = 0;
 	virtual string getFilename() = 0;
 };
+
+string getOnlyFilename(string path);

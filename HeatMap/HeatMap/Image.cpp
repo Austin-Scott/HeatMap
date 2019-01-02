@@ -17,12 +17,14 @@ Image::~Image()
 	}
 }
 
-void Image::saveImage(string filename)
+string Image::saveImage(string filename)
 {
 	vector<unsigned char> png;
 	unsigned int error = lodepng::encode(png, data, width, height);
-	if (!error) lodepng::save_file(png, filename.c_str());
+	if (!error) 
+		error = lodepng::save_file(png, filename.c_str());
 	if (error) {
-		cerr << "lodepng error " << error << ": " << lodepng_error_text(error) << endl;
+		return "lodepng error " + to_string(error) + ": " + string(lodepng_error_text(error));
 	}
+	return "";
 }

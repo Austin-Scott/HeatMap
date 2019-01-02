@@ -15,5 +15,6 @@ class ConfigRendererGUI : public form {
 private:
 
 public:
-
+	void setSubWindowInteractive(bool value);
+	ConfigRendererGUI();
 };
