@@ -8,4 +8,8 @@ void ConfigRendererGUI::setSubWindowInteractive(bool value)
 ConfigRendererGUI::ConfigRendererGUI()
 {
 	caption("Configure Renderer");
+	events().unload([&](const arg_unload &arg) {
+		arg.cancel = true;
+		hide();
+	});
 }

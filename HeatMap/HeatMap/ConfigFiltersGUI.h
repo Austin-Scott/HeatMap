@@ -8,11 +8,23 @@
 
 #include "HeatMapConfiguration.h"
 
+#include "FilterByActivityTypeGUI.h"
+#include "FilterByDateGUI.h"
+#include "FilterBySpeedGUI.h"
+
 using namespace std;
 using namespace nana;
 
 class ConfigFiltersGUI : public form {
 private:
+	FilterByActivityTypeGUI filterByActivityTypeGUI;
+	FilterByDateGUI filterByDateGUI;
+	FilterBySpeedGUI filterBySpeedGUI;
+
+	place layout{ *this };
+	button filterByActivityType{ *this };
+	button filterByDate{ *this };
+	button filterBySpeed{ *this };
 
 public:
 	void setSubWindowInteractive(bool value);

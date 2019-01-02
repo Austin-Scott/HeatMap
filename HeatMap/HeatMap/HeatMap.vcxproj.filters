@@ -16,6 +16,12 @@
     <Filter Include="Source Files\fit-sdk">
       <UniqueIdentifier>{de18f8cd-b09a-43be-a2fb-83e02e358552}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GUI">
+      <UniqueIdentifier>{2862f662-4a59-420c-b207-28fa9676f87d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI">
+      <UniqueIdentifier>{2d8704d6-d17d-49fa-afb6-79e1a9468132}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -129,29 +135,38 @@
     <ClCompile Include="HeatMapConfiguration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ActivityDirectoryGUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ActivityLoadingGUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MainGUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConfigViewportGUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConfigFiltersGUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConfigRendererGUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderMapGUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Activity.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ActivityDirectoryGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ActivityLoadingGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigFiltersGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigRendererGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigViewportGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderMapGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterByDateGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterBySpeedGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterByActivityTypeGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -198,25 +213,34 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ActivityDirectoryGUI.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="ActivityLoadingGUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MainGUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigViewportGUI.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="ConfigFiltersGUI.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="ConfigRendererGUI.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigViewportGUI.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterByDateGUI.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGUI.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="RenderMapGUI.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterBySpeedGUI.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterByActivityTypeGUI.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
