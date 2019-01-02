@@ -2,7 +2,7 @@
 
 ActivityDirectoryGUI::ActivityDirectoryGUI() : form(API::make_center(500, 200), form::appear::decorate<form::appear::minimize>())
 {
-	caption("Heat Map");
+	caption("Select Activity Directory");
 	instructions.caption("Please select folder containing your activities:");
 	decompress.caption("Automatically decompress .gz files");
 	decompress.check(true);
@@ -21,8 +21,38 @@ ActivityDirectoryGUI::ActivityDirectoryGUI() : form(API::make_center(500, 200), 
 		activityLoadingGUI.present(&fut, this->currentProgress, this->shouldCancel, this->progressKnown, this->statusString, this->statusMutex);
 
 		if (!(*this->shouldCancel)) {
-			hide();
-			finishedCallback(fut.get());
+			bool nextPhase = true;
+			vector<Activity*> activities = fut.get();
+			
+			if (activities.size() == 0) {
+				nextPhase = false;
+				msgbox box(*this, "Unable to proceed");
+				box.icon(msgbox::icon_information) << "No supported activities were found.";
+				box.show();
+			}
+			else {
+				bool containsGPSData = false;
+				for (Activity* p : activities) {
+					if (p->getTrack().size() > 0) {
+						containsGPSData = true;
+						break;
+					}
+				}
+				if (!containsGPSData) {
+					nextPhase = false;
+					for (Activity* p : activities) {
+						delete p;
+					}
+					msgbox box(*this, "Unable to proceed");
+					box.icon(msgbox::icon_information) << "None of the loaded activities contain GPS data.";
+					box.show();
+				}
+			}
+
+			if (nextPhase) {
+				hide();
+				finishedCallback(activities, nextForm);
+			}
 		}
 	});
 	layout.div("<><vert weight=80% <><instructions><<weight=75% pathToDirectory> <browseButton>><decompress><><loadButton><>><>");
@@ -34,7 +64,7 @@ ActivityDirectoryGUI::ActivityDirectoryGUI() : form(API::make_center(500, 200), 
 	layout.collocate();
 }
 
-void ActivityDirectoryGUI::present(function<vector<Activity*>(string, bool)> workCallback, function<void(vector<Activity*>)> finishedCallback, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, string* statusString, mutex* statusMutex)
+void ActivityDirectoryGUI::present(function<vector<Activity*>(string, bool)> workCallback, function<void(vector<Activity*>, form*)> finishedCallback, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, string* statusString, mutex* statusMutex, form* nextForm)
 {
 	this->workCallback = workCallback;
 	this->finishedCallback = finishedCallback;
@@ -43,5 +73,6 @@ void ActivityDirectoryGUI::present(function<vector<Activity*>(string, bool)> wor
 	this->progressKnown = progressKnown;
 	this->statusString = statusString;
 	this->statusMutex = statusMutex;
+	this->nextForm = nextForm;
 	show();
 }

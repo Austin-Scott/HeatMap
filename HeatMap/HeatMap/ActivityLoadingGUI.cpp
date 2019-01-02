@@ -2,7 +2,7 @@
 
 ActivityLoadingGUI::ActivityLoadingGUI(form &frm) : form(frm)
 {
-	caption("Heat Map");
+	caption("Loading Activities...");
 	message.caption("This may take a few minutes.");
 	cancel.caption("Cancel");
 	cancel.events().click([&]() {

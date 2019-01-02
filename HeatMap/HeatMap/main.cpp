@@ -14,6 +14,7 @@
 #include "FITProtocol.h"
 #include "HeatMap.h"
 #include "HeatMapConfiguration.h"
+#include "MainGUI.h"
 
 #include "ActivityDirectoryGUI.h"
 
@@ -106,11 +107,13 @@ Image* generateHeatMapImage(string activityDirectory, bool decompressFiles, Heat
 	return result;
 }
 
-void finished(vector<Activity*> activities) {
+void finished(vector<Activity*> activities, form* mainGUI) {
 	cout << "Loading finished." << endl;
 	cout << activities.size() << " test activities loaded." << endl;
 	for (auto p : activities)
 		delete p;
+
+	mainGUI->show();
 }
 
 void writeSharedString(mutex &m, string* strDest, string strSrc) {
@@ -237,8 +240,10 @@ int main(int argc, char* argv[]) {
 	*/
 	
 	ActivityDirectoryGUI activityDirectoryGUI;
+	MainGUI mainGUI;
 
-	activityDirectoryGUI.present(loadActivities, finished, &progressAmount, &shouldCancel, &progressKnown, &statusString, &statusMutex);
+	activityDirectoryGUI.present(loadActivities, finished, &progressAmount, &shouldCancel, &progressKnown, &statusString, &statusMutex, &mainGUI);
 	
+
 	exec();
 }
