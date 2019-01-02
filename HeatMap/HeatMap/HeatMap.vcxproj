@@ -171,6 +171,7 @@
     <ClCompile Include="HeatMapConfiguration.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainGUI.cpp" />
     <ClCompile Include="Speed.cpp" />
     <ClCompile Include="TrainingCenterXML.cpp" />
   </ItemGroup>
@@ -180,6 +181,9 @@
     <ClInclude Include="ActivityDirectoryGUI.h" />
     <ClInclude Include="ActivityLoadingGUI.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="ConfigFiltersGUI.h" />
+    <ClInclude Include="ConfigRendererGUI.h" />
+    <ClInclude Include="ConfigViewportGUI.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="FITProtocol.h" />
     <ClInclude Include="GeographicCoordinate.h" />
@@ -188,6 +192,7 @@
     <ClInclude Include="HeatMapCell.h" />
     <ClInclude Include="HeatMapConfiguration.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="MainGUI.h" />
     <ClInclude Include="rapidxml.hpp" />
     <ClInclude Include="Speed.h" />
     <ClInclude Include="TrainingCenterXML.h" />
