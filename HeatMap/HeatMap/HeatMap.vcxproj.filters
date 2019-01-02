@@ -144,9 +144,6 @@
     <ClCompile Include="ActivityLoadingGUI.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigFiltersGUI.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="ConfigRendererGUI.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
@@ -166,6 +163,9 @@
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="FilterByActivityTypeGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="DatePickerGUI.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -218,9 +218,6 @@
     <ClInclude Include="ActivityLoadingGUI.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigFiltersGUI.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="ConfigRendererGUI.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -240,6 +237,9 @@
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="FilterByActivityTypeGUI.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="DatePickerGUI.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>

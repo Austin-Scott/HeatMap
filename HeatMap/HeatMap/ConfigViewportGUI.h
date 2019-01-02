@@ -13,8 +13,9 @@ using namespace nana;
 
 class ConfigViewportGUI : public form {
 private:
-
+	HeatMapConfiguration* config;
 public:
 	void setSubWindowInteractive(bool value);
+	void setConfig(HeatMapConfiguration* config);
 	ConfigViewportGUI();
 };

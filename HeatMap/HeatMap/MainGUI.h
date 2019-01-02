@@ -15,9 +15,11 @@
 #include <nana/gui/filebox.hpp>
 
 #include "ConfigViewportGUI.h"
-#include "ConfigFiltersGUI.h"
 #include "ConfigRendererGUI.h"
 #include "RenderMapGUI.h"
+#include "FilterByDateGUI.h"
+#include "FilterBySpeedGUI.h"
+#include "FilterByActivityTypeGUI.h"
 
 #include "HeatMapConfiguration.h"
 #include "Image.h"
@@ -29,15 +31,20 @@ class MainGUI : public form {
 private:
 	place layout{ *this };
 	button configViewport{ *this };
-	button configFilters{ *this };
 	button configRenderer{ *this };
 	button renderButton{ *this };
+	button dateFilter{ *this };
+	button speedFilter{ *this };
+	button typeFilter{ *this };
 
-	timer time;
+	timer nanaTime;
 
 	ConfigViewportGUI configViewportGUI;
-	ConfigFiltersGUI configFiltersGUI;
 	ConfigRendererGUI configRendererGUI;
+
+	FilterByDateGUI filterByDateGUI;
+	FilterBySpeedGUI filterBySpeedGUI;
+	FilterByActivityTypeGUI filterByActivityTypeGUI;
 
 	HeatMapConfiguration heatMapConfiguration;
 	function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap;

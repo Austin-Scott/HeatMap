@@ -9,6 +9,11 @@ FilterBySpeedGUI::FilterBySpeedGUI()
 	});
 }
 
+void FilterBySpeedGUI::setConfig(HeatMapConfiguration * config)
+{
+	this->config = config;
+}
+
 void FilterBySpeedGUI::setSubWindowInteractive(bool value)
 {
 	enabled(value);
