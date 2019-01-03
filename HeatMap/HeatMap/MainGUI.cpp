@@ -1,10 +1,10 @@
 #include "MainGUI.h"
 #include <nana/gui/state_cursor.hpp>
 
-MainGUI::MainGUI() : form(API::make_center(800, 900), form::appear::decorate<form::appear::minimize, form::appear::maximize, form::appear::sizable>())
+MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<form::appear::minimize>())
 {
 	caption("Heat Map Generator v1.0");
-	layout.div("<><vert weight=95% <weight=2%><configViewportGUI><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><configRendererGUI><weight=10%><weight=10% renderButton><weight=2%>><>");
+	layout.div("<><vert weight=95% <weight=2%><<weight=40% configRendererGUI><configViewportGUI>><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><weight=10%><weight=10% renderButton><weight=2%>><>");
 	
 	renderButton.caption("Render and Save Heat Map");
 	layout["renderButton"] << renderButton;

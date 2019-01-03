@@ -12,7 +12,7 @@ FilterByActivityTypeGUI::FilterByActivityTypeGUI(form & frm) : group(frm)
 	layout.div("<><vert weight=95% <><filterUnknown><filterRunning><filterCycling><filterWalking><filterSwimming><><<saveChangesButton><discardChangesButton>><>><>");
 	filterUnknown.caption("Filter activities of Unknown type");
 	layout["filterUnknown"] << filterUnknown;
-	filterRunning.caption("Filter activities of Runnning type");
+	filterRunning.caption("Filter activities of Running type");
 	layout["filterRunning"] << filterRunning;
 	filterCycling.caption("Filter activities of Cycling type");
 	layout["filterCycling"] << filterCycling;
@@ -20,7 +20,7 @@ FilterByActivityTypeGUI::FilterByActivityTypeGUI(form & frm) : group(frm)
 	layout["filterWalking"] << filterWalking;
 	filterSwimming.caption("Filter activities of Swimming type");
 	layout["filterSwimming"] << filterSwimming;
-	saveChangesButton.caption("Accept");
+	saveChangesButton.caption("Apply");
 	layout["saveChangesButton"] << saveChangesButton;
 	discardChangesButton.caption("Discard");
 	layout["discardChangesButton"] << discardChangesButton;
