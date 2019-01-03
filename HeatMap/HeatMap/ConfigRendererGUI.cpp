@@ -11,9 +11,11 @@ ConfigRendererGUI::ConfigRendererGUI(form &frm) : group(frm)
 {
 	caption("Configure Renderer");
 	layout.div("<><vert weight=95% <><<labelOne><spinboxOne><labelTwo><spinboxTwo>><useAnitAliasing><<weight=50% labelThree><textboxOne><buttonOne>><<weight=50% labelFour><textboxTwo><buttonTwo>><<weight=50% labelFive><textboxThree><buttonThree>><><<buttonSaveChanges><buttonDiscardChanges>><>><>");
-	labelOne.caption("Width:");
+	labelOne.caption("Width: ");
+	labelOne.text_align(align::right);
 	layout["labelOne"] << labelOne;
-	labelTwo.caption("Height:");
+	labelTwo.caption("Height: ");
+	labelTwo.text_align(align::right);
 	layout["labelTwo"] << labelTwo;
 	labelThree.caption("Background hex color: ");
 	layout["labelThree"] << labelThree;
@@ -22,8 +24,10 @@ ConfigRendererGUI::ConfigRendererGUI(form &frm) : group(frm)
 	labelFive.caption("Maximum activity hex color: ");
 	layout["labelFive"] << labelFive;
 	spinboxOne.range(1, INT_MAX, 1);
+	spinboxOne.caption("1920");
 	layout["spinboxOne"] << spinboxOne;
 	spinboxTwo.range(1, INT_MAX, 1);
+	spinboxTwo.caption("1080");
 	layout["spinboxTwo"] << spinboxTwo;
 	useAnitAliasing.caption("Use Anti-Aliasing (Recommended)");
 	useAnitAliasing.check(true);
