@@ -15,7 +15,8 @@ HeatMapConfiguration::HeatMapConfiguration(int width, int height)
 void HeatMapConfiguration::removeFilters()
 {
 	useActivityFiltering = false;
-	useDateFiltering = false;
+	useDateFilteringOne = false;
+	useDateFilteringTwo = false;
 	useAverageSpeedFiltering = false;
 }
 
@@ -27,9 +28,10 @@ void HeatMapConfiguration::setActivityTypeFilter(vector<ActivityType> activityFi
 	}
 }
 
-void HeatMapConfiguration::setDateFilter(Date startDate, Date endDate, bool includeUnknownDates)
+void HeatMapConfiguration::setDateFilter(bool filterOne, Date startDate, bool filterTwo, Date endDate, bool includeUnknownDates)
 {
-	useDateFiltering = true;
+	useDateFilteringOne = filterOne;
+	useDateFilteringTwo = filterTwo;
 	this->includeUnknownDates = includeUnknownDates;
 	this->startDate = startDate;
 	this->endDate = endDate;

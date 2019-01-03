@@ -28,3 +28,33 @@ string getOnlyFilename(string path)
 	}
 	return result;
 }
+
+bool includeActivity(Activity & activity, HeatMapConfiguration configuration)
+{
+	if (configuration.useDateFilteringOne || configuration.useDateFilteringTwo) {
+		Date date = activity.getStartDate();
+		if (date.isDateSet()) {
+			if (configuration.useDateFilteringOne && date.isOlderThan(configuration.startDate)) {
+				return false;
+			}
+			if (configuration.useDateFilteringTwo && date.isMoreRecentThan(configuration.endDate)) {
+				return false;
+			}
+		}
+		else if(!configuration.includeUnknownDates) {
+			return false;
+		}
+	}
+	if (configuration.useAverageSpeedFiltering) {
+		Speed activitySpeed = activity.getAverageSpeed();
+		if (activitySpeed.isSpeedSet()) {
+			if (activitySpeed.getSpeed() < configuration.slowestSpeed.getSpeed() || activitySpeed.getSpeed() > configuration.fastestSpeed.getSpeed()) {
+				return false;
+			}
+		}
+		else if (!configuration.includeUnknownSpeeds) {
+			return false;
+		}
+	}
+	return true;
+}

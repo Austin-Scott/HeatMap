@@ -6,6 +6,8 @@
 #include "Date.h"
 #include "Speed.h"
 
+struct HeatMapConfiguration;
+
 using namespace std;
 
 enum ActivityType { Unknown, Running, Cycling, Walking, Swimming };
@@ -22,3 +24,6 @@ public:
 };
 
 string getOnlyFilename(string path);
+bool includeActivity(Activity &activity, HeatMapConfiguration configuration);
+
+#include "HeatMapConfiguration.h"

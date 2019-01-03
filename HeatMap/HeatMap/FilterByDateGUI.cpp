@@ -8,11 +8,16 @@ FilterByDateGUI::FilterByDateGUI()
 		hide();
 	});
 
-	layout.div("<><vert weight=80% <><filterEarlier><<labelOne><textboxOne><buttonOne>><filterLater><<labelTwo><textboxTwo><buttonTwo>><><applyChanges><>><>");
+	layout.div("<><vert weight=80% <><includeUnknown><filterEarlier><<labelOne><textboxOne><buttonOne>><filterLater><<labelTwo><textboxTwo><buttonTwo>><><applyChanges><>><>");
+	includeUnknown.caption("Include activities with unknown dates");
+	includeUnknown.events().checked([&]() {unsavedChanges = true; });
+	layout["includeUnknown"] << includeUnknown;
 	filterEarlier.caption("Filter activities with start dates earlier than");
+	filterEarlier.events().checked([&]() {unsavedChanges = true; });
 	layout["filterEarlier"] << filterEarlier;
 	labelOne.caption("YYYY-MM-DD");
 	layout["labelOne"] << labelOne;
+	textboxOne.events().text_changed([&]() {unsavedChanges = true; });
 	layout["textboxOne"] << textboxOne;
 	buttonOne.caption("Choose");
 	buttonOne.events().click([&]() {
@@ -25,9 +30,11 @@ FilterByDateGUI::FilterByDateGUI()
 	});
 	layout["buttonOne"] << buttonOne;
 	filterLater.caption("Filter activities with start dates later than");
+	filterLater.events().checked([&]() {unsavedChanges = true; });
 	layout["filterLater"] << filterLater;
 	labelTwo.caption("YYYY-MM-DD");
 	layout["labelTwo"] << labelTwo;
+	textboxTwo.events().text_changed([&]() {unsavedChanges = true; });
 	layout["textboxTwo"] << textboxTwo;
 	buttonTwo.caption("Choose");
 	buttonTwo.events().click([&]() {
@@ -41,7 +48,22 @@ FilterByDateGUI::FilterByDateGUI()
 	layout["buttonTwo"] << buttonTwo;
 	applyChanges.caption("Apply changes");
 	applyChanges.events().click([&]() {
-		//TODO
+		bool shouldIncludeUnknown = includeUnknown.checked();
+		bool filterOne = false;
+		Date dateOne;
+		bool filterTwo = false;
+		Date dateTwo;
+
+		if (filterEarlier.checked()) {
+			filterOne = true;
+			dateOne = Date::fromFormalString(textboxOne.caption());
+		}
+		if (filterLater.checked()) {
+			filterTwo = true;
+			dateTwo = Date::fromFormalString(textboxTwo.caption());
+		}
+		config->setDateFilter(filterOne, dateOne, filterTwo, dateTwo, shouldIncludeUnknown);
+		unsavedChanges = false;
 	});
 	layout["applyChanges"] << applyChanges;
 	layout.collocate();

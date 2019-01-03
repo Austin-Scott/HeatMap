@@ -13,7 +13,8 @@ struct HeatMapConfiguration {
 	bool useActivityFiltering;
 	vector<ActivityType> activityFilters;
 
-	bool useDateFiltering;
+	bool useDateFilteringOne;
+	bool useDateFilteringTwo;
 	bool includeUnknownDates;
 	Date startDate;
 	Date endDate;
@@ -40,7 +41,7 @@ struct HeatMapConfiguration {
 	void removeFilters();
 
 	void setActivityTypeFilter(vector<ActivityType> activityFilters);
-	void setDateFilter(Date startDate, Date endDate, bool includeUnknownDates = false);
+	void setDateFilter(bool filterOne, Date startDate, bool filterTwo, Date endDate, bool includeUnknownDates=false);
 	void setAverageSpeedFilter(Speed slowestSpeed, Speed fastestSpeed, bool includeUnknownSpeeds = false);
 	void computeBoundingBox(GeographicCoordinate bottomCenter, double maxLatitude);
 

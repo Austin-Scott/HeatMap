@@ -213,48 +213,9 @@ HeatMap::~HeatMap()
 	delete[] cells;
 }
 
-bool HeatMap::checkFilter(Activity & activity)
-{
-	if (configuration.useActivityFiltering) {
-		bool foundActivityType = false;
-		for (ActivityType t : configuration.activityFilters) {
-			if (t == activity.getActivityType()) {
-				foundActivityType = true;
-				break;
-			}
-		}
-		if (!foundActivityType) {
-			return false;
-		}
-	}
-	if (configuration.useDateFiltering) {
-		Date activityDate = activity.getStartDate();
-		if (activityDate.isDateSet()) {
-			if (activityDate.isOlderThan(configuration.startDate) || activityDate.isMoreRecentThan(configuration.endDate)) {
-				return false;
-			}
-		}
-		else if (!configuration.includeUnknownDates) {
-			return false;
-		}
-	}
-	if (configuration.useAverageSpeedFiltering) {
-		Speed activitySpeed = activity.getAverageSpeed();
-		if (activitySpeed.isSpeedSet()) {
-			if (activitySpeed.getSpeed() < configuration.slowestSpeed.getSpeed() || activitySpeed.getSpeed() > configuration.fastestSpeed.getSpeed()) {
-				return false;
-			}
-		}
-		else if (!configuration.includeUnknownSpeeds) {
-			return false;
-		}
-	}
-	return true;
-}
-
 void HeatMap::addActivity(Activity & activity)
 {
-	if (checkFilter(activity) && activity.getTrack().size() > 1) {
+	if (includeActivity(activity, configuration) && activity.getTrack().size() > 1) {
 		for (int i = 0; i < activity.getTrack().size() - 1; i++) {
 			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], configuration.useAntiAliasing);
 		}
