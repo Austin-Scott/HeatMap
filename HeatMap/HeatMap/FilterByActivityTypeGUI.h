@@ -11,11 +11,16 @@
 using namespace std;
 using namespace nana;
 
-class FilterByActivityTypeGUI : public form {
+class FilterByActivityTypeGUI : public group {
 private:
 	HeatMapConfiguration* config;
+	bool unsavedChanges;
+
+	form* parentFrm;
 public:
-	FilterByActivityTypeGUI();
-	void setConfig(HeatMapConfiguration* config);
-	void setSubWindowInteractive(bool value);
+	FilterByActivityTypeGUI(form &frm);
+	void setConfig(HeatMapConfiguration* config, form* parentFrm);
+	void saveChanges();
+	void discardChanges();
+	bool hasUnsavedChanges();
 };

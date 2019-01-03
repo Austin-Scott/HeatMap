@@ -1,31 +1,18 @@
 #include "MainGUI.h"
 #include <nana/gui/state_cursor.hpp>
 
-MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<form::appear::minimize>())
+MainGUI::MainGUI() : form(API::make_center(800, 900), form::appear::decorate<form::appear::minimize, form::appear::maximize, form::appear::sizable>())
 {
 	caption("Heat Map Generator v1.0");
-	layout.div("<><vert weight=80% <><configViewport><<dateFilter><speedFilter><typeFilter>><configRenderer><><renderButton><>><>");
-	configViewport.caption("Configure Viewport");
-	dateFilter.caption("Date");
-	dateFilter.events().click([&]() {
-		filterByDateGUI.show();
-	});
-	speedFilter.caption("Speed");
-	speedFilter.events().click([&]() {
-		filterBySpeedGUI.show();
-	});
-	typeFilter.caption("Type");
-	typeFilter.events().click([&]() {
-		filterByActivityTypeGUI.show();
-	});
-	configRenderer.caption("Configure Renderer");
+	layout.div("<><vert weight=95% <weight=2%><configViewportGUI><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><configRendererGUI><weight=10%><weight=10% renderButton><weight=2%>><>");
+	
 	renderButton.caption("Render and Save Heat Map");
-	layout["configViewport"] << configViewport;
-	layout["dateFilter"] << dateFilter;
-	layout["speedFilter"] << speedFilter;
-	layout["typeFilter"] << typeFilter;
-	layout["configRenderer"] << configRenderer;
 	layout["renderButton"] << renderButton;
+	layout["configViewportGUI"] << configViewportGUI;
+	layout["configRendererGUI"] << configRendererGUI;
+	layout["filterByDateGUI"] << filterByDateGUI;
+	layout["filterBySpeedGUI"] << filterBySpeedGUI;
+	layout["filterByActivityTypeGUI"] << filterByActivityTypeGUI;
 	layout.collocate();
 
 	events().unload([&](const arg_unload &arg) {
@@ -45,71 +32,11 @@ MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<for
 
 	nanaTime.interval(100);
 	nanaTime.elapse([&]() {
-		if (!configViewportGUI.visible()) {
-			if (!configViewport.enabled()) {
-				configViewport.enabled(true);
-			}
-		}
-		else {
-			if (configViewport.enabled()) {
-				configViewport.enabled(false);
-			}
-		}
-		if (!configRendererGUI.visible()) {
-			if (!configRenderer.enabled()) {
-				configRenderer.enabled(true);
-			}
-		}
-		else {
-			if (configRenderer.enabled()) {
-				configRenderer.enabled(false);
-			}
-		}
-		if (!filterByDateGUI.visible()) {
-			if (!dateFilter.enabled()) {
-				dateFilter.enabled(true);
-			}
-		}
-		else {
-			if (dateFilter.enabled()) {
-				dateFilter.enabled(false);
-			}
-		}
-		if (!filterBySpeedGUI.visible()) {
-			if (!speedFilter.enabled()) {
-				speedFilter.enabled(true);
-			}
-		}
-		else {
-			if (speedFilter.enabled()) {
-				speedFilter.enabled(false);
-			}
-		}
-		if (!filterByActivityTypeGUI.visible()) {
-			if (!typeFilter.enabled()) {
-				typeFilter.enabled(true);
-			}
-		}
-		else {
-			if (typeFilter.enabled()) {
-				typeFilter.enabled(false);
-			}
-		}
+		
 	});
 	nanaTime.start();
 
-	configViewport.events().click([&]() {
-		configViewportGUI.show();
-	});
-
-	
-
-	configRenderer.events().click([&]() {
-		configRendererGUI.show();
-	});
-
 	renderButton.events().click([&]() {
-		setSubWindowInteractive(false);
 		RenderMapGUI renderMapGUI(*this);
 		fut = async(renderHeatMap, heatMapConfiguration, activities);
 		renderMapGUI.present(&fut, currentProgress, shouldCancel, progressKnown);
@@ -138,8 +65,6 @@ MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<for
 				delete image;
 			}
 		}
-		configViewportGUI.enabled(true);
-		setSubWindowInteractive(true);
 	});
 
 
@@ -148,20 +73,11 @@ MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<for
 	heatMapConfiguration.computeBoundingBox(geoCoord(44.846595, -91.897108), 44.938059);
 	heatMapConfiguration.setRenderer(true, Color("#000000FF"), Color("#FF000080"), Color("#FFFFFFFF"));
 
-	filterByActivityTypeGUI.setConfig(&heatMapConfiguration);
-	filterByDateGUI.setConfig(&heatMapConfiguration);
-	filterBySpeedGUI.setConfig(&heatMapConfiguration);
-	configViewportGUI.setConfig(&heatMapConfiguration);
-	configRendererGUI.setConfig(&heatMapConfiguration);
-}
-
-void MainGUI::setSubWindowInteractive(bool value)
-{
-	configViewportGUI.setSubWindowInteractive(value);
-	filterByDateGUI.setSubWindowInteractive(value);
-	filterBySpeedGUI.setSubWindowInteractive(value);
-	filterByActivityTypeGUI.setSubWindowInteractive(value);
-	configRendererGUI.setSubWindowInteractive(value);
+	filterByActivityTypeGUI.setConfig(&heatMapConfiguration, this);
+	filterByDateGUI.setConfig(&heatMapConfiguration, this);
+	filterBySpeedGUI.setConfig(&heatMapConfiguration, this);
+	configViewportGUI.setConfig(&heatMapConfiguration, this);
+	configRendererGUI.setConfig(&heatMapConfiguration, this);
 }
 
 void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, vector<Activity*> activities)

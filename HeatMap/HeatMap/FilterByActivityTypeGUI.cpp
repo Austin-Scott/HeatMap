@@ -1,20 +1,25 @@
 #include "FilterByActivityTypeGUI.h"
 
-FilterByActivityTypeGUI::FilterByActivityTypeGUI()
-{
-	caption("Filter By Activity Type");
-	events().unload([&](const arg_unload &arg) {
-		arg.cancel = true;
-		hide();
-	});
-}
-
-void FilterByActivityTypeGUI::setConfig(HeatMapConfiguration * config)
+void FilterByActivityTypeGUI::setConfig(HeatMapConfiguration * config, form* parentFrm)
 {
 	this->config = config;
+	this->parentFrm = parentFrm;
 }
 
-void FilterByActivityTypeGUI::setSubWindowInteractive(bool value)
+FilterByActivityTypeGUI::FilterByActivityTypeGUI(form & frm) : group(frm)
 {
-	enabled(value);
+	caption("Filter Activity Type");
+}
+
+void FilterByActivityTypeGUI::saveChanges()
+{
+}
+
+void FilterByActivityTypeGUI::discardChanges()
+{
+}
+
+bool FilterByActivityTypeGUI::hasUnsavedChanges()
+{
+	return unsavedChanges;
 }

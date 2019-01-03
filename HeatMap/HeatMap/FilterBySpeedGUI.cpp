@@ -1,20 +1,25 @@
 #include "FilterBySpeedGUI.h"
 
-FilterBySpeedGUI::FilterBySpeedGUI()
-{
-	caption("Filter By Average Speed");
-	events().unload([&](const arg_unload &arg) {
-		arg.cancel = true;
-		hide();
-	});
-}
-
-void FilterBySpeedGUI::setConfig(HeatMapConfiguration * config)
+void FilterBySpeedGUI::setConfig(HeatMapConfiguration * config, form* parentFrm)
 {
 	this->config = config;
+	this->parentFrm = parentFrm;
 }
 
-void FilterBySpeedGUI::setSubWindowInteractive(bool value)
+FilterBySpeedGUI::FilterBySpeedGUI(form & frm) : group(frm)
 {
-	enabled(value);
+	caption("Filter Activity Speed");
+}
+
+void FilterBySpeedGUI::saveChanges()
+{
+}
+
+void FilterBySpeedGUI::discardChanges()
+{
+}
+
+bool FilterBySpeedGUI::hasUnsavedChanges()
+{
+	return unsavedChanges;
 }

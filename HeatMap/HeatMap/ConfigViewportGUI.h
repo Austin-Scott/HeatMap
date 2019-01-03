@@ -11,11 +11,16 @@
 using namespace std;
 using namespace nana;
 
-class ConfigViewportGUI : public form {
+class ConfigViewportGUI : public group {
 private:
 	HeatMapConfiguration* config;
+	bool unsavedChanges;
+
+	form* parentFrm;
 public:
-	void setSubWindowInteractive(bool value);
-	void setConfig(HeatMapConfiguration* config);
-	ConfigViewportGUI();
+	void setConfig(HeatMapConfiguration* config, form* parentFrm);
+	ConfigViewportGUI(form &frm);
+	void saveChanges();
+	void discardChanges();
+	bool hasUnsavedChanges();
 };

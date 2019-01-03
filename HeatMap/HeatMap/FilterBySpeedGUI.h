@@ -11,11 +11,16 @@
 using namespace std;
 using namespace nana;
 
-class FilterBySpeedGUI : public form {
+class FilterBySpeedGUI : public group {
 private:
 	HeatMapConfiguration* config;
+	bool unsavedChanges;
+
+	form* parentFrm;
 public:
-	FilterBySpeedGUI();
-	void setConfig(HeatMapConfiguration* config);
-	void setSubWindowInteractive(bool value);
+	FilterBySpeedGUI(form &frm);
+	void setConfig(HeatMapConfiguration* config, form* parentFrm);
+	void saveChanges();
+	void discardChanges();
+	bool hasUnsavedChanges();
 };

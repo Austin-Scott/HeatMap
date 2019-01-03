@@ -1,14 +1,11 @@
 #include "FilterByDateGUI.h"
 
-FilterByDateGUI::FilterByDateGUI()
+FilterByDateGUI::FilterByDateGUI(form &frm) : group(frm)
 {
 	caption("Filter By Activity Date");
-	events().unload([&](const arg_unload &arg) {
-		arg.cancel = true;
-		hide();
-	});
+	
 
-	layout.div("<><vert weight=80% <><includeUnknown><filterEarlier><<labelOne><textboxOne><buttonOne>><filterLater><<labelTwo><textboxTwo><buttonTwo>><><<applyChanges><discardChangesButton>><>><>");
+	layout.div("<><vert weight=95% <><includeUnknown><filterEarlier><<labelOne><textboxOne><weight=25% buttonOne>><filterLater><<labelTwo><textboxTwo><weight=25% buttonTwo>><><<applyChanges><discardChangesButton>><>><>");
 	includeUnknown.caption("Include activities with unknown dates");
 	includeUnknown.events().checked([&]() {unsavedChanges = true; });
 	layout["includeUnknown"] << includeUnknown;
@@ -21,7 +18,7 @@ FilterByDateGUI::FilterByDateGUI()
 	layout["textboxOne"] << textboxOne;
 	buttonOne.caption("Choose");
 	buttonOne.events().click([&]() {
-		DatePickerGUI picker(*this);
+		DatePickerGUI picker(*parentFrm);
 		Date choosen = picker.present();
 		if (choosen.isDateSet()) {
 			unsavedChanges = true;
@@ -38,7 +35,7 @@ FilterByDateGUI::FilterByDateGUI()
 	layout["textboxTwo"] << textboxTwo;
 	buttonTwo.caption("Choose");
 	buttonTwo.events().click([&]() {
-		DatePickerGUI picker(*this);
+		DatePickerGUI picker(*parentFrm);
 		Date choosen = picker.present();
 		if (choosen.isDateSet()) {
 			unsavedChanges = true;
@@ -80,15 +77,10 @@ FilterByDateGUI::FilterByDateGUI()
 	unsavedChanges = false;
 }
 
-void FilterByDateGUI::setConfig(HeatMapConfiguration * config)
+void FilterByDateGUI::setConfig(HeatMapConfiguration * config, form* parentFrm)
 {
 	this->config = config;
-
-}
-
-void FilterByDateGUI::setSubWindowInteractive(bool value)
-{
-	enabled(value);
+	this->parentFrm = parentFrm;
 }
 
 void FilterByDateGUI::saveChanges()

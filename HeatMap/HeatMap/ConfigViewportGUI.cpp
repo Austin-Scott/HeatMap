@@ -1,20 +1,25 @@
 #include "ConfigViewportGUI.h"
 
-void ConfigViewportGUI::setSubWindowInteractive(bool value)
-{
-	enabled(value);
-}
-
-void ConfigViewportGUI::setConfig(HeatMapConfiguration * config)
+void ConfigViewportGUI::setConfig(HeatMapConfiguration * config, form* parentFrm)
 {
 	this->config = config;
+	this->parentFrm = parentFrm;
 }
 
-ConfigViewportGUI::ConfigViewportGUI()
+ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 {
 	caption("Configure Viewport");
-	events().unload([&](const arg_unload &arg) {
-		arg.cancel = true;
-		hide();
-	});
+}
+
+void ConfigViewportGUI::saveChanges()
+{
+}
+
+void ConfigViewportGUI::discardChanges()
+{
+}
+
+bool ConfigViewportGUI::hasUnsavedChanges()
+{
+	return unsavedChanges;
 }
