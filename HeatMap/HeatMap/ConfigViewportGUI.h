@@ -5,6 +5,8 @@
 #include <nana/gui/widgets/spinbox.hpp>
 #include <nana/gui/widgets/checkbox.hpp>
 #include <nana/gui/widgets/group.hpp>
+#include <nana/gui/widgets/panel.hpp>
+#include <nana/gui/widgets/tabbar.hpp>
 
 #include "HeatMapConfiguration.h"
 
@@ -16,10 +18,47 @@ private:
 	HeatMapConfiguration* config;
 	bool unsavedChanges;
 
+	place layout{ *this };
+
+	label labelOne{ *this };
+	label labelTwo{ *this };
+	label labelThree{ *this };
+	label labelFour{ *this };
+	label labelFive{ *this };
+	label labelSix{ *this };
+
+	spinbox spinboxOne{ *this };
+	spinbox spinboxTwo{ *this };
+	spinbox spinboxThree{ *this };
+	spinbox spinboxFour{ *this };
+
+	label labelEleven{ *this };
+	label labelTwelve{ *this };
+
+	spinbox spinboxEight{ *this };
+
+	button buttonTwo{ *this };
+
+	label labelSeven{ *this };
+	label labelEight{ *this };
+	label labelNine{ *this };
+	label labelTen{ *this };
+
+	spinbox spinboxFive{ *this };
+	spinbox spinboxSix{ *this };
+	spinbox spinboxSeven{ *this };
+
+	button buttonOne{ *this };
+
+	button acceptChangesButton{ *this };
+	button discardChangesButton{ *this };
+
+
 	form* parentFrm;
 public:
 	void setConfig(HeatMapConfiguration* config, form* parentFrm);
 	ConfigViewportGUI(form &frm);
+	~ConfigViewportGUI();
 	void saveChanges();
 	void discardChanges();
 	bool hasUnsavedChanges();

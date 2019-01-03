@@ -13,6 +13,7 @@ FilterByDateGUI::FilterByDateGUI(form &frm) : group(frm)
 	filterEarlier.events().checked([&]() {unsavedChanges = true; });
 	layout["filterEarlier"] << filterEarlier;
 	labelOne.caption("YYYY-MM-DD");
+	labelOne.text_align(align::right);
 	layout["labelOne"] << labelOne;
 	textboxOne.events().text_changed([&]() {unsavedChanges = true; });
 	layout["textboxOne"] << textboxOne;
@@ -30,6 +31,7 @@ FilterByDateGUI::FilterByDateGUI(form &frm) : group(frm)
 	filterLater.events().checked([&]() {unsavedChanges = true; });
 	layout["filterLater"] << filterLater;
 	labelTwo.caption("YYYY-MM-DD");
+	labelTwo.text_align(align::right);
 	layout["labelTwo"] << labelTwo;
 	textboxTwo.events().text_changed([&]() {unsavedChanges = true; });
 	layout["textboxTwo"] << textboxTwo;
