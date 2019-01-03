@@ -8,7 +8,7 @@ FilterByDateGUI::FilterByDateGUI()
 		hide();
 	});
 
-	layout.div("<><vert weight=80% <><includeUnknown><filterEarlier><<labelOne><textboxOne><buttonOne>><filterLater><<labelTwo><textboxTwo><buttonTwo>><><applyChanges><>><>");
+	layout.div("<><vert weight=80% <><includeUnknown><filterEarlier><<labelOne><textboxOne><buttonOne>><filterLater><<labelTwo><textboxTwo><buttonTwo>><><<applyChanges><discardChangesButton>><>><>");
 	includeUnknown.caption("Include activities with unknown dates");
 	includeUnknown.events().checked([&]() {unsavedChanges = true; });
 	layout["includeUnknown"] << includeUnknown;
@@ -46,27 +46,36 @@ FilterByDateGUI::FilterByDateGUI()
 		}
 	});
 	layout["buttonTwo"] << buttonTwo;
-	applyChanges.caption("Apply changes");
+	applyChanges.caption("Apply");
 	applyChanges.events().click([&]() {
-		bool shouldIncludeUnknown = includeUnknown.checked();
-		bool filterOne = false;
-		Date dateOne;
-		bool filterTwo = false;
-		Date dateTwo;
-
-		if (filterEarlier.checked()) {
-			filterOne = true;
-			dateOne = Date::fromFormalString(textboxOne.caption());
-		}
-		if (filterLater.checked()) {
-			filterTwo = true;
-			dateTwo = Date::fromFormalString(textboxTwo.caption());
-		}
-		config->setDateFilter(filterOne, dateOne, filterTwo, dateTwo, shouldIncludeUnknown);
-		unsavedChanges = false;
+		saveChanges();
 	});
 	layout["applyChanges"] << applyChanges;
+	discardChangesButton.caption("Discard");
+	discardChangesButton.events().click([&]() {
+		discardChanges();
+	});
+	layout["discardChangesButton"] << discardChangesButton;
 	layout.collocate();
+
+	nanaTime.interval(100);
+	nanaTime.elapse([&]() {
+		if (unsavedChanges) {
+			if (!applyChanges.enabled()) {
+				applyChanges.enabled(true);
+				discardChangesButton.enabled(true);
+				caption("*Filter By Activity Date");
+			}
+		}
+		else {
+			if (applyChanges.enabled()) {
+				applyChanges.enabled(false);
+				discardChangesButton.enabled(false);
+				caption("Filter By Activity Date");
+			}
+		}
+	});
+	nanaTime.start();
 
 	unsavedChanges = false;
 }
@@ -80,6 +89,47 @@ void FilterByDateGUI::setConfig(HeatMapConfiguration * config)
 void FilterByDateGUI::setSubWindowInteractive(bool value)
 {
 	enabled(value);
+}
+
+void FilterByDateGUI::saveChanges()
+{
+	bool shouldIncludeUnknown = includeUnknown.checked();
+	bool filterOne = false;
+	Date dateOne;
+	bool filterTwo = false;
+	Date dateTwo;
+
+	if (filterEarlier.checked()) {
+		filterOne = true;
+		dateOne = Date::fromFormalString(textboxOne.caption());
+	}
+	if (filterLater.checked()) {
+		filterTwo = true;
+		dateTwo = Date::fromFormalString(textboxTwo.caption());
+	}
+	config->setDateFilter(filterOne, dateOne, filterTwo, dateTwo, shouldIncludeUnknown);
+	unsavedChanges = false;
+}
+
+void FilterByDateGUI::discardChanges()
+{
+	includeUnknown.check(config->includeUnknownDates);
+	filterEarlier.check(config->useDateFilteringOne);
+	filterLater.check(config->useDateFilteringTwo);
+	if (config->startDate.isDateSet()) {
+		textboxOne.caption(config->startDate.toFormalString());
+	}
+	else {
+		textboxOne.caption("");
+	}
+	if (config->endDate.isDateSet()) {
+		textboxTwo.caption(config->endDate.toFormalString());
+	}
+	else {
+		textboxTwo.caption("");
+	}
+
+	unsavedChanges = false;
 }
 
 bool FilterByDateGUI::hasUnsavedChanges()

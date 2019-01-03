@@ -45,8 +45,58 @@ MainGUI::MainGUI() : form(API::make_center(300, 450), form::appear::decorate<for
 
 	nanaTime.interval(100);
 	nanaTime.elapse([&]() {
-		
+		if (!configViewportGUI.visible()) {
+			if (!configViewport.enabled()) {
+				configViewport.enabled(true);
+			}
+		}
+		else {
+			if (configViewport.enabled()) {
+				configViewport.enabled(false);
+			}
+		}
+		if (!configRendererGUI.visible()) {
+			if (!configRenderer.enabled()) {
+				configRenderer.enabled(true);
+			}
+		}
+		else {
+			if (configRenderer.enabled()) {
+				configRenderer.enabled(false);
+			}
+		}
+		if (!filterByDateGUI.visible()) {
+			if (!dateFilter.enabled()) {
+				dateFilter.enabled(true);
+			}
+		}
+		else {
+			if (dateFilter.enabled()) {
+				dateFilter.enabled(false);
+			}
+		}
+		if (!filterBySpeedGUI.visible()) {
+			if (!speedFilter.enabled()) {
+				speedFilter.enabled(true);
+			}
+		}
+		else {
+			if (speedFilter.enabled()) {
+				speedFilter.enabled(false);
+			}
+		}
+		if (!filterByActivityTypeGUI.visible()) {
+			if (!typeFilter.enabled()) {
+				typeFilter.enabled(true);
+			}
+		}
+		else {
+			if (typeFilter.enabled()) {
+				typeFilter.enabled(false);
+			}
+		}
 	});
+	nanaTime.start();
 
 	configViewport.events().click([&]() {
 		configViewportGUI.show();

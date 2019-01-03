@@ -1,5 +1,6 @@
 #pragma once
 #include <nana/gui.hpp>
+#include <nana/gui/timer.hpp>
 #include <nana/gui/widgets/label.hpp>
 #include <nana/gui/widgets/button.hpp>
 #include <nana/gui/widgets/spinbox.hpp>
@@ -30,9 +31,14 @@ private:
 	label labelOne{ *this };
 	label labelTwo{ *this };
 	button applyChanges{ *this };
+	button discardChangesButton{ *this };
+	timer nanaTime;
+	
 public:
 	FilterByDateGUI();
 	void setConfig(HeatMapConfiguration* config);
 	void setSubWindowInteractive(bool value);
+	void saveChanges();
+	void discardChanges();
 	bool hasUnsavedChanges();
 };
