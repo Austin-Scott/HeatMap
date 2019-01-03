@@ -16,6 +16,17 @@ private:
 	HeatMapConfiguration* config;
 	bool unsavedChanges;
 
+	place layout{ *this };
+
+	checkbox filterUnknown{ *this };
+	checkbox filterRunning{ *this };
+	checkbox filterCycling{ *this };
+	checkbox filterWalking{ *this };
+	checkbox filterSwimming{ *this };
+	button saveChangesButton{ *this };
+	button discardChangesButton{ *this };
+
+
 	form* parentFrm;
 public:
 	FilterByActivityTypeGUI(form &frm);
