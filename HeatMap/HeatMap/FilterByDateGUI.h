@@ -15,7 +15,7 @@
 using namespace std;
 using namespace nana;
 
-class FilterByDateGUI : public form {
+class FilterByDateGUI : public group {
 private:
 	HeatMapConfiguration* config;
 	bool unsavedChanges;
@@ -33,11 +33,12 @@ private:
 	button applyChanges{ *this };
 	button discardChangesButton{ *this };
 	timer nanaTime;
+
+	form* parentFrm;
 	
 public:
-	FilterByDateGUI();
-	void setConfig(HeatMapConfiguration* config);
-	void setSubWindowInteractive(bool value);
+	FilterByDateGUI(form &frm);
+	void setConfig(HeatMapConfiguration* config, form* parentFrm);
 	void saveChanges();
 	void discardChanges();
 	bool hasUnsavedChanges();

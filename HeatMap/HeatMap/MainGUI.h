@@ -30,21 +30,16 @@ using namespace nana;
 class MainGUI : public form {
 private:
 	place layout{ *this };
-	button configViewport{ *this };
-	button configRenderer{ *this };
 	button renderButton{ *this };
-	button dateFilter{ *this };
-	button speedFilter{ *this };
-	button typeFilter{ *this };
 
 	timer nanaTime;
 
-	ConfigViewportGUI configViewportGUI;
-	ConfigRendererGUI configRendererGUI;
+	ConfigViewportGUI configViewportGUI{ *this };
+	ConfigRendererGUI configRendererGUI{ *this };
 
-	FilterByDateGUI filterByDateGUI;
-	FilterBySpeedGUI filterBySpeedGUI;
-	FilterByActivityTypeGUI filterByActivityTypeGUI;
+	FilterByDateGUI filterByDateGUI{ *this };
+	FilterBySpeedGUI filterBySpeedGUI{ *this };
+	FilterByActivityTypeGUI filterByActivityTypeGUI{ *this };
 
 	HeatMapConfiguration heatMapConfiguration;
 	function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap;
@@ -56,6 +51,5 @@ private:
 
 public:
 	MainGUI();
-	void setSubWindowInteractive(bool value);
 	void present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, vector<Activity*> activities);
 };

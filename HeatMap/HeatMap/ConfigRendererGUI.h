@@ -11,11 +11,15 @@
 using namespace std;
 using namespace nana;
 
-class ConfigRendererGUI : public form {
+class ConfigRendererGUI : public group {
 private:
 	HeatMapConfiguration* config;
+	bool unsavedChanges;
+	form* parentFrm;
 public:
-	void setSubWindowInteractive(bool value);
-	void setConfig(HeatMapConfiguration* config);
-	ConfigRendererGUI();
+	void setConfig(HeatMapConfiguration* config, form* parentFrm);
+	ConfigRendererGUI(form& frm);
+	void saveChanges();
+	void discardChanges();
+	bool hasUnsavedChanges();
 };

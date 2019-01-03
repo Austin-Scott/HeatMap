@@ -1,20 +1,27 @@
 #include "ConfigRendererGUI.h"
 
-void ConfigRendererGUI::setSubWindowInteractive(bool value)
-{
-	enabled(value);
-}
 
-void ConfigRendererGUI::setConfig(HeatMapConfiguration * config)
+void ConfigRendererGUI::setConfig(HeatMapConfiguration * config, form* parentFrm)
 {
 	this->config = config;
+	this->parentFrm = parentFrm;
 }
 
-ConfigRendererGUI::ConfigRendererGUI()
+ConfigRendererGUI::ConfigRendererGUI(form &frm) : group(frm)
 {
 	caption("Configure Renderer");
-	events().unload([&](const arg_unload &arg) {
-		arg.cancel = true;
-		hide();
-	});
+	
+}
+
+void ConfigRendererGUI::saveChanges()
+{
+}
+
+void ConfigRendererGUI::discardChanges()
+{
+}
+
+bool ConfigRendererGUI::hasUnsavedChanges()
+{
+	return unsavedChanges;
 }
