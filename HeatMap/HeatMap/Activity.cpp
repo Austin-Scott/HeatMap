@@ -34,10 +34,10 @@ bool includeActivity(Activity & activity, HeatMapConfiguration configuration)
 	if (configuration.useDateFilteringOne || configuration.useDateFilteringTwo) {
 		Date date = activity.getStartDate();
 		if (date.isDateSet()) {
-			if (configuration.useDateFilteringOne && date.isOlderThan(configuration.startDate)) {
+			if (configuration.useDateFilteringOne && configuration.startDate.isDateSet() && date.isOlderThan(configuration.startDate)) {
 				return false;
 			}
-			if (configuration.useDateFilteringTwo && date.isMoreRecentThan(configuration.endDate)) {
+			if (configuration.useDateFilteringTwo && configuration.endDate.isDateSet() && date.isMoreRecentThan(configuration.endDate)) {
 				return false;
 			}
 		}
