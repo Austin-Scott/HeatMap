@@ -34,7 +34,6 @@ public:
 	HeatMap(HeatMapConfiguration configuration);
 	~HeatMap();
 
-	bool checkFilter(Activity &activity);
 	void addActivity(Activity &activity);
 	void normalizeMap();
 	Image* renderImage();

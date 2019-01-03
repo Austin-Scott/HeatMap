@@ -22,6 +22,7 @@ private:
 	place layout{ *this };
 	checkbox filterEarlier{ *this };
 	checkbox filterLater{ *this };
+	checkbox includeUnknown{ *this };
 	textbox textboxOne{ *this };
 	textbox textboxTwo{ *this };
 	button buttonOne{ *this };

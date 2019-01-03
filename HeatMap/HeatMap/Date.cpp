@@ -255,4 +255,5 @@ string Date::toFormalString()
 	if (isSet) {
 		return padZeros(4, year) + "-" + padZeros(2, (int)month) + "-" + padZeros(2, day);
 	}
+	return "";
 }

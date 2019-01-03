@@ -19,7 +19,7 @@ private:
 	bool isSet;
 	template<class T>string padZeros(int width, T value) {
 		string result = to_string(value);
-		if (width > result.length()) {
+		if (width < result.length()) {
 			result = "";
 		}
 		while (result.length() < width) {
