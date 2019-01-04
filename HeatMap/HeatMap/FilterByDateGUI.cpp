@@ -87,21 +87,16 @@ void FilterByDateGUI::setConfig(HeatMapConfiguration * config, form* parentFrm)
 
 void FilterByDateGUI::saveChanges()
 {
-	bool shouldIncludeUnknown = includeUnknown.checked();
-	bool filterOne = false;
-	Date dateOne;
-	bool filterTwo = false;
-	Date dateTwo;
+	config->includeUnknownDates = includeUnknown.checked();
 
 	if (filterEarlier.checked()) {
-		filterOne = true;
-		dateOne = Date::fromFormalString(textboxOne.caption());
+		config->useDateFilteringOne = true;
+		config->startDate = Date::fromFormalString(textboxOne.caption());
 	}
 	if (filterLater.checked()) {
-		filterTwo = true;
-		dateTwo = Date::fromFormalString(textboxTwo.caption());
+		config->useDateFilteringTwo = true;
+		config->endDate = Date::fromFormalString(textboxTwo.caption());
 	}
-	config->setDateFilter(filterOne, dateOne, filterTwo, dateTwo, shouldIncludeUnknown);
 	unsavedChanges = false;
 }
 

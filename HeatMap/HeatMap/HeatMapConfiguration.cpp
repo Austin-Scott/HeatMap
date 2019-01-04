@@ -14,35 +14,10 @@ HeatMapConfiguration::HeatMapConfiguration(int width, int height)
 
 void HeatMapConfiguration::removeFilters()
 {
-	useActivityFiltering = false;
 	useDateFilteringOne = false;
 	useDateFilteringTwo = false;
-	useAverageSpeedFiltering = false;
-}
-
-void HeatMapConfiguration::setActivityTypeFilter(vector<ActivityType> activityFilters)
-{
-	if (activityFilters.size() > 0) {
-		useActivityFiltering = true;
-		this->activityFilters = activityFilters;
-	}
-}
-
-void HeatMapConfiguration::setDateFilter(bool filterOne, Date startDate, bool filterTwo, Date endDate, bool includeUnknownDates)
-{
-	useDateFilteringOne = filterOne;
-	useDateFilteringTwo = filterTwo;
-	this->includeUnknownDates = includeUnknownDates;
-	this->startDate = startDate;
-	this->endDate = endDate;
-}
-
-void HeatMapConfiguration::setAverageSpeedFilter(Speed slowestSpeed, Speed fastestSpeed, bool includeUnknownSpeeds)
-{
-	useAverageSpeedFiltering = true;
-	this->includeUnknownSpeeds = includeUnknownSpeeds;
-	this->slowestSpeed = slowestSpeed;
-	this->fastestSpeed = fastestSpeed;
+	useAverageSpeedFilteringOne = false;
+	useAverageSpeedFilteringTwo = false;
 }
 
 void HeatMapConfiguration::computeBoundingBox(GeographicCoordinate bottomCenter, double maxLatitude)
