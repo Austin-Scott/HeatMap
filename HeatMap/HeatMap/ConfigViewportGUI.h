@@ -32,7 +32,6 @@ private:
 	spinbox spinboxThree{ *this };
 	spinbox spinboxFour{ *this };
 
-	label labelEleven{ *this };
 	label labelTwelve{ *this };
 
 	spinbox spinboxEight{ *this };
@@ -52,6 +51,9 @@ private:
 
 	button acceptChangesButton{ *this };
 	button discardChangesButton{ *this };
+
+	label helpTextOne{ *this };
+	label helpTextTwo{ *this };
 
 
 	form* parentFrm;

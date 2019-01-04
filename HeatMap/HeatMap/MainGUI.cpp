@@ -1,13 +1,19 @@
 #include "MainGUI.h"
 #include <nana/gui/state_cursor.hpp>
+#include <nana/system/platform.hpp>
 
 MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<form::appear::minimize>())
 {
 	caption("Heat Map Generator v1.0");
-	layout.div("<><vert weight=95% <weight=2%><<weight=40% configRendererGUI><configViewportGUI>><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><weight=10%><weight=10% renderButton><weight=2%>><>");
+	layout.div("<><vert weight=95% <weight=2%><configViewportGUI><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><<configRendererGUI><<><vert weight=95% <><weight=40% renderButton><><websiteButton><>><>>><weight=2%>><>");
 	
 	renderButton.caption("Render and Save Heat Map");
 	layout["renderButton"] << renderButton;
+	websiteButton.caption("Visit Project Website");
+	websiteButton.events().click([&]() {
+		nana::system::open_url("https://github.com/Austin-Scott/HeatMap");
+	});
+	layout["websiteButton"] << websiteButton;
 	layout["configViewportGUI"] << configViewportGUI;
 	layout["configRendererGUI"] << configRendererGUI;
 	layout["filterByDateGUI"] << filterByDateGUI;
