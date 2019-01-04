@@ -65,23 +65,48 @@ ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 
 	spinboxOne.range(-90.0, 90.0, 0.01);
 	spinboxOne.caption("0.0");
+	spinboxOne.events().text_changed([&]() { unsavedChanges = true;  });
 	layout["spinboxOne"] << spinboxOne;
 	spinboxTwo.range(-180.0, 180.0, 0.01);
 	spinboxTwo.caption("0.0");
+	spinboxTwo.events().text_changed([&]() { unsavedChanges = true;  });
 	layout["spinboxTwo"] << spinboxTwo;
 	spinboxThree.range(-90.0, 90.0, 0.01);
 	spinboxThree.caption("0.0");
+	spinboxThree.events().text_changed([&]() { unsavedChanges = true;  });
 	layout["spinboxThree"] << spinboxThree;
 	spinboxFour.range(-180.0, 180.0, 0.01);
 	spinboxFour.caption("0.0");
+	spinboxFour.events().text_changed([&]() { unsavedChanges = true;  });
 	layout["spinboxFour"] << spinboxFour;
 
 	acceptChangesButton.caption("Apply");
+	acceptChangesButton.events().click([&]() {saveChanges(); });
 	layout["acceptChangesButton"] << acceptChangesButton;
 	discardChangesButton.caption("Discard");
+	discardChangesButton.events().click([&]() {discardChanges(); });
 	layout["discardChangesButton"] << discardChangesButton;
 
 	layout.collocate();
+
+	nanaTime.interval(100);
+	nanaTime.elapse([&]() {
+		if (unsavedChanges) {
+			if (!acceptChangesButton.enabled()) {
+				acceptChangesButton.enabled(true);
+				discardChangesButton.enabled(true);
+				caption("*Configure Viewport");
+			}
+		}
+		else {
+			if (acceptChangesButton.enabled()) {
+				acceptChangesButton.enabled(false);
+				discardChangesButton.enabled(false);
+				caption("Configure Viewport");
+			}
+		}
+	});
+	nanaTime.start();
 }
 
 ConfigViewportGUI::~ConfigViewportGUI()
@@ -91,10 +116,20 @@ ConfigViewportGUI::~ConfigViewportGUI()
 
 void ConfigViewportGUI::saveChanges()
 {
+	this->config->lowerLeft = geoCoord(spinboxOne.to_double(), spinboxTwo.to_double());
+	this->config->upperRight = geoCoord(spinboxThree.to_double(), spinboxFour.to_double());
+
+	unsavedChanges = false;
 }
 
 void ConfigViewportGUI::discardChanges()
 {
+	spinboxOne.value(to_string(config->lowerLeft.getLat()));
+	spinboxTwo.value(to_string(config->lowerLeft.getLon()));
+	spinboxThree.value(to_string(config->upperRight.getLat()));
+	spinboxFour.value(to_string(config->upperRight.getLon()));
+
+	unsavedChanges = false;
 }
 
 bool ConfigViewportGUI::hasUnsavedChanges()
