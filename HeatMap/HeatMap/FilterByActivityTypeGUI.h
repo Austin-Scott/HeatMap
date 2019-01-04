@@ -1,5 +1,6 @@
 #pragma once
 #include <nana/gui.hpp>
+#include <nana/gui/timer.hpp>
 #include <nana/gui/widgets/label.hpp>
 #include <nana/gui/widgets/button.hpp>
 #include <nana/gui/widgets/spinbox.hpp>
@@ -26,6 +27,7 @@ private:
 	button saveChangesButton{ *this };
 	button discardChangesButton{ *this };
 
+	timer nanaTime;
 
 	form* parentFrm;
 public:

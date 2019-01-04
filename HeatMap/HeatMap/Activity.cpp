@@ -51,5 +51,10 @@ bool includeActivity(Activity & activity, HeatMapConfiguration configuration)
 	if (configuration.useAverageSpeedFilteringTwo && configuration.fastestSpeed.isSpeedSet() && speed.isSpeedSet() && speed.getSpeed() > configuration.fastestSpeed.getSpeed()) {
 		return false;
 	}
+	for (ActivityType t : configuration.activityFilters) {
+		if (t == activity.getActivityType()) {
+			return false;
+		}
+	}
 	return true;
 }
