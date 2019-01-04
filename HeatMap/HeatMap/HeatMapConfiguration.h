@@ -10,7 +10,6 @@
 struct HeatMapConfiguration {
 	bool useAntiAliasing;
 
-	bool useActivityFiltering;
 	vector<ActivityType> activityFilters;
 
 	bool useDateFilteringOne;
@@ -19,7 +18,8 @@ struct HeatMapConfiguration {
 	Date startDate;
 	Date endDate;
 
-	bool useAverageSpeedFiltering;
+	bool useAverageSpeedFilteringOne;
+	bool useAverageSpeedFilteringTwo;
 	bool includeUnknownSpeeds;
 	Speed slowestSpeed;
 	Speed fastestSpeed;
@@ -40,9 +40,6 @@ struct HeatMapConfiguration {
 
 	void removeFilters();
 
-	void setActivityTypeFilter(vector<ActivityType> activityFilters);
-	void setDateFilter(bool filterOne, Date startDate, bool filterTwo, Date endDate, bool includeUnknownDates=false);
-	void setAverageSpeedFilter(Speed slowestSpeed, Speed fastestSpeed, bool includeUnknownSpeeds = false);
 	void computeBoundingBox(GeographicCoordinate bottomCenter, double maxLatitude);
 
 	void setRenderer(bool useAntiAliasing, Color backgroundColor, Color minimumActivityColor, Color maximumActivityColor);

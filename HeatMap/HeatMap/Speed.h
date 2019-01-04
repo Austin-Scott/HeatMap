@@ -5,6 +5,7 @@ enum SpeedUnits { MetersPerSecond, MilesPerHour, KilometersPerHour, MinutesPerMi
 class Speed {
 private:
 	double speedInMetersPerSecond;
+	SpeedUnits setWithUnits;
 
 	bool isSet;
 public:
@@ -12,6 +13,7 @@ public:
 	Speed();
 	void setSpeed(double speed, SpeedUnits units = SpeedUnits::MetersPerSecond);
 	double getSpeed(SpeedUnits units = SpeedUnits::MetersPerSecond);
+	SpeedUnits getUnits();
 
 	bool isSpeedSet();
 };

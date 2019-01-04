@@ -31,30 +31,25 @@ string getOnlyFilename(string path)
 
 bool includeActivity(Activity & activity, HeatMapConfiguration configuration)
 {
-	if (configuration.useDateFilteringOne || configuration.useDateFilteringTwo) {
-		Date date = activity.getStartDate();
-		if (date.isDateSet()) {
-			if (configuration.useDateFilteringOne && configuration.startDate.isDateSet() && date.isOlderThan(configuration.startDate)) {
-				return false;
-			}
-			if (configuration.useDateFilteringTwo && configuration.endDate.isDateSet() && date.isMoreRecentThan(configuration.endDate)) {
-				return false;
-			}
-		}
-		else if(!configuration.includeUnknownDates) {
-			return false;
-		}
+	Date date = activity.getStartDate();
+	if (!configuration.includeUnknownDates && !date.isDateSet()) {
+		return false;
 	}
-	if (configuration.useAverageSpeedFiltering) {
-		Speed activitySpeed = activity.getAverageSpeed();
-		if (activitySpeed.isSpeedSet()) {
-			if (activitySpeed.getSpeed() < configuration.slowestSpeed.getSpeed() || activitySpeed.getSpeed() > configuration.fastestSpeed.getSpeed()) {
-				return false;
-			}
-		}
-		else if (!configuration.includeUnknownSpeeds) {
-			return false;
-		}
+	if (configuration.useDateFilteringOne && configuration.startDate.isDateSet() && date.isDateSet() && date.isOlderThan(configuration.startDate)) {
+		return false;
+	}
+	if (configuration.useDateFilteringTwo && configuration.endDate.isDateSet() && date.isDateSet() && date.isMoreRecentThan(configuration.endDate)) {
+		return false;
+	}
+	Speed speed = activity.getAverageSpeed();
+	if (!configuration.includeUnknownSpeeds && !speed.isSpeedSet()) {
+		return false;
+	}
+	if (configuration.useAverageSpeedFilteringOne && configuration.slowestSpeed.isSpeedSet() && speed.isSpeedSet() && speed.getSpeed() < configuration.slowestSpeed.getSpeed()) {
+		return false;
+	}
+	if (configuration.useAverageSpeedFilteringTwo && configuration.fastestSpeed.isSpeedSet() && speed.isSpeedSet() && speed.getSpeed() > configuration.fastestSpeed.getSpeed()) {
+		return false;
 	}
 	return true;
 }

@@ -13,6 +13,7 @@ Speed::Speed()
 void Speed::setSpeed(double speed, SpeedUnits units)
 {
 	isSet = true;
+	setWithUnits = units;
 	if (speed == 0.0) {
 		speedInMetersPerSecond = 0.0; //Prevent possible division by zero
 		return;
@@ -46,12 +47,17 @@ double Speed::getSpeed(SpeedUnits units)
 	case SpeedUnits::KilometersPerHour:
 		return speedInMetersPerSecond * (1.0 / 1000.0)*3600.0;
 	case SpeedUnits::MinutesPerKilometer:
-		return (1.0 / speedInMetersPerSecond) * 60.0 * (1.0 / 1000.0);
+		return (1.0 / speedInMetersPerSecond) * (1.0 / 60.0) * 1000.0;
 	case SpeedUnits::MinutesPerMile:
-		return (1.0 / speedInMetersPerSecond) * (1.0 / 1609.344)*60.0;
+		return (1.0 / speedInMetersPerSecond) * 1609.344 * (1.0 / 60.0);
 	default:
 		return speedInMetersPerSecond;
 	}
+}
+
+SpeedUnits Speed::getUnits()
+{
+	return setWithUnits;
 }
 
 bool Speed::isSpeedSet()
