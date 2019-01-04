@@ -1,5 +1,26 @@
 #include "Color.h"
 
+string Color::charToHexCode(unsigned char c)
+{
+	int leastSig = c % 16;
+	int mostSig = c / 16;
+	string firstChar;
+	string secondChar;
+	if (mostSig < 10) {
+		firstChar.push_back('0' + mostSig);
+	}
+	else {
+		firstChar.push_back('A' + (mostSig - 10));
+	}
+	if (leastSig < 10) {
+		secondChar.push_back('0' + leastSig);
+	}
+	else {
+		secondChar.push_back('A' + (leastSig - 10));
+	}
+	return firstChar + secondChar;
+}
+
 unsigned char Color::twoDigitHexToChar(std::string hex)
 {
 	unsigned char result = 0;
@@ -45,15 +66,24 @@ Color::Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 
 Color::Color(std::string hexCode)
 {
-	unsigned char R = 0, G = 0, B = 0, A = 0;
-	R = twoDigitHexToChar(hexCode.substr(1, 2));
-	G = twoDigitHexToChar(hexCode.substr(3, 2));
-	B = twoDigitHexToChar(hexCode.substr(5, 2));
-	A = twoDigitHexToChar(hexCode.substr(7, 2));
-	this->r = R;
-	this->g = G;
-	this->b = B;
-	this->a = A;
+	if (hexCode.length() == 9 && regex_match(hexCode, regex("#[0-9a-fA-F]{8}"))) {
+		unsigned char R = 0, G = 0, B = 0, A = 0;
+		R = twoDigitHexToChar(hexCode.substr(1, 2));
+		G = twoDigitHexToChar(hexCode.substr(3, 2));
+		B = twoDigitHexToChar(hexCode.substr(5, 2));
+		A = twoDigitHexToChar(hexCode.substr(7, 2));
+		this->r = R;
+		this->g = G;
+		this->b = B;
+		this->a = A;
+	}
+	else {
+		Color();
+	}
+}
+
+string Color::toHex() {
+	return "#" + charToHexCode(r) + charToHexCode(g) + charToHexCode(b) + charToHexCode(a);
 }
 
 Color Color::blend(Color other)
@@ -91,4 +121,24 @@ unsigned char Color::getB()
 unsigned char Color::getA()
 {
 	return a;
+}
+
+void Color::setR(unsigned char v)
+{
+	r = v;
+}
+
+void Color::setG(unsigned char v)
+{
+	g = v;
+}
+
+void Color::setB(unsigned char v)
+{
+	b = v;
+}
+
+void Color::setA(unsigned char v)
+{
+	a = v;
 }

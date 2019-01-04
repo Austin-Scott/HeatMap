@@ -1,5 +1,6 @@
 #pragma once
 #include <nana/gui.hpp>
+#include <nana/gui/timer.hpp>
 #include <nana/gui/widgets/label.hpp>
 #include <nana/gui/widgets/button.hpp>
 #include <nana/gui/widgets/spinbox.hpp>
@@ -8,6 +9,7 @@
 #include <nana/gui/widgets/group.hpp>
 
 #include "HeatMapConfiguration.h"
+#include "ColorPickerGUI.h"
 
 using namespace std;
 using namespace nana;
@@ -27,7 +29,7 @@ private:
 	label labelFive{ *this };
 	spinbox spinboxOne{ *this };
 	spinbox spinboxTwo{ *this };
-	checkbox useAnitAliasing{ *this };
+	checkbox useAntiAliasing{ *this };
 	textbox textboxOne{ *this };
 	textbox textboxTwo{ *this };
 	textbox textboxThree{ *this };
@@ -36,6 +38,8 @@ private:
 	button buttonThree{ *this };
 	button buttonSaveChanges{ *this };
 	button buttonDiscardChanges{ *this };
+
+	timer nanaTime;
 
 public:
 	void setConfig(HeatMapConfiguration* config, form* parentFrm);
