@@ -163,6 +163,8 @@
     <ClCompile Include="ActivityDirectoryGUI.cpp" />
     <ClCompile Include="ActivityLoadingGUI.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="ColorPickerGUI.cpp" />
+    <ClCompile Include="ColorPreviewGUI.cpp" />
     <ClCompile Include="ConfigRendererGUI.cpp" />
     <ClCompile Include="ConfigViewportGUI.cpp" />
     <ClCompile Include="Date.cpp" />
@@ -189,6 +191,8 @@
     <ClInclude Include="ActivityDirectoryGUI.h" />
     <ClInclude Include="ActivityLoadingGUI.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="ColorPickerGUI.h" />
+    <ClInclude Include="ColorPreviewGUI.h" />
     <ClInclude Include="ConfigRendererGUI.h" />
     <ClInclude Include="ConfigViewportGUI.h" />
     <ClInclude Include="Date.h" />
