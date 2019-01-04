@@ -9,37 +9,47 @@ void ConfigViewportGUI::setConfig(HeatMapConfiguration * config, form* parentFrm
 ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 {
 	caption("Configure Viewport");
-	layout.div("<vert <><labelOne><<labelTwo><spinboxOne><labelThree><spinboxTwo>><labelFour><<labelFive><spinboxThree><labelSix><spinboxFour>><><<acceptChangesButton><discardChangesButton>><>>|<vert <><<labelSeven><spinboxFive>><labelEight><<labelNine><spinboxSix><labelTen><spinboxSeven>><><buttonOne><>>|<vert <><labelEleven><<spinboxEight><labelTwelve>><><buttonTwo><>>");
+	layout.div("<><weight=97% <<vert <><labelOne><<labelTwo><spinboxOne><labelThree><spinboxTwo>><labelFour><<labelFive><spinboxThree><labelSix><spinboxFour>><><<acceptChangesButton><discardChangesButton>><>>|<vert <><helpTextOne><<labelSeven><spinboxFive>><labelEight><<labelNine><spinboxSix><labelTen><spinboxSeven>><><buttonOne><>>|<vert <><weight=37.5% helpTextTwo><<spinboxEight><labelTwelve>><><buttonTwo><>>>><>");
 
-	labelEleven.caption("Distance from median start point: ");
-	layout["labelEleven"] << labelEleven;
-	labelTwelve.caption("kilometers");
+	labelTwelve.caption("radius in kilometers");
 	layout["labelTwelve"] << labelTwelve;
 	spinboxEight.range(1.0, 300.0, 0.1);
 	layout["spinboxEight"] << spinboxEight;
 	buttonTwo.caption("Compute");
 	layout["buttonTwo"] << buttonTwo;
+
+	helpTextOne.caption("Compute coordinates that maintain aspect ratio:");
+	layout["helpTextOne"] << helpTextOne;
+	helpTextTwo.caption("Don't want to mess with coordinates? This tool will compute the viewport dimensions based on the bounds of activities that start within a specified radius of the median activity start point.");
+	layout["helpTextTwo"] << helpTextTwo;
 	
 	labelOne.caption("Coordinate of lower left corner:");
 	layout["labelOne"] << labelOne;
 	labelTwo.caption("Latitude: ");
+	labelTwo.text_align(align::right);
 	layout["labelTwo"] << labelTwo;
 	labelThree.caption("Longitude: ");
+	labelThree.text_align(align::right);
 	layout["labelThree"] << labelThree;
 	labelFour.caption("Coordinate of upper right corner:");
 	layout["labelFour"] << labelFour;
 	labelFive.caption("Latitude: ");
+	labelFive.text_align(align::right);
 	layout["labelFive"] << labelFive;
 	labelSix.caption("Longitude: ");
+	labelSix.text_align(align::right);
 	layout["labelSix"] << labelSix;
 
 	labelSeven.caption("Highest latitude: ");
+	labelSeven.text_align(align::right);
 	layout["labelSeven"] << labelSeven;
 	labelEight.caption("Coordinate of bottom center:");
 	layout["labelEight"] << labelEight;
 	labelNine.caption("Latitude: ");
+	labelNine.text_align(align::right);
 	layout["labelNine"] << labelNine;
 	labelTen.caption("Longitude: ");
+	labelTen.text_align(align::right);
 	layout["labelTen"] << labelTen;
 	spinboxFive.range(-90.0, 90.0, 0.01);
 	spinboxFive.caption("0.0");

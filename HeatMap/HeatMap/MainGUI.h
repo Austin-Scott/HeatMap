@@ -31,6 +31,7 @@ class MainGUI : public form {
 private:
 	place layout{ *this };
 	button renderButton{ *this };
+	button websiteButton{ *this };
 
 	timer nanaTime;
 
