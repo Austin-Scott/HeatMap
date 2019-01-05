@@ -14,7 +14,7 @@ Download a complete archive of your account by going to the [Account Download an
 Coming soon...
 
 ### For anyone else
-Just download all of your GPS activities files in any of the supported formats below and save them inside of a folder/directory. Then select that directory when you start the program and follow the on screen instructions!
+Just download all of your GPS activity files in any of the supported formats below and save them inside of a folder/directory. Then select that directory when you start the program and follow the on screen instructions!
 
 ## Beta Testing
 Please note that this application is currently in Beta and there are probably bugs that I haven't caught yet. All feedback is accepted and encouraged!! Thank you for being a Beta tester!
