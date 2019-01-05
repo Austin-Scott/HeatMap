@@ -40,7 +40,5 @@ struct HeatMapConfiguration {
 
 	void removeFilters();
 
-	void computeBoundingBox(GeographicCoordinate bottomCenter, double maxLatitude);
-
 	void setRenderer(bool useAntiAliasing, Color backgroundColor, Color minimumActivityColor, Color maximumActivityColor);
 };

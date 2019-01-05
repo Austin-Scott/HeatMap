@@ -20,15 +20,6 @@ void HeatMapConfiguration::removeFilters()
 	useAverageSpeedFilteringTwo = false;
 }
 
-void HeatMapConfiguration::computeBoundingBox(GeographicCoordinate bottomCenter, double maxLatitude)
-{
-	double latitudeDifference = maxLatitude - bottomCenter.getLat();
-	double aspectRatio = (double)width / (double)height;
-	double viewportWidth = abs(latitudeDifference) * aspectRatio;
-	lowerLeft = geoCoord(bottomCenter.getLat(), bottomCenter.getLon() - (viewportWidth / 2.0));
-	upperRight = geoCoord(maxLatitude, bottomCenter.getLon() + (viewportWidth / 2.0));
-}
-
 void HeatMapConfiguration::setRenderer(bool useAntiAliasing, Color backgroundColor, Color minimumActivityColor, Color maximumActivityColor)
 {
 	this->useAntiAliasing = useAntiAliasing;

@@ -176,6 +176,8 @@ vector<Activity*> loadActivities(string activityDirectory, bool shouldDecompress
 	return result;
 }
 
+#define main WinMain
+
 int main(int argc, char* argv[]) {
 
 	ActivityDirectoryGUI activityDirectoryGUI;

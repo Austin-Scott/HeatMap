@@ -58,3 +58,84 @@ bool includeActivity(Activity & activity, HeatMapConfiguration configuration)
 	}
 	return true;
 }
+
+vector<GeographicCoordinate> computeBoundingBoxVertical(GeographicCoordinate bottomCenter, HeatMapConfiguration config, double maxLatitude)
+{
+	double latitudeDifference = maxLatitude - bottomCenter.getLat();
+	double aspectRatio = (double)config.width / (double)config.height;
+	double viewportWidth = abs(latitudeDifference) * aspectRatio;
+	return vector<GeographicCoordinate>({ geoCoord(bottomCenter.getLat(), bottomCenter.getLon() - (viewportWidth / 2.0)), geoCoord(maxLatitude, bottomCenter.getLon() + (viewportWidth / 2.0)) });
+}
+
+vector<GeographicCoordinate> computeBoundingBoxHorizontal(GeographicCoordinate leftCenter, HeatMapConfiguration config, double rightMostLongitude)
+{
+	double longituteDifference = rightMostLongitude - leftCenter.getLon();
+	double aspectRatio = (double)config.height / (double)config.width;
+	double viewportHeight = abs(longituteDifference) * aspectRatio;
+	return vector<GeographicCoordinate>({ geoCoord(leftCenter.getLat() - (viewportHeight / 2.0), leftCenter.getLon()), geoCoord(leftCenter.getLat()+(viewportHeight/2.0), rightMostLongitude) });
+}
+
+vector<GeographicCoordinate> guessBounds(vector<Activity*> activities, HeatMapConfiguration config, double radius)
+{
+	vector<Activity*> filteredActivities;
+	vector<double> startLats;
+	vector<double> startLons;
+	for (Activity* a : activities) {
+		if (includeActivity(*a, config)) {
+			if (a->getTrack().size() > 0) {
+				startLats.push_back(a->getTrack()[0].getLat());
+				startLons.push_back(a->getTrack()[0].getLon());
+				filteredActivities.push_back(a);
+			}
+		}
+	}
+	if (filteredActivities.size() == 0)
+		return vector<GeographicCoordinate>();
+
+	sort(startLats.begin(), startLats.end());
+	sort(startLons.begin(), startLons.end());
+
+	GeographicCoordinate medianStartPoint = geoCoord(startLats[startLats.size() / 2], startLons[startLons.size() / 2]);
+
+	double maxLatitude;
+	double minLatitude;
+	double maxLongitude;
+	double minLongitude;
+	bool initialized = false;
+
+	for (Activity* a : filteredActivities) {
+		if (medianStartPoint.getKilometersTo(a->getTrack()[0]) < radius) {
+			if(!initialized || (a->upperRight().getLat()>maxLatitude))
+				maxLatitude=a->upperRight().getLat();
+			if (!initialized || (a->lowerLeft().getLat()<minLatitude))
+				minLatitude=a->lowerLeft().getLat();
+			if (!initialized || (a->upperRight().getLon()>maxLongitude))
+				maxLongitude=a->upperRight().getLon();
+			if (!initialized || (a->lowerLeft().getLon()<minLongitude))
+				minLongitude=a->lowerLeft().getLon();
+
+			initialized = true;
+		}
+	}
+
+	const double padding = 0.005;
+	maxLatitude += padding;
+	minLatitude -= padding;
+	maxLongitude += padding;
+	minLongitude -= padding;
+
+	double dLat = maxLatitude - minLatitude;
+	double dLon = maxLongitude - minLongitude;
+
+	if(dLat==0.0)
+		return vector<GeographicCoordinate>();
+
+	double aspectRatio = (double)config.width / (double)config.height;
+
+	if ((dLon / dLat) > aspectRatio) {
+		return computeBoundingBoxHorizontal(geoCoord(minLatitude + (abs(dLat) / 2.0), minLongitude), config, maxLongitude);
+	}
+	else {
+		return computeBoundingBoxVertical(geoCoord(minLatitude, minLongitude + (abs(dLon) / 2.0)), config, maxLatitude);
+	}
+}

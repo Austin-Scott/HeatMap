@@ -89,14 +89,11 @@ void FilterByDateGUI::saveChanges()
 {
 	config->includeUnknownDates = includeUnknown.checked();
 
-	if (filterEarlier.checked()) {
-		config->useDateFilteringOne = true;
-		config->startDate = Date::fromFormalString(textboxOne.caption());
-	}
-	if (filterLater.checked()) {
-		config->useDateFilteringTwo = true;
-		config->endDate = Date::fromFormalString(textboxTwo.caption());
-	}
+	config->useDateFilteringOne = filterEarlier.checked();
+	config->startDate = Date::fromFormalString(textboxOne.caption());
+	config->useDateFilteringTwo = filterLater.checked();
+	config->endDate = Date::fromFormalString(textboxTwo.caption());
+	
 	unsavedChanges = false;
 }
 
