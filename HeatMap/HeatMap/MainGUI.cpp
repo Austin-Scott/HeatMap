@@ -4,7 +4,7 @@
 
 MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<form::appear::minimize>())
 {
-	caption("Heat Map Generator v1.0");
+	caption("Heat Map Generator v1.0 BETA");
 	layout.div("<><vert weight=95% <weight=2%><configViewportGUI><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><<configRendererGUI><<><vert weight=95% <><weight=40% renderButton><><websiteButton><>><>>><weight=2%>><>");
 	
 	renderButton.caption("Render and Save Heat Map");
@@ -43,6 +43,27 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 	nanaTime.start();
 
 	renderButton.events().click([&]() {
+		if (configViewportGUI.hasUnsavedChanges() ||
+			configRendererGUI.hasUnsavedChanges() ||
+			filterByDateGUI.hasUnsavedChanges() ||
+			filterBySpeedGUI.hasUnsavedChanges() ||
+			filterByActivityTypeGUI.hasUnsavedChanges()) {
+
+			msgbox confirm(*this, "Unapplied changes", msgbox::button_t::yes_no_cancel);
+			confirm.icon(msgbox::icon_question) << "You have unapplied changes. Apply all and then proceed?";
+			auto answer = confirm.show();
+			if (answer == msgbox::pick_t::pick_cancel) {
+				return;
+			}
+			else if (answer == msgbox::pick_t::pick_yes) {
+				configViewportGUI.saveChanges();
+				configRendererGUI.saveChanges();
+				filterByDateGUI.saveChanges();
+				filterBySpeedGUI.saveChanges();
+				filterByActivityTypeGUI.saveChanges();
+			}
+		}
+
 		RenderMapGUI renderMapGUI(*this);
 		fut = async(renderHeatMap, heatMapConfiguration, activities);
 		renderMapGUI.present(&fut, currentProgress, shouldCancel, progressKnown);
@@ -72,18 +93,6 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 			}
 		}
 	});
-
-
-	heatMapConfiguration.width = 1920;
-	heatMapConfiguration.height = 1080;
-	heatMapConfiguration.computeBoundingBox(geoCoord(44.846595, -91.897108), 44.938059);
-	heatMapConfiguration.setRenderer(true, Color("#000000FF"), Color("#FF000080"), Color("#FFFFFFFF"));
-
-	filterByActivityTypeGUI.setConfig(&heatMapConfiguration, this);
-	filterByDateGUI.setConfig(&heatMapConfiguration, this);
-	filterBySpeedGUI.setConfig(&heatMapConfiguration, this);
-	configViewportGUI.setConfig(&heatMapConfiguration, this);
-	configRendererGUI.setConfig(&heatMapConfiguration, this);
 }
 
 void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, vector<Activity*> activities)
@@ -93,6 +102,30 @@ void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> 
 	this->shouldCancel = shouldCancel;
 	this->progressKnown = progressKnown;
 	this->activities = activities;
+
+	filterByActivityTypeGUI.setConfig(&heatMapConfiguration, this);
+	filterByDateGUI.setConfig(&heatMapConfiguration, this);
+	filterBySpeedGUI.setConfig(&heatMapConfiguration, this);
+	configViewportGUI.setConfig(&heatMapConfiguration, activities, this);
+	configRendererGUI.setConfig(&heatMapConfiguration, this);
+
+	heatMapConfiguration = HeatMapConfiguration(1920, 1080);
+	heatMapConfiguration.setRenderer(true, Color("#000000FF"), Color("#FF000080"), Color("#FFFFFFFF"));
+	heatMapConfiguration.includeUnknownDates = true;
+	heatMapConfiguration.includeUnknownSpeeds = true;
+
+	vector<GeographicCoordinate> bounds = guessBounds(activities, heatMapConfiguration, 10.0);
+	if (bounds.size() == 2) {
+		heatMapConfiguration.lowerLeft = bounds[0];
+		heatMapConfiguration.upperRight = bounds[1];
+	}
+
+	configViewportGUI.discardChanges();
+	configRendererGUI.discardChanges();
+	filterByDateGUI.discardChanges();
+	filterBySpeedGUI.discardChanges();
+	filterByActivityTypeGUI.discardChanges();
+
 
 	show();
 }

@@ -19,12 +19,12 @@ GeographicCoordinate::GeographicCoordinate(double latitude, double longitude)
 	this->longitude = longitude;
 }
 
-double GeographicCoordinate::getLat()
+double GeographicCoordinate::getLat() const
 {
 	return latitude;
 }
 
-double GeographicCoordinate::getLon()
+double GeographicCoordinate::getLon() const
 {
 	return longitude;
 }

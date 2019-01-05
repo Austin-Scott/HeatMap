@@ -14,8 +14,8 @@ private:
 public:
 	GeographicCoordinate();
 	GeographicCoordinate(double latitude, double longitude);
-	double getLat();
-	double getLon();
+	double getLat() const;
+	double getLon() const;
 	string toString();
 	bool getIsSet();
 	double getKilometersTo(GeographicCoordinate other);

@@ -59,8 +59,9 @@ private:
 	timer nanaTime;
 
 	form* parentFrm;
+	vector<Activity*> activities;
 public:
-	void setConfig(HeatMapConfiguration* config, form* parentFrm);
+	void setConfig(HeatMapConfiguration* config, vector<Activity*> activities, form* parentFrm);
 	ConfigViewportGUI(form &frm);
 	~ConfigViewportGUI();
 	void saveChanges();

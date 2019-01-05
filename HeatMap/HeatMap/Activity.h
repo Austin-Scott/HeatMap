@@ -25,5 +25,10 @@ public:
 
 string getOnlyFilename(string path);
 bool includeActivity(Activity &activity, HeatMapConfiguration configuration);
+//{lowerLeft, upperRight}
+vector<GeographicCoordinate> computeBoundingBoxVertical(GeographicCoordinate bottomCenter, HeatMapConfiguration config, double maxLatitude);
+vector<GeographicCoordinate> computeBoundingBoxHorizontal(GeographicCoordinate leftCenter, HeatMapConfiguration config, double rightMostLongitude);
+vector<GeographicCoordinate> guessBounds(vector<Activity*> activities, HeatMapConfiguration config, double radius);
+
 
 #include "HeatMapConfiguration.h"
