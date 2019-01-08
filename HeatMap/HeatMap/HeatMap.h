@@ -36,5 +36,5 @@ public:
 
 	void addActivity(Activity &activity);
 	void normalizeMap();
-	Image* renderImage();
+	Image* renderImage(Image* backgroundImage=nullptr);
 };

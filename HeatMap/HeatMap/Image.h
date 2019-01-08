@@ -4,14 +4,17 @@
 #include <iostream>
 
 #include "../../lodepng/lodepng.h"
+#include "Color.h"
 
 class Image {
 private:
-	int width;
-	int height;
+	unsigned int width;
+	unsigned int height;
 	unsigned char* data;
 public:
-	Image(int width, int height, unsigned char* data);
+	Image(unsigned int width, unsigned int height, unsigned char* data);
+	Image(std::string filename);
 	~Image();
+	Color getPixel(unsigned int x, unsigned int y);
 	std::string saveImage(std::string filename);
 };
