@@ -250,7 +250,7 @@ void HeatMap::normalizeMap()
 	}
 }
 
-Image* HeatMap::renderImage()
+Image* HeatMap::renderImage(Image* backgroundImage)
 {
 	unsigned char* data = new unsigned char[configuration.width * configuration.height * 4];
 	int index = 0;
@@ -258,15 +258,29 @@ Image* HeatMap::renderImage()
 		for (int x = 0; x < configuration.width; x++) {
 			double normalizedValue = cells[x][y].getNormalizedValue();
 			if (normalizedValue <= 0.0) {
-				data[index] = configuration.backgroundColor.getR();
-				data[index+1] = configuration.backgroundColor.getG();
-				data[index+2] = configuration.backgroundColor.getB();
-				data[index+3] = configuration.backgroundColor.getA();
+				if (backgroundImage == nullptr) {
+					data[index] = configuration.backgroundColor.getR();
+					data[index + 1] = configuration.backgroundColor.getG();
+					data[index + 2] = configuration.backgroundColor.getB();
+					data[index + 3] = configuration.backgroundColor.getA();
+				}
+				else {
+					Color background = backgroundImage->getPixel(x, y);
+					data[index] = background.getR();
+					data[index + 1] = background.getG();
+					data[index + 2] = background.getB();
+					data[index + 3] = background.getA();
+				}
 			}
 			else {
 				Color rawColor = configuration.minimumActivityColor.lerp(configuration.maximumActivityColor, normalizedValue);
 				if (rawColor.getA() != 255) {
-					rawColor = rawColor.blend(configuration.backgroundColor);
+					if (backgroundImage != nullptr) {
+						rawColor = rawColor.blend(backgroundImage->getPixel(x, y));
+					}
+					else {
+						rawColor = rawColor.blend(configuration.backgroundColor);
+					}
 				}
 				data[index] = rawColor.getR();
 				data[index + 1] = rawColor.getG();

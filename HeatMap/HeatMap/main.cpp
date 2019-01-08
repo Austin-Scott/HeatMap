@@ -82,8 +82,24 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 	cout << "\nNormalizing Heat Map..." << endl << endl;
 	map.normalizeMap();
 
+	Image* background = nullptr;
+	string mapKey = "";
+	fstream keyFile("key.txt");
+	if (keyFile) {
+		getline(keyFile, mapKey);
+
+		string downloadCommand = "curl -k -o \"BackgroundMap.png\" \"https://open.mapquestapi.com/staticmap/v5/map?key=" + mapKey + "&size=" + to_string(configuration.width) + "," + to_string(configuration.height) + "&boundingBox=" + to_string(configuration.upperRight.getLat()) + "," + to_string(configuration.lowerLeft.getLon()) + "," + to_string(configuration.lowerLeft.getLat()) + "," + to_string(configuration.upperRight.getLon()) + "&format=png&type=dark&margin=0&zoom=0\"";
+
+		system(downloadCommand.c_str());
+
+		background = new Image("BackgroundMap.png");
+
+		keyFile.close();
+	}
+
 	cout << "Rendering Image..." << endl << endl;
-	Image* result = map.renderImage();
+	Image* result = map.renderImage(background);
+	delete background;
 
 	cout << "...done!" << endl;
 
