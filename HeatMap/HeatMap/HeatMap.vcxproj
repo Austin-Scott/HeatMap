@@ -216,6 +216,7 @@
     <ClInclude Include="HeatMapConfiguration.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="MainGUI.h" />
+    <ClInclude Include="MapQuest.h" />
     <ClInclude Include="rapidxml.hpp" />
     <ClInclude Include="RenderMapGUI.h" />
     <ClInclude Include="Speed.h" />

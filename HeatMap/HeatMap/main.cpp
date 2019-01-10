@@ -19,6 +19,8 @@
 
 #include "ActivityDirectoryGUI.h"
 
+#include "MapQuest.h"
+
 using namespace std;
 using namespace nana;
 using namespace experimental::filesystem;
@@ -65,6 +67,28 @@ atomic<unsigned int> progressAmountHM;
 atomic<bool> progressKnownHM;
 
 Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*> activities)  {
+	progressKnownHM = false;
+	Image* background = nullptr;
+	string mapKey = "";
+	fstream keyFile("key.txt");
+	if (keyFile) {
+		getline(keyFile, mapKey);
+
+		MapQuestConfig mapConfig = getMapConfig(configuration.lowerLeft, configuration.upperRight, configuration.width, configuration.height);
+
+		configuration.lowerLeft = mapConfig.lowerLeft;
+		configuration.upperRight = mapConfig.upperRight;
+
+		string downloadCommand = "curl -k -o \"BackgroundMap.png\" \"https://open.mapquestapi.com/staticmap/v5/map?key=" + mapKey + "&size=" + to_string(configuration.width) + "," + to_string(configuration.height) + "&center=" + to_string(mapConfig.center.getLat()) + "," + to_string(mapConfig.center.getLon()) + "&zoom=" + to_string(mapConfig.zoom) + "&format=png&type=dark&margin=0\"";
+
+		system(downloadCommand.c_str());
+
+		background = new Image("BackgroundMap.png");
+
+		keyFile.close();
+	}
+	progressKnownHM = true;
+	
 	cout << "Lat/Lon Bounding Box for Heat Map:" << endl
 		<< "\t*Lower left bound: \"" << configuration.lowerLeft.toString()
 		<< "\"\n\t*Upper right bound: \"" << configuration.upperRight.toString() << "\"" << endl;
@@ -81,21 +105,6 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 
 	cout << "\nNormalizing Heat Map..." << endl << endl;
 	map.normalizeMap();
-
-	Image* background = nullptr;
-	string mapKey = "";
-	fstream keyFile("key.txt");
-	if (keyFile) {
-		getline(keyFile, mapKey);
-
-		string downloadCommand = "curl -k -o \"BackgroundMap.png\" \"https://open.mapquestapi.com/staticmap/v5/map?key=" + mapKey + "&size=" + to_string(configuration.width) + "," + to_string(configuration.height) + "&boundingBox=" + to_string(configuration.upperRight.getLat()) + "," + to_string(configuration.lowerLeft.getLon()) + "," + to_string(configuration.lowerLeft.getLat()) + "," + to_string(configuration.upperRight.getLon()) + "&format=png&type=dark&margin=0&zoom=0\"";
-
-		system(downloadCommand.c_str());
-
-		background = new Image("BackgroundMap.png");
-
-		keyFile.close();
-	}
 
 	cout << "Rendering Image..." << endl << endl;
 	Image* result = map.renderImage(background);

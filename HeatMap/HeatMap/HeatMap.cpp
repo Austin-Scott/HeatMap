@@ -4,14 +4,44 @@
 
 using namespace std;
 
+double HeatMap::DEG2RAD(double a)
+{
+	return (a / (180.0 / M_PI));
+}
+
+double HeatMap::RAD2DEG(double a)
+{
+	return (a*(180.0 / M_PI));
+}
+
+double HeatMap::latToWorldY(double lat)
+{
+	return RAD2DEG(log(tan(DEG2RAD(lat) / 2.0 + M_PI / 4.0)));
+}
+
+double HeatMap::lonToWorldX(double lon)
+{
+	return lon;
+}
+
+double HeatMap::worldYToLat(double y)
+{
+	return RAD2DEG(atan(exp(DEG2RAD(y))) * 2.0 - M_PI / 2.0);
+}
+
+double HeatMap::worldXToLon(double x)
+{
+	return x;
+}
+
 double HeatMap::latToDoubleY(double lat)
 {
-	return (1.0-((lat - configuration.lowerLeft.getLat()) / (configuration.upperRight.getLat() - configuration.lowerLeft.getLat())))*(double)configuration.height;
+	return (1.0-((latToWorldY(lat) - latToWorldY(configuration.lowerLeft.getLat())) / (latToWorldY(configuration.upperRight.getLat()) - latToWorldY(configuration.lowerLeft.getLat()))))*(double)configuration.height;
 }
 
 double HeatMap::lonToDoubleX(double lon)
 {
-	return ((lon - configuration.lowerLeft.getLon()) / (configuration.upperRight.getLon() - configuration.lowerLeft.getLon()))*(double)configuration.width;
+	return ((lonToWorldX(lon) - lonToWorldX(configuration.lowerLeft.getLon())) / (lonToWorldX(configuration.upperRight.getLon()) - lonToWorldX(configuration.lowerLeft.getLon())))*(double)configuration.width;
 }
 
 int HeatMap::latToIntY(double lat)

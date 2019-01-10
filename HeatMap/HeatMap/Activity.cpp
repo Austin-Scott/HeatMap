@@ -1,4 +1,6 @@
 #include "Activity.h"
+#include "HeatMapConfiguration.h"
+#include "HeatMap.h"
 
 string getOnlyFilename(string path)
 {
@@ -61,18 +63,18 @@ bool includeActivity(Activity & activity, HeatMapConfiguration configuration)
 
 vector<GeographicCoordinate> computeBoundingBoxVertical(GeographicCoordinate bottomCenter, HeatMapConfiguration config, double maxLatitude)
 {
-	double latitudeDifference = maxLatitude - bottomCenter.getLat();
+	double latitudeDifference = HeatMap::latToWorldY(maxLatitude) - HeatMap::latToWorldY(bottomCenter.getLat());
 	double aspectRatio = (double)config.width / (double)config.height;
 	double viewportWidth = abs(latitudeDifference) * aspectRatio;
-	return vector<GeographicCoordinate>({ geoCoord(bottomCenter.getLat(), bottomCenter.getLon() - (viewportWidth / 2.0)), geoCoord(maxLatitude, bottomCenter.getLon() + (viewportWidth / 2.0)) });
+	return vector<GeographicCoordinate>({ geoCoord(bottomCenter.getLat(), HeatMap::worldXToLon(HeatMap::lonToWorldX(bottomCenter.getLon()) - (viewportWidth / 2.0))), geoCoord(maxLatitude, HeatMap::worldXToLon(HeatMap::lonToWorldX(bottomCenter.getLon()) + (viewportWidth / 2.0))) });
 }
 
 vector<GeographicCoordinate> computeBoundingBoxHorizontal(GeographicCoordinate leftCenter, HeatMapConfiguration config, double rightMostLongitude)
 {
-	double longituteDifference = rightMostLongitude - leftCenter.getLon();
+	double longituteDifference = HeatMap::lonToWorldX(rightMostLongitude) - HeatMap::lonToWorldX(leftCenter.getLon());
 	double aspectRatio = (double)config.height / (double)config.width;
 	double viewportHeight = abs(longituteDifference) * aspectRatio;
-	return vector<GeographicCoordinate>({ geoCoord(leftCenter.getLat() - (viewportHeight / 2.0), leftCenter.getLon()), geoCoord(leftCenter.getLat()+(viewportHeight/2.0), rightMostLongitude) });
+	return vector<GeographicCoordinate>({ geoCoord(HeatMap::worldYToLat(HeatMap::latToWorldY(leftCenter.getLat()) - (viewportHeight / 2.0)), leftCenter.getLon()), geoCoord(HeatMap::worldYToLat(HeatMap::latToWorldY(leftCenter.getLat())+(viewportHeight/2.0)), rightMostLongitude) });
 }
 
 vector<GeographicCoordinate> guessBounds(vector<Activity*> activities, HeatMapConfiguration config, double radius)
