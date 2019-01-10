@@ -1,9 +1,10 @@
 #pragma once
 #include "HeatMapCell.h"
 #include "GeographicCoordinate.h"
-#include "TrainingCenterXML.h"
 #include "Image.h"
 #include "Color.h"
+
+#include "Activity.h"
 #include "HeatMapConfiguration.h"
 
 #include <iostream>
@@ -15,6 +16,9 @@ private:
 
 	HeatMapCell** cells;
 
+	double static DEG2RAD(double a);
+	double static RAD2DEG(double a);
+	
 	double latToDoubleY(double lat);
 	double lonToDoubleX(double lon);
 	int latToIntY(double lat);
@@ -33,6 +37,11 @@ private:
 public:
 	HeatMap(HeatMapConfiguration configuration);
 	~HeatMap();
+
+	double static latToWorldY(double lat);
+	double static lonToWorldX(double lon);
+	double static worldYToLat(double y);
+	double static worldXToLon(double x);
 
 	void addActivity(Activity &activity);
 	void normalizeMap();

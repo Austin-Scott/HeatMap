@@ -7,6 +7,7 @@
 #include "Speed.h"
 
 struct HeatMapConfiguration;
+class HeatMap;
 
 using namespace std;
 
@@ -29,6 +30,3 @@ bool includeActivity(Activity &activity, HeatMapConfiguration configuration);
 vector<GeographicCoordinate> computeBoundingBoxVertical(GeographicCoordinate bottomCenter, HeatMapConfiguration config, double maxLatitude);
 vector<GeographicCoordinate> computeBoundingBoxHorizontal(GeographicCoordinate leftCenter, HeatMapConfiguration config, double rightMostLongitude);
 vector<GeographicCoordinate> guessBounds(vector<Activity*> activities, HeatMapConfiguration config, double radius);
-
-
-#include "HeatMapConfiguration.h"
