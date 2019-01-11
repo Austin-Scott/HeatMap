@@ -250,6 +250,11 @@ void HeatMap::addActivity(Activity & activity)
 			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], configuration.useAntiAliasing);
 		}
 	}
+	for (int x = 0; x < configuration.width; x++) {
+		for (int y = 0; y < configuration.height; y++) {
+			cells[x][y].incrementCounter();
+		}
+	}
 }
 
 void HeatMap::normalizeMap()
@@ -258,7 +263,7 @@ void HeatMap::normalizeMap()
 	for (int x = 0; x < configuration.width; x++) {
 		for (int y = 0; y < configuration.height; y++) {
 			HeatMapCell* currentCell = &cells[x][y];
-			if (currentCell->getValue() > 0.0) {
+			if (currentCell->getValue() > 0.0 && currentCell->getActivities()>1) {
 				nonZeroCells.push_back(currentCell);
 			}
 			else {
@@ -287,7 +292,9 @@ Image* HeatMap::renderImage(Image* backgroundImage)
 	for (int y = 0; y < configuration.height; y++) {
 		for (int x = 0; x < configuration.width; x++) {
 			double normalizedValue = cells[x][y].getNormalizedValue();
-			if (normalizedValue <= 0.0) {
+			int activities = cells[x][y].getActivities();
+			double value = cells[x][y].getValue();
+			if (activities==0) {
 				if (backgroundImage == nullptr) {
 					data[index] = configuration.backgroundColor.getR();
 					data[index + 1] = configuration.backgroundColor.getG();
@@ -302,7 +309,7 @@ Image* HeatMap::renderImage(Image* backgroundImage)
 					data[index + 3] = background.getA();
 				}
 			}
-			else {
+			else if(activities>1) {
 				Color rawColor = configuration.minimumActivityColor.lerp(configuration.maximumActivityColor, normalizedValue);
 				if (rawColor.getA() != 255) {
 					if (backgroundImage != nullptr) {
@@ -316,6 +323,17 @@ Image* HeatMap::renderImage(Image* backgroundImage)
 				data[index + 1] = rawColor.getG();
 				data[index + 2] = rawColor.getB();
 				data[index + 3] = rawColor.getA();
+			}
+			else {
+				double clampedValue = min(max(value, 0.0), 1.0);
+				Color backgroundPixel = backgroundImage != nullptr ? backgroundImage->getPixel(x, y) : configuration.backgroundColor;
+				Color rawColor = configuration.minimumActivityColor;
+				rawColor.setA(rawColor.getA()*clampedValue);
+				Color resultColor = rawColor.blend(backgroundPixel);
+				data[index] = resultColor.getR();
+				data[index + 1] = resultColor.getG();
+				data[index + 2] = resultColor.getB();
+				data[index + 3] = resultColor.getA();
 			}
 
 			index += 4;
