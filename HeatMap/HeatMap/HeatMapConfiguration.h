@@ -27,6 +27,8 @@ struct HeatMapConfiguration {
 
 	Color backgroundColor;
 	Color minimumActivityColor;
+	Color activity33Color;
+	Color activity66Color;
 	Color maximumActivityColor;
 
 	GeographicCoordinate lowerLeft;
@@ -40,5 +42,5 @@ struct HeatMapConfiguration {
 
 	void removeFilters();
 
-	void setRenderer(bool useAntiAliasing, Color backgroundColor, Color minimumActivityColor, Color maximumActivityColor);
+	void setRenderer(bool useAntiAliasing, Color backgroundColor, Color minimumActivityColor, Color activity33Color, Color activity66Color, Color maximumActivityColor);
 };
