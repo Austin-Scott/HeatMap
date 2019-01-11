@@ -13,8 +13,13 @@ private:
 	unsigned char* data;
 public:
 	Image(unsigned int width, unsigned int height, unsigned char* data);
+	Image(unsigned int width, unsigned int height, Color fillColor);
 	Image(std::string filename);
 	~Image();
-	Color getPixel(unsigned int x, unsigned int y);
+	unsigned int getWidth();
+	unsigned int getHeight();
+	Color getPixel(int x, int y);
 	std::string saveImage(std::string filename);
+	Image* overlayImage(Image* other);
+	Image* addImage(Image* other);
 };
