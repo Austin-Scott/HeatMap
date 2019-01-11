@@ -271,12 +271,12 @@ void HeatMap::normalizeMap()
 			}
 		}
 	}
-	sort(nonZeroCells.begin(), nonZeroCells.end(), [](HeatMapCell* a, HeatMapCell* b) {return a->getValue() < b->getValue(); });
+	sort(nonZeroCells.begin(), nonZeroCells.end(), [](HeatMapCell* a, HeatMapCell* b) {return a->getActivities() < b->getActivities(); });
 	int topOfTier = -1;
 	for (int i = 0; i < nonZeroCells.size(); i++) {
 		if (topOfTier < i) {
 			topOfTier = i;
-			while (topOfTier < nonZeroCells.size() - 1 && nonZeroCells[topOfTier] == nonZeroCells[topOfTier + 1]) {
+			while (topOfTier < nonZeroCells.size() - 1 && nonZeroCells[topOfTier]->getActivities() == nonZeroCells[topOfTier + 1]->getActivities()) {
 				topOfTier++;
 			}
 		}
@@ -310,7 +310,22 @@ Image* HeatMap::renderImage(Image* backgroundImage)
 				}
 			}
 			else if(activities>1) {
-				Color rawColor = configuration.minimumActivityColor.lerp(configuration.maximumActivityColor, normalizedValue);
+				Color rawColor;
+				if (normalizedValue < 0.33) {
+					double alpha = normalizedValue / 0.33;
+					rawColor = configuration.minimumActivityColor.lerp(configuration.activity33Color, alpha);
+				}
+				else if (normalizedValue < 0.66) {
+					double alpha = (normalizedValue- 0.33) / 0.33;
+					rawColor = configuration.activity33Color.lerp(configuration.activity66Color, alpha);
+				}
+				else {
+					double alpha = (normalizedValue- 0.66) / 0.33;
+					rawColor = configuration.activity66Color.lerp(configuration.maximumActivityColor, alpha);
+				}
+
+				rawColor.setA(rawColor.getA()*(value / (double)activities));
+
 				if (rawColor.getA() != 255) {
 					if (backgroundImage != nullptr) {
 						rawColor = rawColor.blend(backgroundImage->getPixel(x, y));

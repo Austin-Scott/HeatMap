@@ -110,7 +110,7 @@ void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> 
 	configRendererGUI.setConfig(&heatMapConfiguration, this);
 
 	heatMapConfiguration = HeatMapConfiguration(1920, 1080);
-	heatMapConfiguration.setRenderer(true, Color("#000000FF"), Color("#FF000080"), Color("#FFFFFFFF"));
+	heatMapConfiguration.setRenderer(true, Color("#000000FF"), Color("#33003380"), Color("#e60000a0"), Color("#ff944dF0"), Color("#FFFFFFFF"));
 	heatMapConfiguration.includeUnknownDates = true;
 	heatMapConfiguration.includeUnknownSpeeds = true;
 
