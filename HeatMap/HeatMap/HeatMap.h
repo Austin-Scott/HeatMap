@@ -34,6 +34,9 @@ private:
 	void bresenham(GeographicCoordinate from, GeographicCoordinate to);
 	void plotLineLow(int x0, int y0, int x1, int y1);
 	void plotLineHigh(int x0, int y0, int x1, int y1);
+
+	long pascalValue(int row, int col);
+	vector<long> getPascalTriangleRow(int length);
 public:
 	HeatMap(HeatMapConfiguration configuration);
 	~HeatMap();
@@ -45,5 +48,6 @@ public:
 
 	void addActivity(Activity &activity);
 	void normalizeMap();
-	Image* renderImage(Image* backgroundImage=nullptr);
+	Image* renderImage();
+	Image* createGlowImage(Image* renderedImage, int diameter);
 };

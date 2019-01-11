@@ -225,6 +225,23 @@ void HeatMap::plotLineHigh(int x0, int y0, int x1, int y1)
 	}
 }
 
+long HeatMap::pascalValue(int row, int col)
+{
+	if (row < 0) return 0;
+	if (col<0 || col>row) return 0;
+	if (col == 0 || col == row) return 1;
+	return pascalValue(row - 1, col - 1) + pascalValue(row - 1, col);
+}
+
+vector<long> HeatMap::getPascalTriangleRow(int length)
+{
+	vector<long> result;
+	for (int i = 0; i < length; i++) {
+		result.push_back(pascalValue(length - 1, i));
+	}
+	return result;
+}
+
 HeatMap::HeatMap(HeatMapConfiguration configuration)
 {
 	this->configuration = configuration;
@@ -285,7 +302,7 @@ void HeatMap::normalizeMap()
 	}
 }
 
-Image* HeatMap::renderImage(Image* backgroundImage)
+Image* HeatMap::renderImage()
 {
 	unsigned char* data = new unsigned char[configuration.width * configuration.height * 4];
 	int index = 0;
@@ -295,19 +312,10 @@ Image* HeatMap::renderImage(Image* backgroundImage)
 			int activities = cells[x][y].getActivities();
 			double value = cells[x][y].getValue();
 			if (activities==0) {
-				if (backgroundImage == nullptr) {
-					data[index] = configuration.backgroundColor.getR();
-					data[index + 1] = configuration.backgroundColor.getG();
-					data[index + 2] = configuration.backgroundColor.getB();
-					data[index + 3] = configuration.backgroundColor.getA();
-				}
-				else {
-					Color background = backgroundImage->getPixel(x, y);
-					data[index] = background.getR();
-					data[index + 1] = background.getG();
-					data[index + 2] = background.getB();
-					data[index + 3] = background.getA();
-				}
+				data[index] = 0;
+				data[index + 1] = 0;
+				data[index + 2] = 0;
+				data[index + 3] = 0;
 			}
 			else if(activities>1) {
 				Color rawColor;
@@ -326,14 +334,6 @@ Image* HeatMap::renderImage(Image* backgroundImage)
 
 				rawColor.setA(rawColor.getA()*(value / (double)activities));
 
-				if (rawColor.getA() != 255) {
-					if (backgroundImage != nullptr) {
-						rawColor = rawColor.blend(backgroundImage->getPixel(x, y));
-					}
-					else {
-						rawColor = rawColor.blend(configuration.backgroundColor);
-					}
-				}
 				data[index] = rawColor.getR();
 				data[index + 1] = rawColor.getG();
 				data[index + 2] = rawColor.getB();
@@ -341,20 +341,86 @@ Image* HeatMap::renderImage(Image* backgroundImage)
 			}
 			else {
 				double clampedValue = min(max(value, 0.0), 1.0);
-				Color backgroundPixel = backgroundImage != nullptr ? backgroundImage->getPixel(x, y) : configuration.backgroundColor;
 				Color rawColor = configuration.minimumActivityColor;
 				rawColor.setA(rawColor.getA()*clampedValue);
-				Color resultColor = rawColor.blend(backgroundPixel);
-				data[index] = resultColor.getR();
-				data[index + 1] = resultColor.getG();
-				data[index + 2] = resultColor.getB();
-				data[index + 3] = resultColor.getA();
+				data[index] = rawColor.getR();
+				data[index + 1] = rawColor.getG();
+				data[index + 2] = rawColor.getB();
+				data[index + 3] = rawColor.getA();
 			}
 
 			index += 4;
 		}
 	}
 	return new Image(configuration.width, configuration.height, data);
+}
+
+Image * HeatMap::createGlowImage(Image * renderedImage, int diameter)
+{
+	if (configuration.width != renderedImage->getWidth() || configuration.height != renderedImage->getHeight())
+		return nullptr;
+
+	unsigned char* result = new unsigned char[renderedImage->getWidth()*renderedImage->getHeight() * 4];
+	int width = diameter %2==1? diameter : diameter +1;
+	vector<long> pascalRow = getPascalTriangleRow(width);
+	vector<vector<long>> gaussianKernel(width, vector<long>(width, 0));
+	long long kernalSum = 0;
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < width; y++) {
+			long value = pascalRow[x] * pascalRow[y];
+			kernalSum += value;
+			gaussianKernel[x][y] = value;
+		}
+	}
+	int index = 0;
+	int radius = diameter / 2;
+	for (int y = 0; y < configuration.height; y++) {
+		for (int x = 0; x < configuration.width; x++) {
+			long sumR = 0;
+			long sumG = 0;
+			long sumB = 0;
+			long sumA = 0;
+			for (int gx = 0; gx < diameter; gx++) {
+				for (int gy = 0; gy < diameter; gy++) {
+					int sampleX = (x - radius) + gx;
+					int sampleY = (y - radius) + gy;
+					Color sample = renderedImage->getPixel(sampleX, sampleY);
+					double weight = 0.0;
+					if (sampleX >= 0 && sampleX < configuration.width&&sampleY >= 0 && sampleY < configuration.height) {
+						weight = cells[sampleX][sampleY].getNormalizedValue();
+					}
+					/*
+					sumR += (int)((double)sample.getR()*(double)gaussianKernel[gx][gy] * weight);
+					sumG += (int)((double)sample.getG()*(double)gaussianKernel[gx][gy] * weight);
+					sumB += (int)((double)sample.getB()*(double)gaussianKernel[gx][gy] * weight);
+					sumA += (int)((double)sample.getA()*(double)gaussianKernel[gx][gy] * weight);
+					*/
+
+					/*
+					sumR += (int)((double)(sample.getR()*gaussianKernel[gx][gy]) * weight);
+					sumG += (int)((double)(sample.getG()*gaussianKernel[gx][gy]) * weight);
+					sumB += (int)((double)(sample.getB()*gaussianKernel[gx][gy]) * weight);
+					sumA += (int)((double)(sample.getA()*gaussianKernel[gx][gy]) * weight);
+					*/
+
+					sumR += ((sample.getR()*gaussianKernel[gx][gy]));
+					sumG += ((sample.getG()*gaussianKernel[gx][gy]));
+					sumB += ((sample.getB()*gaussianKernel[gx][gy]));
+					sumA += ((sample.getA()*gaussianKernel[gx][gy]));
+				}
+			}
+			if (sumR > 0) {
+				cout << "Break point ;)" << endl;
+			}
+			result[index] = (unsigned char)((double)sumR / (double)kernalSum);
+			result[index+1] = (unsigned char)((double)sumG / (double)kernalSum);
+			result[index+2] = (unsigned char)((double)sumB / (double)kernalSum);
+			result[index+3] = (unsigned char)((double)sumA / (double)kernalSum);
+
+			index += 4;
+		}
+	}
+	return new Image(configuration.width, configuration.height, result);
 }
 
 void HeatMap::drawLine(GeographicCoordinate from, GeographicCoordinate to, bool smooth)

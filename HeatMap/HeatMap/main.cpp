@@ -107,12 +107,23 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 	map.normalizeMap();
 
 	cout << "Rendering Image..." << endl << endl;
-	Image* result = map.renderImage(background);
+	Image* result = map.renderImage();
+
+	Image* glowImage = map.createGlowImage(result, 25);
+
+	Image* backgroundWithGlow = glowImage->overlayImage(background);
+
+	Image* imageWithGlowingBackground = result->overlayImage(backgroundWithGlow);
+
+	delete result;
+	delete glowImage;
 	delete background;
+	delete backgroundWithGlow;
+	//delete imageWithGlowingBackground;
 
 	cout << "...done!" << endl;
 
-	return result;
+	return imageWithGlowingBackground;
 }
 
 void onActivitiesLoaded(vector<Activity*> activities, MainGUI* mainGUI) {
