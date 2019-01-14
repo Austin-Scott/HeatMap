@@ -36,8 +36,6 @@ private:
 	button buttonOne{ *this };
 	button buttonTwo{ *this };
 	button buttonThree{ *this };
-	button buttonSaveChanges{ *this };
-	button buttonDiscardChanges{ *this };
 
 	timer nanaTime;
 

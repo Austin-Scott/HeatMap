@@ -31,7 +31,12 @@ class MainGUI : public form {
 private:
 	place layout{ *this };
 	button renderButton{ *this };
-	button websiteButton{ *this };
+	button saveButton{ *this };
+	button loadButton{ *this };
+	label saveLoadLabel{ *this };
+	label websiteLabel{ *this };
+
+	label statusLabel{ *this };
 
 	timer nanaTime;
 

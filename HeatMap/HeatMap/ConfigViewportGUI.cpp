@@ -10,9 +10,10 @@ void ConfigViewportGUI::setConfig(HeatMapConfiguration * config, vector<Activity
 ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 {
 	caption("Configure Viewport");
-	layout.div("<><weight=97% <<vert <><labelOne><<labelTwo><spinboxOne><labelThree><spinboxTwo>><labelFour><<labelFive><spinboxThree><labelSix><spinboxFour>><><<acceptChangesButton><discardChangesButton>><>>|<vert <><helpTextOne><<labelSeven><spinboxFive>><labelEight><<labelNine><spinboxSix><labelTen><spinboxSeven>><><buttonOne><>>|<vert <><weight=37.5% helpTextTwo><<spinboxEight><labelTwelve>><><buttonTwo><>>>><>");
+	layout.div("<><weight=97% <<vert <weight=10%><labelOne><<labelTwo><spinboxOne><labelThree><spinboxTwo>><labelFour><<labelFive><spinboxThree><labelSix><spinboxFour>><weight=10%>>     <weight=3%>     <vert <><helpTextOne><<labelSeven><spinboxFive>><labelEight><<labelNine><spinboxSix><labelTen><spinboxSeven>><weight=5%><<><weight=50% buttonOne><>><weight=5%>>     <weight=3%>     <vert <><weight=45.5% helpTextTwo><<spinboxEight><labelTwelve>><weight=5%><<><weight=50% buttonTwo><>><weight=5%>>>><>");
 
 	labelTwelve.caption("radius in kilometers");
+	labelTwelve.text_align(align::left, align_v::center);
 	layout["labelTwelve"] << labelTwelve;
 	spinboxEight.range(1.0, 300.0, 0.1);
 	spinboxEight.value("10.0");
@@ -39,33 +40,38 @@ ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 	helpTextTwo.caption("Don't want to mess with coordinates? This tool will compute the viewport dimensions based on the bounds of activities that start within a specified radius of the median activity start point.");
 	layout["helpTextTwo"] << helpTextTwo;
 	
-	labelOne.caption("Coordinate of lower left corner:");
+	labelOne.caption("<bold>Coordinate of lower left corner:</>");
+	labelOne.format(true);
+	labelOne.text_align(align::left, align_v::bottom);
 	layout["labelOne"] << labelOne;
 	labelTwo.caption("Latitude: ");
-	labelTwo.text_align(align::right);
+	labelTwo.text_align(align::right, align_v::center);
 	layout["labelTwo"] << labelTwo;
 	labelThree.caption("Longitude: ");
-	labelThree.text_align(align::right);
+	labelThree.text_align(align::right, align_v::center);
 	layout["labelThree"] << labelThree;
-	labelFour.caption("Coordinate of upper right corner:");
+	labelFour.caption("<bold>Coordinate of upper right corner:</>");
+	labelFour.format(true);
+	labelFour.text_align(align::left, align_v::bottom);
 	layout["labelFour"] << labelFour;
 	labelFive.caption("Latitude: ");
-	labelFive.text_align(align::right);
+	labelFive.text_align(align::right, align_v::center);
 	layout["labelFive"] << labelFive;
 	labelSix.caption("Longitude: ");
-	labelSix.text_align(align::right);
+	labelSix.text_align(align::right, align_v::center);
 	layout["labelSix"] << labelSix;
 
 	labelSeven.caption("Highest latitude: ");
-	labelSeven.text_align(align::right);
+	labelSeven.text_align(align::right, align_v::center);
 	layout["labelSeven"] << labelSeven;
 	labelEight.caption("Coordinate of bottom center:");
+	labelEight.text_align(align::left, align_v::bottom);
 	layout["labelEight"] << labelEight;
 	labelNine.caption("Latitude: ");
-	labelNine.text_align(align::right);
+	labelNine.text_align(align::right, align_v::center);
 	layout["labelNine"] << labelNine;
 	labelTen.caption("Longitude: ");
-	labelTen.text_align(align::right);
+	labelTen.text_align(align::right, align_v::center);
 	layout["labelTen"] << labelTen;
 	spinboxFive.range(-90.0, 90.0, 0.01);
 	spinboxFive.caption("0.0");
@@ -110,31 +116,11 @@ ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 	spinboxFour.events().text_changed([&]() { unsavedChanges = true;  });
 	layout["spinboxFour"] << spinboxFour;
 
-	acceptChangesButton.caption("Apply");
-	acceptChangesButton.events().click([&]() {saveChanges(); });
-	layout["acceptChangesButton"] << acceptChangesButton;
-	discardChangesButton.caption("Discard");
-	discardChangesButton.events().click([&]() {discardChanges(); });
-	layout["discardChangesButton"] << discardChangesButton;
-
 	layout.collocate();
 
 	nanaTime.interval(100);
 	nanaTime.elapse([&]() {
-		if (unsavedChanges) {
-			if (!acceptChangesButton.enabled()) {
-				acceptChangesButton.enabled(true);
-				discardChangesButton.enabled(true);
-				caption("*Configure Viewport");
-			}
-		}
-		else {
-			if (acceptChangesButton.enabled()) {
-				acceptChangesButton.enabled(false);
-				discardChangesButton.enabled(false);
-				caption("Configure Viewport");
-			}
-		}
+		
 	});
 	nanaTime.start();
 }

@@ -10,7 +10,7 @@ void ConfigRendererGUI::setConfig(HeatMapConfiguration * config, form* parentFrm
 ConfigRendererGUI::ConfigRendererGUI(form &frm) : group(frm)
 {
 	caption("Configure Renderer");
-	layout.div("<><vert weight=95% <><<labelOne><spinboxOne><labelTwo><spinboxTwo>><useAntiAliasing><<weight=50% labelThree><textboxOne><buttonOne>><<weight=50% labelFour><textboxTwo><buttonTwo>><<weight=50% labelFive><textboxThree><buttonThree>><><<buttonSaveChanges><buttonDiscardChanges>><>><>");
+	layout.div("<><vert weight=95% <><<labelOne><spinboxOne><labelTwo><spinboxTwo>><useAntiAliasing><<weight=50% labelThree><textboxOne><buttonOne>><<weight=50% labelFour><textboxTwo><buttonTwo>><<weight=50% labelFive><textboxThree><buttonThree>><>><>");
 	labelOne.caption("Width: ");
 	labelOne.text_align(align::right);
 	layout["labelOne"] << labelOne;
@@ -61,31 +61,11 @@ ConfigRendererGUI::ConfigRendererGUI(form &frm) : group(frm)
 		ColorPickerGUI cp(*parentFrm);
 		textboxThree.caption(cp.present(Color(textboxThree.caption())).toHex());
 	});
-	layout["buttonThree"] << buttonThree;
-	buttonSaveChanges.caption("Apply");
-	buttonSaveChanges.events().click([&]() {saveChanges(); });
-	layout["buttonSaveChanges"] << buttonSaveChanges;
-	buttonDiscardChanges.caption("Discard");
-	buttonDiscardChanges.events().click([&]() {discardChanges(); });
-	layout["buttonDiscardChanges"] << buttonDiscardChanges;
 	layout.collocate();
 
 	nanaTime.interval(100);
 	nanaTime.elapse([&]() {
-		if (unsavedChanges) {
-			if (!buttonSaveChanges.enabled()) {
-				buttonSaveChanges.enabled(true);
-				buttonDiscardChanges.enabled(true);
-				caption("*Configure Renderer");
-			}
-		}
-		else {
-			if (buttonSaveChanges.enabled()) {
-				buttonSaveChanges.enabled(false);
-				buttonDiscardChanges.enabled(false);
-				caption("Configure Renderer");
-			}
-		}
+		
 	});
 	nanaTime.start();
 }

@@ -50,9 +50,6 @@ private:
 
 	button buttonOne{ *this };
 
-	button acceptChangesButton{ *this };
-	button discardChangesButton{ *this };
-
 	label helpTextOne{ *this };
 	label helpTextTwo{ *this };
 
