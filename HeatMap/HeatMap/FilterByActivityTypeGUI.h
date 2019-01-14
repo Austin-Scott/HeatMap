@@ -24,8 +24,6 @@ private:
 	checkbox filterCycling{ *this };
 	checkbox filterWalking{ *this };
 	checkbox filterSwimming{ *this };
-	button saveChangesButton{ *this };
-	button discardChangesButton{ *this };
 
 	timer nanaTime;
 

@@ -4,16 +4,26 @@
 
 MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<form::appear::minimize>())
 {
-	caption("Heat Map Generator v1.0 BETA");
-	layout.div("<><vert weight=95% <weight=2%><configViewportGUI><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><weight=42% <weight=65% configRendererGUI><<><vert weight=95% <><weight=40% renderButton><><websiteButton><>><>>><weight=2%>><>");
+	caption("Heat Map Generator v1.1");
+	layout.div("<><vert weight=95% <weight=2%><configViewportGUI><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><weight=45% <weight=65% configRendererGUI><<><vert weight=95% <><weight=40% <<><weight=75% statusLabel><>>><saveLoadLabel><<><saveButton><weight=10%><loadButton><>><><weight=25% <<><weight=75% renderButton><>>><websiteLabel>><>>><weight=2%>><>");
 	
-	renderButton.caption("Render and Save Heat Map");
+	statusLabel.caption("<bold color=0x434a4d>Valid Activities Loaded: 290\nActivities not filtered: 130\nActivities visible in viewport: 75</>");
+	statusLabel.format(true);
+	layout["statusLabel"] << statusLabel;
+
+	renderButton.caption("Render Heat Map");
 	layout["renderButton"] << renderButton;
-	websiteButton.caption("Visit Project Website");
-	websiteButton.events().click([&]() {
-		nana::system::open_url("https://github.com/Austin-Scott/HeatMap");
-	});
-	layout["websiteButton"] << websiteButton;
+	saveLoadLabel.caption("Save/Load Current Configuration:");
+	saveLoadLabel.text_align(align::center, align_v::bottom);
+	layout["saveLoadLabel"] << saveLoadLabel;
+	saveButton.caption("Save");
+	layout["saveButton"] << saveButton;
+	loadButton.caption("Load");
+	layout["loadButton"] << loadButton;
+	websiteLabel.caption("<color=blue url=\"https://github.com/Austin-Scott/HeatMap\">https://github.com/Austin-Scott/HeatMap</>");
+	websiteLabel.format(true);
+	websiteLabel.text_align(align::center, align_v::bottom);
+	layout["websiteLabel"] << websiteLabel;
 	layout["configViewportGUI"] << configViewportGUI;
 	layout["configRendererGUI"] << configRendererGUI;
 	layout["filterByDateGUI"] << filterByDateGUI;

@@ -30,8 +30,6 @@ private:
 	button buttonTwo{ *this };
 	label labelOne{ *this };
 	label labelTwo{ *this };
-	button applyChanges{ *this };
-	button discardChangesButton{ *this };
 	timer nanaTime;
 
 	form* parentFrm;

@@ -9,7 +9,7 @@ void FilterByActivityTypeGUI::setConfig(HeatMapConfiguration * config, form* par
 FilterByActivityTypeGUI::FilterByActivityTypeGUI(form & frm) : group(frm)
 {
 	caption("Filter Activity Type");
-	layout.div("<><vert weight=95% <><filterUnknown><filterRunning><filterCycling><filterWalking><filterSwimming><><<saveChangesButton><discardChangesButton>><>><>");
+	layout.div("<><vert weight=95% <><filterUnknown><filterRunning><filterCycling><filterWalking><filterSwimming><weight=10%>><>");
 	filterUnknown.caption("Filter activities of Unknown type");
 	filterUnknown.events().checked([&]() { unsavedChanges = true; });
 	layout["filterUnknown"] << filterUnknown;
@@ -25,30 +25,11 @@ FilterByActivityTypeGUI::FilterByActivityTypeGUI(form & frm) : group(frm)
 	filterSwimming.caption("Filter activities of Swimming type");
 	filterSwimming.events().checked([&]() { unsavedChanges = true; });
 	layout["filterSwimming"] << filterSwimming;
-	saveChangesButton.caption("Apply");
-	saveChangesButton.events().click([&]() { saveChanges(); });
-	layout["saveChangesButton"] << saveChangesButton;
-	discardChangesButton.caption("Discard");
-	discardChangesButton.events().click([&]() { discardChanges(); });
-	layout["discardChangesButton"] << discardChangesButton;
 	layout.collocate();
 
 	nanaTime.interval(100);
 	nanaTime.elapse([&]() {
-		if (unsavedChanges) {
-			if (!saveChangesButton.enabled()) {
-				saveChangesButton.enabled(true);
-				discardChangesButton.enabled(true);
-				caption("*Filter Activity Type");
-			}
-		}
-		else {
-			if (saveChangesButton.enabled()) {
-				saveChangesButton.enabled(false);
-				discardChangesButton.enabled(false);
-				caption("Filter Activity Type");
-			}
-		}
+		
 	});
 	nanaTime.start();
 

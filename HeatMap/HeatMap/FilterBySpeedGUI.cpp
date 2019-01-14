@@ -22,7 +22,7 @@ void FilterBySpeedGUI::setupCombox(combox & c)
 FilterBySpeedGUI::FilterBySpeedGUI(form & frm) : group(frm)
 {
 	caption("Filter Activity Speed");
-	layout.div("<><vert weight=95% <><includeUnknown><filterSlower><<spinboxOne><comboxOne>><filterFaster><<spinboxTwo><comboxTwo>><><<saveChangesButton><discardChangesButton>><>><>");
+	layout.div("<><vert weight=95% <><includeUnknown><filterSlower><<spinboxOne><comboxOne>><filterFaster><<spinboxTwo><comboxTwo>><weight=10%>><>");
 	includeUnknown.caption("Include activities with unknown speeds");
 	includeUnknown.events().checked([&]() {unsavedChanges = true; });
 	layout["includeUnknown"] << includeUnknown;
@@ -42,30 +42,11 @@ FilterBySpeedGUI::FilterBySpeedGUI(form & frm) : group(frm)
 	spinboxTwo.range(0.1, 100.0, 0.1);
 	spinboxTwo.events().text_changed([&]() {unsavedChanges = true; });
 	layout["spinboxTwo"] << spinboxTwo;
-	saveChangesButton.caption("Apply");
-	saveChangesButton.events().click([&]() {saveChanges(); });
-	layout["saveChangesButton"] << saveChangesButton;
-	discardChangesButton.caption("Discard");
-	discardChangesButton.events().click([&]() {discardChanges(); });
-	layout["discardChangesButton"] << discardChangesButton;
 	layout.collocate();
 
 	nanaTime.interval(100);
 	nanaTime.elapse([&]() {
-		if (unsavedChanges) {
-			if (!saveChangesButton.enabled()) {
-				saveChangesButton.enabled(true);
-				discardChangesButton.enabled(true);
-				caption("*Filter Activity Speed");
-			}
-		}
-		else {
-			if (saveChangesButton.enabled()) {
-				saveChangesButton.enabled(false);
-				discardChangesButton.enabled(false);
-				caption("Filter Activity Speed");
-			}
-		}
+		
 	});
 	nanaTime.start();
 }
