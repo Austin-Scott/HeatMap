@@ -6,20 +6,30 @@
 #include <nana/gui/widgets/checkbox.hpp>
 #include <nana/gui/widgets/group.hpp>
 #include <nana/gui/widgets/date_chooser.hpp>
+#include <nana/gui/widgets/textbox.hpp>
+#include <nana/gui/msgbox.hpp>
 
 #include "HeatMapConfiguration.h"
-#include "Date.h"
 
 using namespace std;
 using namespace nana;
 
-class DatePickerGUI : public form {
+class MapQuestKeyGUI : public form {
 private:
 	place layout{ *this };
-	date_chooser chooser{ *this };
-	Date selected;
+	
+	label instructionsLabel{ *this };
+
+	label inputLabel{ *this };
+
+	textbox keyBox{ *this };
+
+	button saveButton{ *this };
+	button cancelButton{ *this };
+
+	bool result;
 
 public:
-	Date present();
-	DatePickerGUI(form &frm);
+	bool present();
+	MapQuestKeyGUI(form &frm);
 };

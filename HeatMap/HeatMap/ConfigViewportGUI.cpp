@@ -10,9 +10,13 @@ void ConfigViewportGUI::setConfig(HeatMapConfiguration * config, vector<Activity
 ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 {
 	caption("Configure Viewport");
-	layout.div("<><weight=97% <<vert <weight=10%><labelOne><<labelTwo><spinboxOne><labelThree><spinboxTwo>><labelFour><<labelFive><spinboxThree><labelSix><spinboxFour>><weight=10%>>     <weight=3%>     <vert <><helpTextOne><<labelSeven><spinboxFive>><labelEight><<labelNine><spinboxSix><labelTen><spinboxSeven>><weight=5%><<><weight=50% buttonOne><>><weight=5%>>     <weight=3%>     <vert <><weight=45.5% helpTextTwo><<spinboxEight><labelTwelve>><weight=5%><<><weight=50% buttonTwo><>><weight=5%>>>><>");
+	layout.div("<><weight=97% <<vert <weight=10%><labelOne><<labelTwo><spinboxOne><labelThree><spinboxTwo>><labelFour><<labelFive><spinboxThree><labelSix><spinboxFour>><weight=10%>>     <weight=3%>     <vert <><helpTextOne><<labelSeven><spinboxFive>><labelEight><<labelNine><spinboxSix><labelTen><spinboxSeven>><weight=5%><<><weight=50% buttonOne><>><weight=5%>>     <weight=3%>     <vert <><weight=35.5% helpTextTwo><weight=10% labelMedian><<spinboxEight><labelTwelve>><weight=5%><<><weight=50% buttonTwo><>><weight=5%>>>><>");
 
-	labelTwelve.caption("radius in kilometers");
+	labelMedian.caption("Latitude: 44.9345, Longitude: 93.6532");
+	labelMedian.text_align(align::center, align_v::top);
+	layout["labelMedian"] << labelMedian;
+
+	labelTwelve.caption(" radius in kilometers");
 	labelTwelve.text_align(align::left, align_v::center);
 	layout["labelTwelve"] << labelTwelve;
 	spinboxEight.range(1.0, 300.0, 0.1);
@@ -35,9 +39,11 @@ ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 	});
 	layout["buttonTwo"] << buttonTwo;
 
-	helpTextOne.caption("Compute coordinates that maintain aspect ratio:");
+	helpTextOne.caption("<bold>Compute bounds that maintain aspect ratio:</>");
+	helpTextOne.format(true);
 	layout["helpTextOne"] << helpTextOne;
-	helpTextTwo.caption("Don't want to mess with coordinates? This tool will compute the viewport dimensions based on the bounds of activities that start within a specified radius of the median activity start point.");
+	helpTextTwo.caption("<bold>Don't want to mess with coordinates? Make all activities that start within a specified radius of the median start point completely visible.</>");
+	helpTextTwo.format(true);
 	layout["helpTextTwo"] << helpTextTwo;
 	
 	labelOne.caption("<bold>Coordinate of lower left corner:</>");

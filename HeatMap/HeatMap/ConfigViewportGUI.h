@@ -28,6 +28,8 @@ private:
 	label labelFive{ *this };
 	label labelSix{ *this };
 
+	label labelMedian{ *this };
+
 	spinbox spinboxOne{ *this };
 	spinbox spinboxTwo{ *this };
 	spinbox spinboxThree{ *this };
