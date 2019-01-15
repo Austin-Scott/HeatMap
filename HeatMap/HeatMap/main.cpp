@@ -2,6 +2,7 @@
 #include <string>
 #include <filesystem>
 #include <chrono>
+#include <Windows.h>
 
 #include <nana/gui.hpp>
 #include <nana/gui/widgets/label.hpp>
@@ -24,6 +25,17 @@
 using namespace std;
 using namespace nana;
 using namespace experimental::filesystem;
+
+void executeSystemCommand(string cmd) {
+	STARTUPINFO info = { sizeof(info) };
+	PROCESS_INFORMATION processInfo;
+	if (CreateProcess(NULL, const_cast<char *>(cmd.c_str()), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &info, &processInfo))
+	{
+		WaitForSingleObject(processInfo.hProcess, INFINITE);
+		CloseHandle(processInfo.hProcess);
+		CloseHandle(processInfo.hThread);
+	}
+}
 
 void printActivityInfo(Activity &activity, bool includedOnMap) {
 	cout << activity.getFilename() << endl;
@@ -81,7 +93,7 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 
 		string downloadCommand = "curl -k -o \"BackgroundMap.png\" \"https://open.mapquestapi.com/staticmap/v5/map?key=" + mapKey + "&size=" + to_string(configuration.width) + "," + to_string(configuration.height) + "&center=" + to_string(mapConfig.center.getLat()) + "," + to_string(mapConfig.center.getLon()) + "&zoom=" + to_string(mapConfig.zoom) + "&format=png&type=dark&margin=0\"";
 
-		system(downloadCommand.c_str());
+		executeSystemCommand(downloadCommand);
 
 		background = new Image("BackgroundMap.png");
 
@@ -109,9 +121,12 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 	cout << "Rendering Image..." << endl << endl;
 	Image* result = map.renderImage();
 
+	Image* resultWithBackground = result->overlayImage(background);
+	delete result;
+
 	cout << "...done!" << endl;
 
-	return result;
+	return resultWithBackground;
 }
 
 void onActivitiesLoaded(vector<Activity*> activities, MainGUI* mainGUI) {
@@ -144,7 +159,7 @@ vector<Activity*> loadActivities(string activityDirectory, bool shouldDecompress
 		if (activityDirectory.size()==0 || activityDirectoryWithSlash.back() != '/' || activityDirectoryWithSlash.back() != '\\')
 			activityDirectoryWithSlash.push_back('/');
 		string command = "7z x \"" + activityDirectoryWithSlash + "*.gz\" -aos \"-o" + activityDirectoryWithSlash + "\"";
-		system(command.c_str());
+		executeSystemCommand(command);
 	}
 
 	if (shouldCancel) {
@@ -200,9 +215,7 @@ vector<Activity*> loadActivities(string activityDirectory, bool shouldDecompress
 	return result;
 }
 
-#define main WinMain
-
-int main(int argc, char* argv[]) {
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 
 	ActivityDirectoryGUI activityDirectoryGUI;
 	MainGUI mainGUI;

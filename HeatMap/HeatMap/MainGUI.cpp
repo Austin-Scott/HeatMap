@@ -101,9 +101,12 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 					string error = image->saveImage(saveFileName);
 					delete cursor;
 					if (error == "") {
-						msgbox dialog(*this, "Heat Map Saved");
-						dialog.icon(msgbox::icon_information) << "Your Heat Map has been successfully saved to: \"" << saveFileName << "\"";
-						dialog.show();
+						msgbox dialog(*this, "Heat Map Saved", msgbox::yes_no);
+						dialog.icon(msgbox::icon_information) << "Your Heat Map has been successfully saved.\n\nWould you like to view it now?";
+						if (dialog.show() == msgbox::pick_yes) {
+							wstring wstr = wstring(saveFileName.begin(), saveFileName.end());
+							ShellExecute(0, 0, wstr.c_str(), 0, 0, SW_SHOW);
+						}
 					}
 					else {
 						msgbox dialog(*this, "Heat Map Saving Failed");

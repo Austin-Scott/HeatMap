@@ -26,6 +26,7 @@
 #include "MapQuestKeyGUI.h"
 
 #include <fstream>
+#include <Windows.h>
 
 using namespace std;
 using namespace nana;

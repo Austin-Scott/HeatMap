@@ -11,7 +11,7 @@ class HeatMap;
 
 using namespace std;
 
-enum ActivityType { Unknown, Running, Cycling, Walking, Swimming };
+enum class ActivityType { Unknown, Running, Cycling, Walking, Swimming };
 
 class Activity {
 public:
