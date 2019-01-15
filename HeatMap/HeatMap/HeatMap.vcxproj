@@ -189,6 +189,7 @@
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGUI.cpp" />
+    <ClCompile Include="MapQuestKeyGUI.cpp" />
     <ClCompile Include="RenderMapGUI.cpp" />
     <ClCompile Include="Speed.cpp" />
     <ClCompile Include="TrainingCenterXML.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="MainGUI.h" />
     <ClInclude Include="MapQuest.h" />
+    <ClInclude Include="MapQuestKeyGUI.h" />
     <ClInclude Include="rapidxml.hpp" />
     <ClInclude Include="RenderMapGUI.h" />
     <ClInclude Include="Speed.h" />

@@ -23,6 +23,9 @@
 
 #include "HeatMapConfiguration.h"
 #include "Image.h"
+#include "MapQuestKeyGUI.h"
+
+#include <fstream>
 
 using namespace std;
 using namespace nana;

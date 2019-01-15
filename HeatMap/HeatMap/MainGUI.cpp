@@ -7,7 +7,7 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 	caption("Heat Map Generator v1.1");
 	layout.div("<><vert weight=95% <weight=2%><configViewportGUI><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><weight=45% <weight=65% configRendererGUI><<><vert weight=95% <><weight=40% <<><weight=75% statusLabel><>>><saveLoadLabel><<><saveButton><weight=10%><loadButton><>><><weight=25% <<><weight=75% renderButton><>>><websiteLabel>><>>><weight=2%>><>");
 	
-	statusLabel.caption("<bold color=0x434a4d>Valid Activities Loaded: 290\nActivities not filtered: 130\nActivities visible in viewport: 75</>");
+	statusLabel.caption("<bold color=0x434a4d>Valid Activities Loaded: </><bold color=green>290</>\n<bold color=0x434a4d>Activities not filtered: </><bold color=green>130</>\n<bold color=0x434a4d>Activities visible in viewport: </><bold color=green>75</>");
 	statusLabel.format(true);
 	layout["statusLabel"] << statusLabel;
 
@@ -71,6 +71,19 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 				filterByDateGUI.saveChanges();
 				filterBySpeedGUI.saveChanges();
 				filterByActivityTypeGUI.saveChanges();
+			}
+		}
+
+		ifstream keyFile("key.txt");
+		string key = "";
+		if (keyFile) {
+			getline(keyFile, key);
+			keyFile.close();
+		}
+		if (key.length() != 32) {
+			MapQuestKeyGUI keyGUI(*this);
+			if (!keyGUI.present()) {
+				return;
 			}
 		}
 
