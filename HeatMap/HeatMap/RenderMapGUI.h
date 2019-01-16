@@ -24,6 +24,7 @@ private:
 	label message{ *this };
 	progress bar{ *this };
 	button cancel{ *this };
+	label statusLabel{ *this };
 
 	timer time;
 
@@ -34,7 +35,10 @@ private:
 	atomic<unsigned int>* currentProgress;
 	atomic<bool>* shouldCancel;
 	atomic<bool>* progressKnown;
+
+	mutex* statusMutex;
+	string* statusString;
 public:
 	RenderMapGUI(form &frm);
-	void present(future<Image*>* fut, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown);
+	void present(future<Image*>* fut, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, mutex* statusMutex, string* statusString);
 };

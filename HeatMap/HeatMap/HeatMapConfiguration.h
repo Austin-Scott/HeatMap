@@ -8,7 +8,6 @@
 #include "Color.h"
 
 struct HeatMapConfiguration {
-	bool useAntiAliasing;
 
 	vector<ActivityType> activityFilters;
 
@@ -37,10 +36,14 @@ struct HeatMapConfiguration {
 	int width;
 	int height;
 
+	bool downloadMap;
+	string mapType;
+	unsigned char heatLayerTransparency;
+
 	HeatMapConfiguration();
 	HeatMapConfiguration(int width, int height);
 
 	void removeFilters();
 
-	void setRenderer(bool useAntiAliasing, Color backgroundColor, Color minimumActivityColor, Color activity33Color, Color activity66Color, Color maximumActivityColor);
+	void setRenderer(Color backgroundColor, Color minimumActivityColor, Color activity33Color, Color activity66Color, Color maximumActivityColor);
 };

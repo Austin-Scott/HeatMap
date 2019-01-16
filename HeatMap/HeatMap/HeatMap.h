@@ -29,11 +29,8 @@ private:
 	double fpart(double value);
 	double rfpart(double value);
 	double sign(double value);
-	void drawLine(GeographicCoordinate from, GeographicCoordinate to, bool smooth);
+	void drawLine(GeographicCoordinate from, GeographicCoordinate to);
 	void xiaolinWu(GeographicCoordinate from, GeographicCoordinate to);
-	void bresenham(GeographicCoordinate from, GeographicCoordinate to);
-	void plotLineLow(int x0, int y0, int x1, int y1);
-	void plotLineHigh(int x0, int y0, int x1, int y1);
 
 	long pascalValue(int row, int col);
 	vector<long> getPascalTriangleRow(int length);

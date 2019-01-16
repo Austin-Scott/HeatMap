@@ -20,9 +20,8 @@ void HeatMapConfiguration::removeFilters()
 	useAverageSpeedFilteringTwo = false;
 }
 
-void HeatMapConfiguration::setRenderer(bool useAntiAliasing, Color backgroundColor, Color minimumActivityColor, Color activity33Color, Color activity66Color, Color maximumActivityColor)
+void HeatMapConfiguration::setRenderer(Color backgroundColor, Color minimumActivityColor, Color activity33Color, Color activity66Color, Color maximumActivityColor)
 {
-	this->useAntiAliasing = useAntiAliasing;
 	this->backgroundColor = backgroundColor;
 	this->minimumActivityColor = minimumActivityColor;
 	this->activity33Color = activity33Color;

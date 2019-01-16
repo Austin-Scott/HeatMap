@@ -18,6 +18,9 @@ public:
 	Color();
 	Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 	Color(std::string hexCode);
+
+	Color getInverse(bool includeAlpha=false);
+
 	Color blend(Color other);
 	Color lerp(Color other, double alpha);
 	string toHex();

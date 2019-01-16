@@ -62,6 +62,7 @@ private:
 public:
 	void setConfig(HeatMapConfiguration* config, form* parentFrm);
 	ConfigRendererGUI(form& frm);
+	void updateHighlight();
 	void saveChanges();
 	void discardChanges();
 	bool hasUnsavedChanges();
