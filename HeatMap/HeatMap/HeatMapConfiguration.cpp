@@ -48,6 +48,31 @@ bool HeatMapConfiguration::operator==(HeatMapConfiguration other)
 
 }
 
+void HeatMapConfiguration::saveConfiguration(string filename)
+{
+	xml_document<> doc;
+	xml_node<>* root = doc.allocate_node(node_element, "heatmap_config");
+	xml_attribute<>* version = doc.allocate_attribute("version", "1.1");
+	root->append_attribute(version);
+	doc.append_node(root);
+	xml_node<>* activityFiltersNode = doc.allocate_node(node_element, "activityFilters");
+	for (ActivityType t : activityFilters) {
+		xml_node<>* actFilter = doc.allocate_node(node_element, "filter");
+		char* value = doc.allocate_string(to_string(static_cast<int>(t)).c_str());
+		xml_attribute<>* actAtr = doc.allocate_attribute("value", value);
+		actFilter->append_attribute(actAtr);
+		activityFiltersNode->append_node(actFilter);
+	}
+	root->append_node(activityFiltersNode);
+
+	xml_node<>* dateFilterNode = doc.allocate_node(node_element, "dateFilter");
+	//TODO finish here
+}
+
+void HeatMapConfiguration::loadConfiguration(string filename)
+{
+}
+
 void HeatMapConfiguration::setRenderer(Color backgroundColor, Color minimumActivityColor, Color activity33Color, Color activity66Color, Color maximumActivityColor)
 {
 	this->backgroundColor = backgroundColor;
