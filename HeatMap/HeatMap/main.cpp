@@ -2,6 +2,7 @@
 #include <string>
 #include <filesystem>
 #include <chrono>
+#include <locale>
 #include <Windows.h>
 
 #include <nana/gui.hpp>
@@ -91,7 +92,7 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 	Image* background = nullptr;
 	string mapKey = "";
 	fstream keyFile("key.txt");
-	if (keyFile) {
+	if (configuration.downloadMap && keyFile) {
 		getline(keyFile, mapKey);
 
 		writeSharedString(statusMutexHM, &statusStringHM, "Downloading map...");
@@ -101,13 +102,31 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 		configuration.lowerLeft = mapConfig.lowerLeft;
 		configuration.upperRight = mapConfig.upperRight;
 
-		string downloadCommand = "curl -k -o \"BackgroundMap.png\" \"https://open.mapquestapi.com/staticmap/v5/map?key=" + mapKey + "&size=" + to_string(configuration.width) + "," + to_string(configuration.height) + "&center=" + to_string(mapConfig.center.getLat()) + "," + to_string(mapConfig.center.getLon()) + "&zoom=" + to_string(mapConfig.zoom) + "&format=png&type=dark&margin=0\"";
+		wstring tempPathW;
+		wchar_t wcharPath[MAX_PATH];
+		if (GetTempPathW(MAX_PATH, wcharPath)) {
+			tempPathW = wcharPath;
+			tempPathW += L"\\tempMapDownload.png";
+		}
+		else {
+			tempPathW = L"tempMapDownload.png";
+		}
+		wstring_convert<codecvt_utf8<wchar_t>, wchar_t> converter;
+		string tempPath = converter.to_bytes(tempPathW);
+
+
+		string downloadCommand = "curl -k -o \""+tempPath+"\" \"https://open.mapquestapi.com/staticmap/v5/map?key=" + mapKey + "&size=" + to_string(configuration.width) + "," + to_string(configuration.height) + "&center=" + to_string(mapConfig.center.getLat()) + "," + to_string(mapConfig.center.getLon()) + "&zoom=" + to_string(mapConfig.zoom) + "&format=png&type="+configuration.mapType+"&margin=0\"";
 
 		executeSystemCommand(downloadCommand);
 
-		background = new Image("BackgroundMap.png");
+		background = new Image(tempPath);
+
+		DeleteFile(const_cast<char *>(tempPath.c_str())); //Clean up temp file
 
 		keyFile.close();
+	}
+	else {
+		background = new Image(configuration.width, configuration.height, configuration.backgroundColor);
 	}
 	progressKnownHM = true;
 	
@@ -132,7 +151,7 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 	writeSharedString(statusMutexHM, &statusStringHM, "Rendering image...");
 	Image* result = map.renderImage();
 
-	Image* resultWithBackground = result->overlayImage(background);
+	Image* resultWithBackground = result->overlayImage(background, configuration.heatLayerTransparency);
 	delete result;
 
 	return resultWithBackground;

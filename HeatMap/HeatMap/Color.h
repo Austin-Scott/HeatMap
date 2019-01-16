@@ -21,7 +21,7 @@ public:
 
 	Color getInverse(bool includeAlpha=false);
 
-	Color blend(Color other);
+	Color blend(Color other, unsigned char alp=255);
 	Color lerp(Color other, double alpha);
 	string toHex();
 	unsigned char getR();
