@@ -6,6 +6,7 @@
 
 #include "Activity.h"
 #include "HeatMapConfiguration.h"
+#include "PrivacyZones.h"
 
 #include <iostream>
 #include <algorithm>
@@ -29,7 +30,7 @@ private:
 	double fpart(double value);
 	double rfpart(double value);
 	double sign(double value);
-	void drawLine(GeographicCoordinate from, GeographicCoordinate to);
+	void drawLine(GeographicCoordinate from, GeographicCoordinate to, PrivacyZones* zones=nullptr);
 	void xiaolinWu(GeographicCoordinate from, GeographicCoordinate to);
 
 	long pascalValue(int row, int col);
@@ -43,7 +44,7 @@ public:
 	double static worldYToLat(double y);
 	double static worldXToLon(double x);
 
-	void addActivity(Activity &activity);
+	void addActivity(Activity &activity, PrivacyZones* zones=nullptr);
 	void normalizeMap();
 	Image* renderImage();
 	Image* createGlowImage(Image* renderedImage, int diameter);
