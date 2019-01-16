@@ -103,10 +103,11 @@ string Color::toHex() {
 	return "#" + charToHexCode(r) + charToHexCode(g) + charToHexCode(b) + charToHexCode(a);
 }
 
-Color Color::blend(Color other)
+Color Color::blend(Color other, unsigned char alp)
 {
 	
 	double alpha = 1.0-((double)a / 255.0);
+	alpha *= (double)alp / 255.0;
 	if (other.getA()!=255) {
 		return lerp(other, alpha);
 	}

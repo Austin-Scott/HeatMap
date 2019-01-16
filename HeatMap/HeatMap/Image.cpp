@@ -78,7 +78,7 @@ string Image::saveImage(string filename)
 	return "";
 }
 
-Image * Image::overlayImage(Image * other)
+Image * Image::overlayImage(Image * other, unsigned char alpha = 255)
 {
 	if (width != other->getWidth() || height != other->getHeight())
 		return nullptr;
@@ -89,7 +89,7 @@ Image * Image::overlayImage(Image * other)
 	
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
-			Color blendedColor = getPixel(x, y).blend(other->getPixel(x, y));
+			Color blendedColor = getPixel(x, y).blend(other->getPixel(x, y), alpha);
 			result[index] = blendedColor.getR();
 			result[index+1] = blendedColor.getG();
 			result[index+2] = blendedColor.getB();
