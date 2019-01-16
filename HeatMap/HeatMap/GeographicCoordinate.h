@@ -19,5 +19,7 @@ public:
 	string toString();
 	bool getIsSet();
 	double getKilometersTo(GeographicCoordinate other);
+
+	bool operator==(GeographicCoordinate other);
 };
 GeographicCoordinate geoCoord(double latitude, double longitude);

@@ -165,3 +165,8 @@ void Color::setA(unsigned char v)
 {
 	a = v;
 }
+
+bool Color::operator==(Color other)
+{
+	return r == other.getR() && g == other.getG() && b == other.getB() && a == other.getA();
+}

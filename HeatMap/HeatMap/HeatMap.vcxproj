@@ -189,6 +189,7 @@
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGUI.cpp" />
+    <ClCompile Include="MapQuest.cpp" />
     <ClCompile Include="MapQuestKeyGUI.cpp" />
     <ClCompile Include="RenderMapGUI.cpp" />
     <ClCompile Include="Speed.cpp" />

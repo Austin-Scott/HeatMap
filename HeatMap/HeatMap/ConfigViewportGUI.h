@@ -66,4 +66,6 @@ public:
 	void saveChanges();
 	void discardChanges();
 	bool hasUnsavedChanges();
+
+	void setMedianStartPoint(GeographicCoordinate median);
 };

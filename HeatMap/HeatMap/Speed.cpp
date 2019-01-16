@@ -60,6 +60,11 @@ SpeedUnits Speed::getUnits()
 	return setWithUnits;
 }
 
+bool Speed::operator==(Speed other)
+{
+	return speedInMetersPerSecond==other.getSpeed()&&isSet==other.isSpeedSet();
+}
+
 bool Speed::isSpeedSet()
 {
 	return isSet;
