@@ -78,7 +78,7 @@ string Image::saveImage(string filename)
 	return "";
 }
 
-Image * Image::overlayImage(Image * other, unsigned char alpha = 255)
+Image * Image::overlayImage(Image * other, unsigned char alpha)
 {
 	if (width != other->getWidth() || height != other->getHeight())
 		return nullptr;
