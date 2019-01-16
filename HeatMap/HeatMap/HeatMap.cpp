@@ -158,73 +158,6 @@ void HeatMap::xiaolinWu(GeographicCoordinate from, GeographicCoordinate to)
 	}
 }
 
-void HeatMap::bresenham(GeographicCoordinate from, GeographicCoordinate to)
-{
-	int x0 = (int)lonToDoubleX(from.getLon());
-	int y0 = (int)latToDoubleY(from.getLat());
-	int x1 = (int)lonToDoubleX(to.getLon());
-	int y1 = (int)latToDoubleY(to.getLat());
-
-	if (abs(y1 - y0) < abs(x1 - x0)) {
-		if (x0 > x1) {
-			plotLineLow(x1, y1, x0, y0);
-		}
-		else {
-			plotLineLow(x0, y0, x1, y1);
-		}
-	}
-	else {
-		if (y0 > y1) {
-			plotLineHigh(x1, y1, x0, y0);
-		}
-		else {
-			plotLineHigh(x0, y0, x1, y1);
-		}
-	}
-}
-
-void HeatMap::plotLineLow(int x0, int y0, int x1, int y1)
-{
-	int dx = x1 - x0;
-	int dy = y1 - y0;
-	int yi = 1;
-	if (dy < 0) {
-		yi = -1;
-		dy = -dy;
-	}
-	int D = 2 * dy - dx;
-	int y = y0;
-	for (int x = x0; x < x1; x++) {
-		drawPoint(x, y, 1.0);
-		if (D > 0) {
-			y = y + yi;
-			D = D - (2 * dx);
-		}
-		D = D + (2 * dy);
-	}
-}
-
-void HeatMap::plotLineHigh(int x0, int y0, int x1, int y1)
-{
-	int dx = x1 - x0;
-	int dy = y1 - y0;
-	int xi = 1;
-	if (dx < 0) {
-		xi = -1;
-		dx = -dx;
-	}
-	int D = 2 * dx - dy;
-	int x = x0;
-	for (int y = y0; y < y1; y++) {
-		drawPoint(x, y, 1.0);
-		if (D > 0) {
-			x = x + xi;
-			D = D - 2 * dy;
-		}
-		D = D + 2 * dx;
-	}
-}
-
 long HeatMap::pascalValue(int row, int col)
 {
 	if (row < 0) return 0;
@@ -264,7 +197,7 @@ void HeatMap::addActivity(Activity & activity)
 {
 	if (includeActivity(activity, configuration) && activity.getTrack().size() > 1) {
 		for (int i = 0; i < activity.getTrack().size() - 1; i++) {
-			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], configuration.useAntiAliasing);
+			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1]);
 		}
 	}
 	for (int x = 0; x < configuration.width; x++) {
@@ -423,12 +356,7 @@ Image * HeatMap::createGlowImage(Image * renderedImage, int diameter)
 	return new Image(configuration.width, configuration.height, result);
 }
 
-void HeatMap::drawLine(GeographicCoordinate from, GeographicCoordinate to, bool smooth)
+void HeatMap::drawLine(GeographicCoordinate from, GeographicCoordinate to)
 {
-	if (smooth) {
-		xiaolinWu(from, to);
-	}
-	else {
-		bresenham(from, to);
-	}
+	xiaolinWu(from, to);
 }

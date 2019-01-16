@@ -8,7 +8,8 @@ RenderMapGUI::RenderMapGUI(form & frm) : form(frm)
 	cancel.events().click([&]() {
 		*shouldCancel = true;
 	});
-	layout.div("<><vert weight=80% <message><><><bar><><cancel><>><>");
+	layout.div("<><vert weight=80% <message><><statusLabel><bar><><cancel><>><>");
+	layout["statusLabel"] << statusLabel;
 	layout["message"] << message;
 	layout["bar"] << bar;
 	layout["cancel"] << cancel;
@@ -20,7 +21,7 @@ RenderMapGUI::RenderMapGUI(form & frm) : form(frm)
 	});
 }
 
-void RenderMapGUI::present(future<Image*>* fut, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown)
+void RenderMapGUI::present(future<Image*>* fut, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, mutex* statusMutex, string* statusString)
 {
 	finished = false;
 	this->fut = fut;
@@ -28,9 +29,15 @@ void RenderMapGUI::present(future<Image*>* fut, atomic<unsigned int>* currentPro
 	this->shouldCancel = shouldCancel;
 	*(this->shouldCancel) = false;
 	this->progressKnown = progressKnown;
+	this->statusMutex = statusMutex;
+	this->statusString = statusString;
 
 	time.interval(100);
 	time.elapse([&]() {
+		statusMutex->lock();
+		statusLabel.caption(*statusString);
+		statusMutex->unlock();
+
 		if (*shouldCancel == true) {
 			close();
 		}

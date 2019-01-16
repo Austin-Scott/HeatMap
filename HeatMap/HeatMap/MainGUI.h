@@ -57,9 +57,12 @@ private:
 	atomic<unsigned int>* currentProgress;
 	atomic<bool>* shouldCancel;
 	atomic<bool>* progressKnown;
+	mutex* statusMutex;
+	string* statusString;
+
 	vector<Activity*> activities;
 
 public:
 	MainGUI();
-	void present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, vector<Activity*> activities);
+	void present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, mutex* statusMutex, string* statusString, vector<Activity*> activities);
 };

@@ -91,6 +91,14 @@ Color::Color(std::string hexCode)
 	}
 }
 
+Color Color::getInverse(bool includeAlpha)
+{
+	if(includeAlpha)
+		return Color(255 - r, 255 - g, 255 - b, 255-a);
+
+	return Color(255-r, 255-g, 255-b, 255);
+}
+
 string Color::toHex() {
 	return "#" + charToHexCode(r) + charToHexCode(g) + charToHexCode(b) + charToHexCode(a);
 }

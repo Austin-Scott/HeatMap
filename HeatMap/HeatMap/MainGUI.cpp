@@ -48,32 +48,19 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 
 	nanaTime.interval(100);
 	nanaTime.elapse([&]() {
-		
+
+
+		configViewportGUI.saveChanges();
+		configRendererGUI.saveChanges();
+		filterByDateGUI.saveChanges();
+		filterBySpeedGUI.saveChanges();
+		filterByActivityTypeGUI.saveChanges();
+
+
 	});
-	nanaTime.start();
 
 	renderButton.events().click([&]() {
-		if (configViewportGUI.hasUnsavedChanges() ||
-			configRendererGUI.hasUnsavedChanges() ||
-			filterByDateGUI.hasUnsavedChanges() ||
-			filterBySpeedGUI.hasUnsavedChanges() ||
-			filterByActivityTypeGUI.hasUnsavedChanges()) {
-
-			msgbox confirm(*this, "Unapplied changes", msgbox::button_t::yes_no_cancel);
-			confirm.icon(msgbox::icon_question) << "You have unapplied changes. Apply all and then proceed?";
-			auto answer = confirm.show();
-			if (answer == msgbox::pick_t::pick_cancel) {
-				return;
-			}
-			else if (answer == msgbox::pick_t::pick_yes) {
-				configViewportGUI.saveChanges();
-				configRendererGUI.saveChanges();
-				filterByDateGUI.saveChanges();
-				filterBySpeedGUI.saveChanges();
-				filterByActivityTypeGUI.saveChanges();
-			}
-		}
-
+		
 		ifstream keyFile("key.txt");
 		string key = "";
 		if (keyFile) {
@@ -89,7 +76,7 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 
 		RenderMapGUI renderMapGUI(*this);
 		fut = async(renderHeatMap, heatMapConfiguration, activities);
-		renderMapGUI.present(&fut, currentProgress, shouldCancel, progressKnown);
+		renderMapGUI.present(&fut, currentProgress, shouldCancel, progressKnown, statusMutex, statusString);
 		if (!(*this->shouldCancel)) {
 			Image* image = fut.get();
 			if (image != nullptr) {
@@ -121,12 +108,14 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 	});
 }
 
-void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, vector<Activity*> activities)
+void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, mutex* statusMutex, string* statusString, vector<Activity*> activities)
 {
 	this->renderHeatMap = renderHeatMap;
 	this->currentProgress = currentProgress;
 	this->shouldCancel = shouldCancel;
 	this->progressKnown = progressKnown;
+	this->statusMutex = statusMutex;
+	this->statusString = statusString;
 	this->activities = activities;
 
 	filterByActivityTypeGUI.setConfig(&heatMapConfiguration, this);
@@ -136,9 +125,12 @@ void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> 
 	configRendererGUI.setConfig(&heatMapConfiguration, this);
 
 	heatMapConfiguration = HeatMapConfiguration(1920, 1080);
-	heatMapConfiguration.setRenderer(true, Color("#000000FF"), Color("#33003380"), Color("#e60000a0"), Color("#ff944dF0"), Color("#FFFFFFFF"));
+	heatMapConfiguration.setRenderer(Color("#000000FF"), Color("#33003380"), Color("#e60000a0"), Color("#ff944dF0"), Color("#FFFFFFFF"));
 	heatMapConfiguration.includeUnknownDates = true;
 	heatMapConfiguration.includeUnknownSpeeds = true;
+	heatMapConfiguration.downloadMap = true;
+	heatMapConfiguration.heatLayerTransparency = 255;
+	heatMapConfiguration.mapType = "dark";
 
 	vector<GeographicCoordinate> bounds = guessBounds(activities, heatMapConfiguration, 10.0);
 	if (bounds.size() == 2) {
@@ -152,6 +144,7 @@ void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> 
 	filterBySpeedGUI.discardChanges();
 	filterByActivityTypeGUI.discardChanges();
 
+	nanaTime.start();
 
 	show();
 }

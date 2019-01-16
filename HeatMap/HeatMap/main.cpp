@@ -37,6 +37,12 @@ void executeSystemCommand(string cmd) {
 	}
 }
 
+void writeSharedString(mutex &m, string* strDest, string strSrc) {
+	m.lock();
+	*strDest = strSrc;
+	m.unlock();
+}
+
 void printActivityInfo(Activity &activity, bool includedOnMap) {
 	cout << activity.getFilename() << endl;
 	Date startDate = activity.getStartDate();
@@ -77,6 +83,8 @@ void printActivityInfo(Activity &activity, bool includedOnMap) {
 atomic<bool> shouldCancelHM;
 atomic<unsigned int> progressAmountHM;
 atomic<bool> progressKnownHM;
+mutex statusMutexHM;
+string statusStringHM;
 
 Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*> activities)  {
 	progressKnownHM = false;
@@ -85,6 +93,8 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 	fstream keyFile("key.txt");
 	if (keyFile) {
 		getline(keyFile, mapKey);
+
+		writeSharedString(statusMutexHM, &statusStringHM, "Downloading map...");
 
 		MapQuestConfig mapConfig = getMapConfig(configuration.lowerLeft, configuration.upperRight, configuration.width, configuration.height);
 
@@ -107,6 +117,7 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 
 	HeatMap map(configuration);
 
+	writeSharedString(statusMutexHM, &statusStringHM, "Rendering activities on Heat Map...");
 	progressKnownHM = true;
 	for (int i = 0; i < activities.size(); i++) {
 		if (shouldCancelHM) return nullptr;
@@ -115,16 +126,14 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 		progressAmountHM = ((double)i / (double)activities.size())*(int)100;
 	}
 
-	cout << "\nNormalizing Heat Map..." << endl << endl;
+	writeSharedString(statusMutexHM, &statusStringHM, "Normalizing map...");
 	map.normalizeMap();
 
-	cout << "Rendering Image..." << endl << endl;
+	writeSharedString(statusMutexHM, &statusStringHM, "Rendering image...");
 	Image* result = map.renderImage();
 
 	Image* resultWithBackground = result->overlayImage(background);
 	delete result;
-
-	cout << "...done!" << endl;
 
 	return resultWithBackground;
 }
@@ -132,13 +141,7 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 void onActivitiesLoaded(vector<Activity*> activities, MainGUI* mainGUI) {
 	cout << "Loading finished." << endl;
 	cout << activities.size() << " activities loaded." << endl;
-	mainGUI->present(generateHeatMapImage, &progressAmountHM, &shouldCancelHM, &progressKnownHM, activities);
-}
-
-void writeSharedString(mutex &m, string* strDest, string strSrc) {
-	m.lock();
-	*strDest = strSrc;
-	m.unlock();
+	mainGUI->present(generateHeatMapImage, &progressAmountHM, &shouldCancelHM, &progressKnownHM, &statusMutexHM, &statusStringHM, activities);
 }
 
 atomic<bool> shouldCancel;
