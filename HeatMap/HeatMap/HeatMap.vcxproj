@@ -223,6 +223,7 @@
     <ClInclude Include="MapQuestKeyGUI.h" />
     <ClInclude Include="PrivacyZones.h" />
     <ClInclude Include="rapidxml.hpp" />
+    <ClInclude Include="rapidxml_print.hpp" />
     <ClInclude Include="RenderMapGUI.h" />
     <ClInclude Include="Speed.h" />
     <ClInclude Include="TrainingCenterXML.h" />

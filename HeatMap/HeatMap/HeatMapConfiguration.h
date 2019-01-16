@@ -1,11 +1,17 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <sstream>
+
+#include "rapidxml.hpp"
+#include "rapidxml_print.hpp"
 
 #include "Activity.h"
 #include "Date.h"
 #include "Speed.h"
 #include "Color.h"
+
+using namespace rapidxml;
 
 struct HeatMapConfiguration {
 
@@ -46,6 +52,9 @@ struct HeatMapConfiguration {
 	void removeFilters();
 
 	bool operator==(HeatMapConfiguration other);
+
+	void saveConfiguration(string filename);
+	void loadConfiguration(string filename);
 
 	void setRenderer(Color backgroundColor, Color minimumActivityColor, Color activity33Color, Color activity66Color, Color maximumActivityColor);
 };
