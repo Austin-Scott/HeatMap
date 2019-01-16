@@ -180,6 +180,9 @@
     <ClCompile Include="MapQuest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PrivacyZones.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HeatMap.h">
@@ -265,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="MapQuestKeyGUI.h">
       <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="PrivacyZones.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

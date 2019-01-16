@@ -27,6 +27,8 @@ using namespace std;
 using namespace nana;
 using namespace experimental::filesystem;
 
+PrivacyZones zones;
+
 void executeSystemCommand(string cmd) {
 	STARTUPINFO info = { sizeof(info) };
 	PROCESS_INFORMATION processInfo;
@@ -144,7 +146,7 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 	for (int i = 0; i < activities.size(); i++) {
 		if (shouldCancelHM) return nullptr;
 
-		map.addActivity(*activities[i]);
+		map.addActivity(*activities[i], &zones);
 		progressAmountHM = ((double)i / (double)activities.size())*(int)100;
 	}
 
@@ -241,6 +243,8 @@ vector<Activity*> loadActivities(string activityDirectory, bool shouldDecompress
 }
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+
+	zones = PrivacyZones("privacy.txt");
 
 	ActivityDirectoryGUI activityDirectoryGUI;
 	MainGUI mainGUI;

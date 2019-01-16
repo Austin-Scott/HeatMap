@@ -193,11 +193,11 @@ HeatMap::~HeatMap()
 	delete[] cells;
 }
 
-void HeatMap::addActivity(Activity & activity)
+void HeatMap::addActivity(Activity & activity, PrivacyZones* zones)
 {
 	if (includeActivity(activity, configuration) && activity.getTrack().size() > 1) {
 		for (int i = 0; i < activity.getTrack().size() - 1; i++) {
-			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1]);
+			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], zones);
 		}
 	}
 	for (int x = 0; x < configuration.width; x++) {
@@ -356,7 +356,11 @@ Image * HeatMap::createGlowImage(Image * renderedImage, int diameter)
 	return new Image(configuration.width, configuration.height, result);
 }
 
-void HeatMap::drawLine(GeographicCoordinate from, GeographicCoordinate to)
+void HeatMap::drawLine(GeographicCoordinate from, GeographicCoordinate to, PrivacyZones* zones)
 {
+	if (zones != nullptr) {
+		if (zones->isPointInZones(from) || zones->isPointInZones(to))
+			return;
+	}
 	xiaolinWu(from, to);
 }
