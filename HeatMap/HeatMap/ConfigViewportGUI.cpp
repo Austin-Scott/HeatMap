@@ -158,3 +158,8 @@ bool ConfigViewportGUI::hasUnsavedChanges()
 {
 	return unsavedChanges;
 }
+
+void ConfigViewportGUI::setMedianStartPoint(GeographicCoordinate median)
+{
+	labelMedian.caption(median.toString());
+}

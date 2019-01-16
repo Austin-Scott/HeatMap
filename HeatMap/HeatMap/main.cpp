@@ -93,6 +93,9 @@ Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*
 	string mapKey = "";
 	fstream keyFile("key.txt");
 	if (configuration.downloadMap && keyFile) {
+		configuration.width = min(max(configuration.width, 170), 1920); //min: 170, max: 1920
+		configuration.height = min(max(configuration.height, 30), 1920); //min: 30, max: 1920
+
 		getline(keyFile, mapKey);
 
 		writeSharedString(statusMutexHM, &statusStringHM, "Downloading map...");

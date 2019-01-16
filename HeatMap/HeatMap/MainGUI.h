@@ -24,6 +24,7 @@
 #include "HeatMapConfiguration.h"
 #include "Image.h"
 #include "MapQuestKeyGUI.h"
+#include "MapQuest.h"
 
 #include <fstream>
 #include <Windows.h>
@@ -52,6 +53,8 @@ private:
 	FilterByActivityTypeGUI filterByActivityTypeGUI{ *this };
 
 	HeatMapConfiguration heatMapConfiguration;
+	HeatMapConfiguration previousConfiguration;
+
 	function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap;
 	future<Image*> fut;
 	atomic<unsigned int>* currentProgress;
@@ -61,6 +64,8 @@ private:
 	string* statusString;
 
 	vector<Activity*> activities;
+
+	void setStatusLabel(int activitiesLoaded, int activitiesPastFilter, int activitiesOnScreen, int activitiesFullyOnScreen);
 
 public:
 	MainGUI();

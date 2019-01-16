@@ -15,5 +15,7 @@ public:
 	double getSpeed(SpeedUnits units = SpeedUnits::MetersPerSecond);
 	SpeedUnits getUnits();
 
+	bool operator==(Speed other);
+
 	bool isSpeedSet();
 };

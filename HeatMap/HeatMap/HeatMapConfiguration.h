@@ -45,5 +45,7 @@ struct HeatMapConfiguration {
 
 	void removeFilters();
 
+	bool operator==(HeatMapConfiguration other);
+
 	void setRenderer(Color backgroundColor, Color minimumActivityColor, Color activity33Color, Color activity66Color, Color maximumActivityColor);
 };

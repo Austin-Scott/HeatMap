@@ -32,4 +32,6 @@ public:
 	void setG(unsigned char v);
 	void setB(unsigned char v);
 	void setA(unsigned char v);
+
+	bool operator==(Color other);
 };
