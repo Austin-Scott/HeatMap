@@ -106,21 +106,19 @@ string Color::toHex() {
 Color Color::blend(Color other, unsigned char alp)
 {
 	
-	double alpha = 1.0-((double)a / 255.0);
-	alpha *= (double)alp / 255.0;
-	if (other.getA()!=255) {
-		return lerp(other, alpha);
+	double alpha = ((double)a / 255.0)*((double)alp/255.0);
+	
+
+	if (alpha == 0.0) {
+		return other;
 	}
-	else {
-		Color color = lerp(other, alpha);
-		return Color(color.getR(), color.getG(), color.getB(), 255);
+	if (alpha == 1.0) {
+		return *this;
 	}
 	
-	/*
-	double topAlpha = (double)a / 255.0;
 	double bottomAlpha = (double)other.getA() / 255.0;
-	return Color(blend(r, other.getR(), topAlpha, bottomAlpha), blend(g, other.getG(), topAlpha, bottomAlpha), blend(b, other.getB(), topAlpha, bottomAlpha), bottomAlpha!=1.0?min(topAlpha + bottomAlpha * (1.0 - topAlpha), 1.0) * 255:255);
-	*/
+	return Color(blend(r, other.getR(), alpha, bottomAlpha), blend(g, other.getG(), alpha, bottomAlpha), blend(b, other.getB(), alpha, bottomAlpha), bottomAlpha!=1.0?min(alpha + bottomAlpha * (1.0 - alpha), 1.0) * 255:255);
+	
 }
 
 Color Color::lerp(Color other, double alpha)
