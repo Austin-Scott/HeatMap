@@ -201,6 +201,8 @@ void ConfigRendererGUI::discardChanges()
 	}
 	transparencySlider.value(config->heatLayerTransparency);
 
+	downloadMap.check(config->downloadMap);
+
 	updateHighlight();
 
 	unsavedChanges = false;
