@@ -50,6 +50,7 @@ ConfigRendererGUI::ConfigRendererGUI(form &frm) : group(frm)
 
 	transparencySlider.maximum(255);
 	transparencySlider.value(255);
+	transparencySlider.transparent(true);
 	layout["transparencySlider"] << transparencySlider;
 
 	for (string s : mapStyles) {
@@ -59,6 +60,7 @@ ConfigRendererGUI::ConfigRendererGUI(form &frm) : group(frm)
 	layout["mapStyle"] << mapStyle;
 
 	downloadMap.caption("Download map from Map Quest");
+	downloadMap.transparent(true);
 	downloadMap.check(true);
 	layout["downloadMap"] << downloadMap;
 

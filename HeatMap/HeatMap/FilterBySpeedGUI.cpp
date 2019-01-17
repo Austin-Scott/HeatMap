@@ -24,12 +24,15 @@ FilterBySpeedGUI::FilterBySpeedGUI(form & frm) : group(frm)
 	caption("Filter Activity Speed");
 	layout.div("<><vert weight=95% <><includeUnknown><filterSlower><<spinboxOne><comboxOne>><filterFaster><<spinboxTwo><comboxTwo>><weight=10%>><>");
 	includeUnknown.caption("Include activities with unknown speeds");
+	includeUnknown.transparent(true);
 	includeUnknown.events().checked([&]() {unsavedChanges = true; });
 	layout["includeUnknown"] << includeUnknown;
 	filterSlower.caption("Filter activities slower than");
+	filterSlower.transparent(true);
 	filterSlower.events().checked([&]() {unsavedChanges = true; });
 	layout["filterSlower"] << filterSlower;
 	filterFaster.caption("Filter activities faster than");
+	filterFaster.transparent(true);
 	filterFaster.events().checked([&]() {unsavedChanges = true; });
 	layout["filterFaster"] << filterFaster;
 	setupCombox(comboxOne);

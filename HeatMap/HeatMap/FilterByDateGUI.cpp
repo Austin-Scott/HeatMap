@@ -7,9 +7,11 @@ FilterByDateGUI::FilterByDateGUI(form &frm) : group(frm)
 
 	layout.div("<><vert weight=95% <><includeUnknown><filterEarlier><<labelOne><textboxOne><weight=25% buttonOne>><filterLater><<labelTwo><textboxTwo><weight=25% buttonTwo>><weight=10%>><>");
 	includeUnknown.caption("Include activities with unknown dates");
+	includeUnknown.transparent(true);
 	includeUnknown.events().checked([&]() {unsavedChanges = true; });
 	layout["includeUnknown"] << includeUnknown;
 	filterEarlier.caption("Filter activities with start dates earlier than");
+	filterEarlier.transparent(true);
 	filterEarlier.events().checked([&]() {unsavedChanges = true; });
 	layout["filterEarlier"] << filterEarlier;
 	labelOne.caption("YYYY-MM-DD");
@@ -28,6 +30,7 @@ FilterByDateGUI::FilterByDateGUI(form &frm) : group(frm)
 	});
 	layout["buttonOne"] << buttonOne;
 	filterLater.caption("Filter activities with start dates later than");
+	filterLater.transparent(true);
 	filterLater.events().checked([&]() {unsavedChanges = true; });
 	layout["filterLater"] << filterLater;
 	labelTwo.caption("YYYY-MM-DD");
