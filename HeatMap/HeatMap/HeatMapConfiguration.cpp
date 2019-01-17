@@ -40,6 +40,10 @@ bool HeatMapConfiguration::operator==(HeatMapConfiguration other)
 		maximumActivityColor == other.maximumActivityColor &&
 		lowerLeft == other.lowerLeft &&
 		upperRight == other.upperRight &&
+		viewportMode == other.viewportMode &&
+		highestLatitude == other.highestLatitude &&
+		bottomCenter == other.bottomCenter &&
+		radius == other.radius &&
 		width == other.width &&
 		height == other.height &&
 		downloadMap == other.downloadMap &&
@@ -129,8 +133,19 @@ void HeatMapConfiguration::saveConfiguration(string filename)
 	root->append_node(speedFilterNode);
 
 	xml_node<>* viewportNode = doc.allocate_node(node_element, "viewport");
-	addAttribute(doc, viewportNode, "lowerLeft", lowerLeft);
-	addAttribute(doc, viewportNode, "upperRight", upperRight);
+	addAttribute(doc, viewportNode, "viewportMode", viewportMode);
+	if (viewportMode == 0) {
+		addAttribute(doc, viewportNode, "lowerLeft", lowerLeft);
+		addAttribute(doc, viewportNode, "upperRight", upperRight);
+	}
+	else {
+		addAttribute(doc, viewportNode, "lowerLeft", GeographicCoordinate());
+		addAttribute(doc, viewportNode, "upperRight", GeographicCoordinate());
+	}
+	
+	addAttribute(doc, viewportNode, "highestLatitude", highestLatitude);
+	addAttribute(doc, viewportNode, "bottomCenter", bottomCenter);
+	addAttribute(doc, viewportNode, "radius", radius);
 	root->append_node(viewportNode);
 
 	xml_node<>* rendererNode = doc.allocate_node(node_element, "renderer");
@@ -252,6 +267,18 @@ void HeatMapConfiguration::loadConfiguration(string filename)
 
 				atr = viewportNode->first_attribute("upperRight");
 				upperRight = atr ? geoCoordFromString(atr->value()) : GeographicCoordinate();
+			
+				atr = viewportNode->first_attribute("bottomCenter");
+				bottomCenter = atr ? geoCoordFromString(atr->value()) : GeographicCoordinate();
+			
+				atr = viewportNode->first_attribute("viewportMode");
+				viewportMode = atr ? atoi(atr->value()) : 2;
+
+				atr = viewportNode->first_attribute("highestLatitude");
+				highestLatitude = atr ? stod(atr->value()) : 0.0;
+
+				atr = viewportNode->first_attribute("radius");
+				radius = atr ? stod(atr->value()) : 10.0;
 			}
 
 			xml_node<>* rendererNode = rootNode->first_node("renderer");

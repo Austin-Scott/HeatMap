@@ -40,6 +40,11 @@ struct HeatMapConfiguration {
 	GeographicCoordinate lowerLeft;
 	GeographicCoordinate upperRight;
 
+	int viewportMode;
+	double highestLatitude;
+	GeographicCoordinate bottomCenter;
+	double radius;
+
 	int width;
 	int height;
 
