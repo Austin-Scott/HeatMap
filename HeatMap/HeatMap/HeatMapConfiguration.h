@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <fstream>
 
 #include "rapidxml.hpp"
 #include "rapidxml_print.hpp"

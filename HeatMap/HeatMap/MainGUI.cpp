@@ -53,8 +53,44 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 	saveLoadLabel.text_align(align::center, align_v::bottom);
 	layout["saveLoadLabel"] << saveLoadLabel;
 	saveButton.caption("Save");
+	saveButton.events().click([&]() {
+		filebox box(*this, false);
+		box.add_filter("Heat Map Configuration", "*.hmx");
+		if (box()) {
+			string filename = box.file();
+			heatMapConfiguration.saveConfiguration(filename);
+		}
+	});
 	layout["saveButton"] << saveButton;
 	loadButton.caption("Load");
+	loadButton.events().click([&]() {
+		filebox box(*this, true);
+		box.add_filter("Heat Map Configuration", "*.hmx");
+		if (box()) {
+			string filename = box.file();
+			heatMapConfiguration.loadConfiguration(filename);
+
+			configViewportGUI.discardChanges();
+			configRendererGUI.discardChanges();
+			filterByDateGUI.discardChanges();
+			filterBySpeedGUI.discardChanges();
+			filterByActivityTypeGUI.discardChanges();
+		}
+	});
+
+	events().mouse_dropfiles([&](const arg_dropfiles& arg) {
+		if (arg.files.size() > 0 && arg.files[0].substr(arg.files[0].size() - 3) == "hmx") {
+			string filename = arg.files[0];
+			heatMapConfiguration.loadConfiguration(filename);
+
+			configViewportGUI.discardChanges();
+			configRendererGUI.discardChanges();
+			filterByDateGUI.discardChanges();
+			filterBySpeedGUI.discardChanges();
+			filterByActivityTypeGUI.discardChanges();
+		}
+	});
+
 	layout["loadButton"] << loadButton;
 	websiteLabel.caption("<color=blue url=\"https://github.com/Austin-Scott/HeatMap\">https://github.com/Austin-Scott/HeatMap</>");
 	websiteLabel.format(true);
@@ -246,6 +282,8 @@ void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> 
 	previousConfiguration = heatMapConfiguration;
 
 	nanaTime.start();
+
+	API::enable_dropfiles(*this, true);
 
 	show();
 }
