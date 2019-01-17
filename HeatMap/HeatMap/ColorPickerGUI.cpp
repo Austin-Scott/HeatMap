@@ -42,15 +42,19 @@ ColorPickerGUI::ColorPickerGUI(form & frm) : form(frm)
 	layout["labelEight"] << labelEight;
 
 	sliderOne.maximum(255);
+	sliderOne.transparent(true);
 	sliderOne.events().value_changed([&]() { updateDisplay(); });
 	layout["sliderOne"] << sliderOne;
 	sliderTwo.maximum(255);
+	sliderTwo.transparent(true);
 	sliderTwo.events().value_changed([&]() { updateDisplay(); });
 	layout["sliderTwo"] << sliderTwo;
 	sliderThree.maximum(255);
+	sliderThree.transparent(true);
 	sliderThree.events().value_changed([&]() { updateDisplay(); });
 	layout["sliderThree"] << sliderThree;
 	sliderFour.maximum(255);
+	sliderFour.transparent(true);
 	sliderFour.events().value_changed([&]() { updateDisplay(); });
 	layout["sliderFour"] << sliderFour;
 

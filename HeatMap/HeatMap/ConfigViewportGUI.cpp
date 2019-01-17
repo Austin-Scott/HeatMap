@@ -14,10 +14,12 @@ ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 
 	rgroup.add(manualOpt);
 	manualOpt.caption("Manual");
+	manualOpt.transparent(true);
 	layout["manualOpt"] << manualOpt;
 
 	rgroup.add(ratioOpt);
 	ratioOpt.caption("Ratio");
+	ratioOpt.transparent(true);
 	ratioOpt.events().checked([&]() {
 		if (config == nullptr)
 			return;
@@ -34,6 +36,7 @@ ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 
 	rgroup.add(autoOpt);
 	autoOpt.caption("Automatic");
+	autoOpt.transparent(true);
 	autoOpt.events().checked([&]() {
 		if (config == nullptr)
 			return;
