@@ -266,6 +266,8 @@ void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> 
 	heatMapConfiguration.downloadMap = true;
 	heatMapConfiguration.heatLayerTransparency = 255;
 	heatMapConfiguration.mapType = "dark";
+	heatMapConfiguration.highestLatitude = 0.0;
+	heatMapConfiguration.radius = 10.0;
 
 	vector<GeographicCoordinate> bounds = guessBounds(activities, heatMapConfiguration, 10.0);
 	if (bounds.size() == 2) {

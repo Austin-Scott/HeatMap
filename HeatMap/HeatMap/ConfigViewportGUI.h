@@ -37,9 +37,12 @@ private:
 
 	label labelTwelve{ *this };
 
-	spinbox spinboxEight{ *this };
+	radio_group rgroup;
+	checkbox manualOpt{ *this };
+	checkbox ratioOpt{ *this };
+	checkbox autoOpt{ *this };
 
-	button buttonTwo{ *this };
+	spinbox spinboxEight{ *this };
 
 	label labelSeven{ *this };
 	label labelEight{ *this };
@@ -49,8 +52,6 @@ private:
 	spinbox spinboxFive{ *this };
 	spinbox spinboxSix{ *this };
 	spinbox spinboxSeven{ *this };
-
-	button buttonOne{ *this };
 
 	label helpTextOne{ *this };
 	label helpTextTwo{ *this };
