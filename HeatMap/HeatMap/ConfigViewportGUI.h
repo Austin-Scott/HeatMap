@@ -68,5 +68,8 @@ public:
 	void discardChanges();
 	bool hasUnsavedChanges();
 
+	void updateAutoCoordinates();
+	void updateRatioCoordinates();
+
 	void setMedianStartPoint(GeographicCoordinate median);
 };

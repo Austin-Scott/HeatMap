@@ -129,6 +129,11 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 		filterByActivityTypeGUI.saveChanges();
 
 		if (!(previousConfiguration == heatMapConfiguration)) {
+
+			if (heatMapConfiguration.viewportMode == 2) {
+				configViewportGUI.updateAutoCoordinates();
+			}
+
 			//Configuration has changed since last tick, update display
 			int width = heatMapConfiguration.width; 
 			int height = heatMapConfiguration.height; 
