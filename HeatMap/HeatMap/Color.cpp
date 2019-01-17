@@ -48,6 +48,15 @@ unsigned char Color::lerp(unsigned char a, unsigned char b, double alpha)
 	return (unsigned char)(((1.0 - alpha)*(double)a) + (alpha*(double)b));
 }
 
+double toDouble(unsigned char value) {
+	return (double)value / 255.0;
+}
+
+unsigned char Color::blend(unsigned char top, unsigned char bottom, double topAlpha, double bottomAlpha)
+{
+	return (toDouble(top)*topAlpha + toDouble(bottom)*bottomAlpha*(1.0 - topAlpha)) * 255;
+}
+
 Color::Color()
 {
 	r = 0;
@@ -82,20 +91,34 @@ Color::Color(std::string hexCode)
 	}
 }
 
+Color Color::getInverse(bool includeAlpha)
+{
+	if(includeAlpha)
+		return Color(255 - r, 255 - g, 255 - b, 255-a);
+
+	return Color(255-r, 255-g, 255-b, 255);
+}
+
 string Color::toHex() {
 	return "#" + charToHexCode(r) + charToHexCode(g) + charToHexCode(b) + charToHexCode(a);
 }
 
-Color Color::blend(Color other)
+Color Color::blend(Color other, unsigned char alp)
 {
-	double alpha = 1.0-((double)a / 255.0);
-	if (other.getA()!=255) {
-		return lerp(other, alpha);
+	
+	double alpha = ((double)a / 255.0)*((double)alp/255.0);
+	
+
+	if (alpha == 0.0) {
+		return other;
 	}
-	else {
-		Color color = lerp(other, alpha);
-		return Color(color.getR(), color.getG(), color.getB(), 255);
+	if (alpha == 1.0) {
+		return *this;
 	}
+	
+	double bottomAlpha = (double)other.getA() / 255.0;
+	return Color(blend(r, other.getR(), alpha, bottomAlpha), blend(g, other.getG(), alpha, bottomAlpha), blend(b, other.getB(), alpha, bottomAlpha), bottomAlpha!=1.0?min(alpha + bottomAlpha * (1.0 - alpha), 1.0) * 255:255);
+	
 }
 
 Color Color::lerp(Color other, double alpha)
@@ -141,4 +164,9 @@ void Color::setB(unsigned char v)
 void Color::setA(unsigned char v)
 {
 	a = v;
+}
+
+bool Color::operator==(Color other)
+{
+	return r == other.getR() && g == other.getG() && b == other.getB() && a == other.getA();
 }

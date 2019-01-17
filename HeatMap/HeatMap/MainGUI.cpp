@@ -2,18 +2,100 @@
 #include <nana/gui/state_cursor.hpp>
 #include <nana/system/platform.hpp>
 
+bool overlaps(GeographicCoordinate lla, GeographicCoordinate ura, GeographicCoordinate llb, GeographicCoordinate urb) {
+	if (ura.getLon() < llb.getLon() || urb.getLon() < lla.getLon())
+		return false;
+
+	if (ura.getLat() < llb.getLat() || urb.getLat() < lla.getLat())
+		return false;
+
+	return true;
+}
+
+//return true if b is fully contained within a
+bool fullyContains(GeographicCoordinate lla, GeographicCoordinate ura, GeographicCoordinate llb, GeographicCoordinate urb) {
+	if (llb.getLon() < lla.getLon() || urb.getLon() > ura.getLon() || llb.getLat() < lla.getLat() || urb.getLat() > ura.getLat())
+		return false;
+
+	return true;
+}
+
+string getFormatedNumber(int n) {
+	if (n >= 10) {
+		return "<bold color=green>" + to_string(n) + "</>";
+	}
+	else if (n > 0) {
+		return "<bold color=0x808000>" + to_string(n) + "</>";
+	}
+
+	return "<bold color=red>" + to_string(n) + "</>";
+}
+
+void MainGUI::setStatusLabel(int activitiesLoaded, int activitiesPastFilter, int activitiesOnScreen, int activitiesFullyOnScreen)
+{
+	string caption = "<bold color=0x434a4d>Valid Activities Loaded: </>" + getFormatedNumber(activitiesLoaded) + "\n<bold color=0x434a4d>Activities not filtered: </>" + getFormatedNumber(activitiesPastFilter) + "\n<bold color=0x434a4d>Fully/Partially visible: </>" + getFormatedNumber(activitiesFullyOnScreen) + "<bold color=0x434a4d>/</>" + getFormatedNumber(activitiesOnScreen);
+	statusLabel.caption(caption);
+	statusLabel.format(true);
+}
+
 MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<form::appear::minimize>())
 {
-	caption("Heat Map Generator v1.0 BETA");
-	layout.div("<><vert weight=95% <weight=2%><configViewportGUI><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><<configRendererGUI><<><vert weight=95% <><weight=40% renderButton><><websiteButton><>><>>><weight=2%>><>");
+	caption("Heat Map Generator v1.1");
+	layout.div("<><vert weight=95% <weight=2%><configViewportGUI><<filterByDateGUI><filterBySpeedGUI><filterByActivityTypeGUI>><weight=45% <weight=65% configRendererGUI><<><vert weight=95% <><weight=40% <<><weight=75% statusLabel><>>><saveLoadLabel><<><saveButton><weight=10%><loadButton><>><><weight=25% <<><weight=75% renderButton><>>><websiteLabel>><>>><weight=2%>><>");
 	
-	renderButton.caption("Render and Save Heat Map");
+	//statusLabel.caption("<bold color=0x434a4d>Valid Activities Loaded: </><bold color=green>290</>\n<bold color=0x434a4d>Activities not filtered: </><bold color=green>130</>\n<bold color=0x434a4d>Activities visible in viewport: </><bold color=green>75</>");
+	//statusLabel.format(true);
+	layout["statusLabel"] << statusLabel;
+
+	renderButton.caption("Render Heat Map");
 	layout["renderButton"] << renderButton;
-	websiteButton.caption("Visit Project Website");
-	websiteButton.events().click([&]() {
-		nana::system::open_url("https://github.com/Austin-Scott/HeatMap");
+	saveLoadLabel.caption("Save/Load Current Configuration:");
+	saveLoadLabel.text_align(align::center, align_v::bottom);
+	layout["saveLoadLabel"] << saveLoadLabel;
+	saveButton.caption("Save");
+	saveButton.events().click([&]() {
+		filebox box(*this, false);
+		box.add_filter("Heat Map Configuration", "*.hmx");
+		if (box()) {
+			string filename = box.file();
+			heatMapConfiguration.saveConfiguration(filename);
+		}
 	});
-	layout["websiteButton"] << websiteButton;
+	layout["saveButton"] << saveButton;
+	loadButton.caption("Load");
+	loadButton.events().click([&]() {
+		filebox box(*this, true);
+		box.add_filter("Heat Map Configuration", "*.hmx");
+		if (box()) {
+			string filename = box.file();
+			heatMapConfiguration.loadConfiguration(filename);
+
+			configViewportGUI.discardChanges();
+			configRendererGUI.discardChanges();
+			filterByDateGUI.discardChanges();
+			filterBySpeedGUI.discardChanges();
+			filterByActivityTypeGUI.discardChanges();
+		}
+	});
+
+	events().mouse_dropfiles([&](const arg_dropfiles& arg) {
+		if (arg.files.size() > 0 && arg.files[0].substr(arg.files[0].size() - 3) == "hmx") {
+			string filename = arg.files[0];
+			heatMapConfiguration.loadConfiguration(filename);
+
+			configViewportGUI.discardChanges();
+			configRendererGUI.discardChanges();
+			filterByDateGUI.discardChanges();
+			filterBySpeedGUI.discardChanges();
+			filterByActivityTypeGUI.discardChanges();
+		}
+	});
+
+	layout["loadButton"] << loadButton;
+	websiteLabel.caption("<color=blue url=\"https://github.com/Austin-Scott/HeatMap\">https://github.com/Austin-Scott/HeatMap</>");
+	websiteLabel.format(true);
+	websiteLabel.text_align(align::center, align_v::bottom);
+	layout["websiteLabel"] << websiteLabel;
 	layout["configViewportGUI"] << configViewportGUI;
 	layout["configRendererGUI"] << configRendererGUI;
 	layout["filterByDateGUI"] << filterByDateGUI;
@@ -38,35 +120,103 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 
 	nanaTime.interval(100);
 	nanaTime.elapse([&]() {
-		
+
+
+		configViewportGUI.saveChanges();
+		configRendererGUI.saveChanges();
+		filterByDateGUI.saveChanges();
+		filterBySpeedGUI.saveChanges();
+		filterByActivityTypeGUI.saveChanges();
+
+		if (!(previousConfiguration == heatMapConfiguration)) {
+
+			if (heatMapConfiguration.viewportMode == 2) {
+				configViewportGUI.updateAutoCoordinates();
+			}
+
+			//Configuration has changed since last tick, update display
+			int width = heatMapConfiguration.width; 
+			int height = heatMapConfiguration.height; 
+			GeographicCoordinate lowerLeft = heatMapConfiguration.lowerLeft;
+			GeographicCoordinate upperRight = heatMapConfiguration.upperRight;
+
+			if (heatMapConfiguration.downloadMap) {
+				width= min(max(width, 170), 1920); //min: 170, max: 1920
+				height= min(max(height, 30), 1920); //min: 30, max: 1920
+
+				MapQuestConfig mapConfig = getMapConfig(lowerLeft, upperRight, width, height);
+				lowerLeft = mapConfig.lowerLeft;
+				upperRight = mapConfig.upperRight;
+			}
+
+			
+			GeographicCoordinate medianStartPoint;
+
+			int validActivities = 0;
+			int numberOfActivitiesOnViewport = 0;
+			int numberOfActivitiesFullyOnViewport = 0;
+
+			vector<Activity*> filteredActivities;
+			vector<double> startLats;
+			vector<double> startLons;
+			for (Activity* a : activities) {
+				if (a->getTrack().size() > 0) {
+					validActivities++;
+
+					if (includeActivity(*a, heatMapConfiguration)) {
+
+						if (overlaps(lowerLeft, upperRight, a->lowerLeft(), a->upperRight())) {
+							numberOfActivitiesOnViewport++;
+							if (fullyContains(lowerLeft, upperRight, a->lowerLeft(), a->upperRight())) {
+								numberOfActivitiesFullyOnViewport++;
+							}
+						}
+
+						startLats.push_back(a->getTrack()[0].getLat());
+						startLons.push_back(a->getTrack()[0].getLon());
+						filteredActivities.push_back(a);
+
+					}
+				}
+			}
+
+			if (filteredActivities.size() > 0) {
+
+				sort(startLats.begin(), startLats.end());
+				sort(startLons.begin(), startLons.end());
+
+				medianStartPoint = geoCoord(startLats[startLats.size() / 2], startLons[startLons.size() / 2]);
+			}
+			configViewportGUI.setMedianStartPoint(medianStartPoint);
+
+			setStatusLabel(validActivities, filteredActivities.size(), numberOfActivitiesOnViewport, numberOfActivitiesFullyOnViewport);
+
+
+
+			previousConfiguration = heatMapConfiguration;
+		}
+
+
 	});
-	nanaTime.start();
 
 	renderButton.events().click([&]() {
-		if (configViewportGUI.hasUnsavedChanges() ||
-			configRendererGUI.hasUnsavedChanges() ||
-			filterByDateGUI.hasUnsavedChanges() ||
-			filterBySpeedGUI.hasUnsavedChanges() ||
-			filterByActivityTypeGUI.hasUnsavedChanges()) {
-
-			msgbox confirm(*this, "Unapplied changes", msgbox::button_t::yes_no_cancel);
-			confirm.icon(msgbox::icon_question) << "You have unapplied changes. Apply all and then proceed?";
-			auto answer = confirm.show();
-			if (answer == msgbox::pick_t::pick_cancel) {
+		
+		ifstream keyFile("key.txt");
+		string key = "";
+		if (keyFile) {
+			getline(keyFile, key);
+			keyFile.close();
+		}
+		if (key.length() != 32) {
+			MapQuestKeyGUI keyGUI(*this);
+			if (!keyGUI.present()) {
 				return;
-			}
-			else if (answer == msgbox::pick_t::pick_yes) {
-				configViewportGUI.saveChanges();
-				configRendererGUI.saveChanges();
-				filterByDateGUI.saveChanges();
-				filterBySpeedGUI.saveChanges();
-				filterByActivityTypeGUI.saveChanges();
 			}
 		}
 
 		RenderMapGUI renderMapGUI(*this);
 		fut = async(renderHeatMap, heatMapConfiguration, activities);
-		renderMapGUI.present(&fut, currentProgress, shouldCancel, progressKnown);
+		renderMapGUI.present(&fut, currentProgress, shouldCancel, progressKnown, statusMutex, statusString);
 		if (!(*this->shouldCancel)) {
 			Image* image = fut.get();
 			if (image != nullptr) {
@@ -78,9 +228,12 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 					string error = image->saveImage(saveFileName);
 					delete cursor;
 					if (error == "") {
-						msgbox dialog(*this, "Heat Map Saved");
-						dialog.icon(msgbox::icon_information) << "Your Heat Map has been successfully saved to: \"" << saveFileName << "\"";
-						dialog.show();
+						msgbox dialog(*this, "Heat Map Saved", msgbox::yes_no);
+						dialog.icon(msgbox::icon_information) << "Your Heat Map has been successfully saved.\n\nWould you like to view it now?";
+						if (dialog.show() == msgbox::pick_yes) {
+							wstring wstr = wstring(saveFileName.begin(), saveFileName.end());
+							ShellExecute(0, 0, wstr.c_str(), 0, 0, SW_SHOW);
+						}
 					}
 					else {
 						msgbox dialog(*this, "Heat Map Saving Failed");
@@ -95,12 +248,14 @@ MainGUI::MainGUI() : form(API::make_center(900, 600), form::appear::decorate<for
 	});
 }
 
-void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, vector<Activity*> activities)
+void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, mutex* statusMutex, string* statusString, vector<Activity*> activities)
 {
 	this->renderHeatMap = renderHeatMap;
 	this->currentProgress = currentProgress;
 	this->shouldCancel = shouldCancel;
 	this->progressKnown = progressKnown;
+	this->statusMutex = statusMutex;
+	this->statusString = statusString;
 	this->activities = activities;
 
 	filterByActivityTypeGUI.setConfig(&heatMapConfiguration, this);
@@ -110,9 +265,14 @@ void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> 
 	configRendererGUI.setConfig(&heatMapConfiguration, this);
 
 	heatMapConfiguration = HeatMapConfiguration(1920, 1080);
-	heatMapConfiguration.setRenderer(true, Color("#000000FF"), Color("#FF000080"), Color("#FFFFFFFF"));
+	heatMapConfiguration.setRenderer(Color("#000000FF"), Color("#33003380"), Color("#e60000a0"), Color("#ff944dF0"), Color("#FFFFFFFF"));
 	heatMapConfiguration.includeUnknownDates = true;
 	heatMapConfiguration.includeUnknownSpeeds = true;
+	heatMapConfiguration.downloadMap = true;
+	heatMapConfiguration.heatLayerTransparency = 255;
+	heatMapConfiguration.mapType = "dark";
+	heatMapConfiguration.highestLatitude = 0.0;
+	heatMapConfiguration.radius = 10.0;
 
 	vector<GeographicCoordinate> bounds = guessBounds(activities, heatMapConfiguration, 10.0);
 	if (bounds.size() == 2) {
@@ -126,6 +286,11 @@ void MainGUI::present(function<Image*(HeatMapConfiguration, vector<Activity*>)> 
 	filterBySpeedGUI.discardChanges();
 	filterByActivityTypeGUI.discardChanges();
 
+	previousConfiguration = heatMapConfiguration;
+
+	nanaTime.start();
+
+	API::enable_dropfiles(*this, true);
 
 	show();
 }

@@ -174,6 +174,15 @@
     <ClCompile Include="ColorPickerGUI.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="MapQuestKeyGUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="MapQuest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PrivacyZones.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HeatMap.h">
@@ -253,6 +262,18 @@
     </ClInclude>
     <ClInclude Include="ColorPreviewGUI.h">
       <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="MapQuest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapQuestKeyGUI.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="PrivacyZones.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml_print.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

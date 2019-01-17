@@ -2,6 +2,8 @@
 #include <string>
 #include <filesystem>
 #include <chrono>
+#include <locale>
+#include <Windows.h>
 
 #include <nana/gui.hpp>
 #include <nana/gui/widgets/label.hpp>
@@ -19,9 +21,30 @@
 
 #include "ActivityDirectoryGUI.h"
 
+#include "MapQuest.h"
+
 using namespace std;
 using namespace nana;
 using namespace experimental::filesystem;
+
+PrivacyZones zones;
+
+void executeSystemCommand(string cmd) {
+	STARTUPINFO info = { sizeof(info) };
+	PROCESS_INFORMATION processInfo;
+	if (CreateProcess(NULL, const_cast<char *>(cmd.c_str()), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &info, &processInfo))
+	{
+		WaitForSingleObject(processInfo.hProcess, INFINITE);
+		CloseHandle(processInfo.hProcess);
+		CloseHandle(processInfo.hThread);
+	}
+}
+
+void writeSharedString(mutex &m, string* strDest, string strSrc) {
+	m.lock();
+	*strDest = strSrc;
+	m.unlock();
+}
 
 void printActivityInfo(Activity &activity, bool includedOnMap) {
 	cout << activity.getFilename() << endl;
@@ -63,43 +86,86 @@ void printActivityInfo(Activity &activity, bool includedOnMap) {
 atomic<bool> shouldCancelHM;
 atomic<unsigned int> progressAmountHM;
 atomic<bool> progressKnownHM;
+mutex statusMutexHM;
+string statusStringHM;
 
 Image* generateHeatMapImage(HeatMapConfiguration configuration, vector<Activity*> activities)  {
+	progressKnownHM = false;
+	Image* background = nullptr;
+	string mapKey = "";
+	fstream keyFile("key.txt");
+	if (configuration.downloadMap && keyFile) {
+		configuration.width = min(max(configuration.width, 170), 1920); //min: 170, max: 1920
+		configuration.height = min(max(configuration.height, 30), 1920); //min: 30, max: 1920
+
+		getline(keyFile, mapKey);
+
+		writeSharedString(statusMutexHM, &statusStringHM, "Downloading map...");
+
+		MapQuestConfig mapConfig = getMapConfig(configuration.lowerLeft, configuration.upperRight, configuration.width, configuration.height);
+
+		configuration.lowerLeft = mapConfig.lowerLeft;
+		configuration.upperRight = mapConfig.upperRight;
+
+		wstring tempPathW;
+		wchar_t wcharPath[MAX_PATH];
+		if (GetTempPathW(MAX_PATH, wcharPath)) {
+			tempPathW = wcharPath;
+			tempPathW += L"\\tempMapDownload.png";
+		}
+		else {
+			tempPathW = L"tempMapDownload.png";
+		}
+		wstring_convert<codecvt_utf8<wchar_t>, wchar_t> converter;
+		string tempPath = converter.to_bytes(tempPathW);
+
+
+		string downloadCommand = "curl -k -o \""+tempPath+"\" \"https://open.mapquestapi.com/staticmap/v5/map?key=" + mapKey + "&size=" + to_string(configuration.width) + "," + to_string(configuration.height) + "&center=" + to_string(mapConfig.center.getLat()) + "," + to_string(mapConfig.center.getLon()) + "&zoom=" + to_string(mapConfig.zoom) + "&format=png&type="+configuration.mapType+"&margin=0\"";
+
+		executeSystemCommand(downloadCommand);
+
+		background = new Image(tempPath);
+
+		DeleteFile(const_cast<char *>(tempPath.c_str())); //Clean up temp file
+
+		keyFile.close();
+	}
+	else {
+		background = new Image(configuration.width, configuration.height, configuration.backgroundColor);
+	}
+	progressKnownHM = true;
+	
 	cout << "Lat/Lon Bounding Box for Heat Map:" << endl
 		<< "\t*Lower left bound: \"" << configuration.lowerLeft.toString()
 		<< "\"\n\t*Upper right bound: \"" << configuration.upperRight.toString() << "\"" << endl;
 
 	HeatMap map(configuration);
 
+	writeSharedString(statusMutexHM, &statusStringHM, "Rendering activities on Heat Map...");
 	progressKnownHM = true;
 	for (int i = 0; i < activities.size(); i++) {
 		if (shouldCancelHM) return nullptr;
 
-		map.addActivity(*activities[i]);
+		map.addActivity(*activities[i], &zones);
 		progressAmountHM = ((double)i / (double)activities.size())*(int)100;
 	}
 
-	cout << "\nNormalizing Heat Map..." << endl << endl;
+	writeSharedString(statusMutexHM, &statusStringHM, "Normalizing map...");
 	map.normalizeMap();
 
-	cout << "Rendering Image..." << endl << endl;
+	writeSharedString(statusMutexHM, &statusStringHM, "Rendering image...");
 	Image* result = map.renderImage();
 
-	cout << "...done!" << endl;
+	Image* resultWithBackground = result->overlayImage(background, configuration.heatLayerTransparency);
+	delete result;
 
-	return result;
+	return resultWithBackground;
 }
 
 void onActivitiesLoaded(vector<Activity*> activities, MainGUI* mainGUI) {
 	cout << "Loading finished." << endl;
 	cout << activities.size() << " activities loaded." << endl;
-	mainGUI->present(generateHeatMapImage, &progressAmountHM, &shouldCancelHM, &progressKnownHM, activities);
-}
-
-void writeSharedString(mutex &m, string* strDest, string strSrc) {
-	m.lock();
-	*strDest = strSrc;
-	m.unlock();
+	mainGUI->present(generateHeatMapImage, &progressAmountHM, &shouldCancelHM, &progressKnownHM, &statusMutexHM, &statusStringHM, activities);
 }
 
 atomic<bool> shouldCancel;
@@ -120,7 +186,7 @@ vector<Activity*> loadActivities(string activityDirectory, bool shouldDecompress
 		if (activityDirectory.size()==0 || activityDirectoryWithSlash.back() != '/' || activityDirectoryWithSlash.back() != '\\')
 			activityDirectoryWithSlash.push_back('/');
 		string command = "7z x \"" + activityDirectoryWithSlash + "*.gz\" -aos \"-o" + activityDirectoryWithSlash + "\"";
-		system(command.c_str());
+		executeSystemCommand(command);
 	}
 
 	if (shouldCancel) {
@@ -176,9 +242,9 @@ vector<Activity*> loadActivities(string activityDirectory, bool shouldDecompress
 	return result;
 }
 
-#define main WinMain
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 
-int main(int argc, char* argv[]) {
+	zones = PrivacyZones("privacy.txt");
 
 	ActivityDirectoryGUI activityDirectoryGUI;
 	MainGUI mainGUI;

@@ -341,3 +341,7 @@ ASALocalRun/
 *.png
 HeatMap/HeatMap/7z.exe
 HeatMap/HeatMap/7za.dll
+HeatMap/HeatMap/key.txt
+HeatMap/HeatMap/curl.exe
+HeatMap/HeatMap/privacy.txt
+HeatMap/HeatMap/config.hmx

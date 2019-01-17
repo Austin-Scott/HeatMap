@@ -32,8 +32,6 @@ private:
 	combox comboxTwo{ *this };
 	spinbox spinboxOne{ *this };
 	spinbox spinboxTwo{ *this };
-	button saveChangesButton{ *this };
-	button discardChangesButton{ *this };
 
 	void setupCombox(combox &c);
 

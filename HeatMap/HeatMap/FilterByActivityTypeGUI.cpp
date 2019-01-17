@@ -9,46 +9,32 @@ void FilterByActivityTypeGUI::setConfig(HeatMapConfiguration * config, form* par
 FilterByActivityTypeGUI::FilterByActivityTypeGUI(form & frm) : group(frm)
 {
 	caption("Filter Activity Type");
-	layout.div("<><vert weight=95% <><filterUnknown><filterRunning><filterCycling><filterWalking><filterSwimming><><<saveChangesButton><discardChangesButton>><>><>");
+	layout.div("<><vert weight=95% <><filterUnknown><filterRunning><filterCycling><filterWalking><filterSwimming><weight=10%>><>");
 	filterUnknown.caption("Filter activities of Unknown type");
+	filterUnknown.transparent(true);
 	filterUnknown.events().checked([&]() { unsavedChanges = true; });
 	layout["filterUnknown"] << filterUnknown;
 	filterRunning.caption("Filter activities of Running type");
+	filterRunning.transparent(true);
 	filterRunning.events().checked([&]() { unsavedChanges = true; });
 	layout["filterRunning"] << filterRunning;
 	filterCycling.caption("Filter activities of Cycling type");
+	filterCycling.transparent(true);
 	filterCycling.events().checked([&]() { unsavedChanges = true; });
 	layout["filterCycling"] << filterCycling;
 	filterWalking.caption("Filter activities of Walking type");
+	filterWalking.transparent(true);
 	filterWalking.events().checked([&]() { unsavedChanges = true; });
 	layout["filterWalking"] << filterWalking;
 	filterSwimming.caption("Filter activities of Swimming type");
+	filterSwimming.transparent(true);
 	filterSwimming.events().checked([&]() { unsavedChanges = true; });
 	layout["filterSwimming"] << filterSwimming;
-	saveChangesButton.caption("Apply");
-	saveChangesButton.events().click([&]() { saveChanges(); });
-	layout["saveChangesButton"] << saveChangesButton;
-	discardChangesButton.caption("Discard");
-	discardChangesButton.events().click([&]() { discardChanges(); });
-	layout["discardChangesButton"] << discardChangesButton;
 	layout.collocate();
 
 	nanaTime.interval(100);
 	nanaTime.elapse([&]() {
-		if (unsavedChanges) {
-			if (!saveChangesButton.enabled()) {
-				saveChangesButton.enabled(true);
-				discardChangesButton.enabled(true);
-				caption("*Filter Activity Type");
-			}
-		}
-		else {
-			if (saveChangesButton.enabled()) {
-				saveChangesButton.enabled(false);
-				discardChangesButton.enabled(false);
-				caption("Filter Activity Type");
-			}
-		}
+		
 	});
 	nanaTime.start();
 

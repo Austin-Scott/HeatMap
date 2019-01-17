@@ -28,6 +28,8 @@ private:
 	label labelFive{ *this };
 	label labelSix{ *this };
 
+	label labelMedian{ *this };
+
 	spinbox spinboxOne{ *this };
 	spinbox spinboxTwo{ *this };
 	spinbox spinboxThree{ *this };
@@ -35,9 +37,12 @@ private:
 
 	label labelTwelve{ *this };
 
-	spinbox spinboxEight{ *this };
+	radio_group rgroup;
+	checkbox manualOpt{ *this };
+	checkbox ratioOpt{ *this };
+	checkbox autoOpt{ *this };
 
-	button buttonTwo{ *this };
+	spinbox spinboxEight{ *this };
 
 	label labelSeven{ *this };
 	label labelEight{ *this };
@@ -47,11 +52,6 @@ private:
 	spinbox spinboxFive{ *this };
 	spinbox spinboxSix{ *this };
 	spinbox spinboxSeven{ *this };
-
-	button buttonOne{ *this };
-
-	button acceptChangesButton{ *this };
-	button discardChangesButton{ *this };
 
 	label helpTextOne{ *this };
 	label helpTextTwo{ *this };
@@ -67,4 +67,9 @@ public:
 	void saveChanges();
 	void discardChanges();
 	bool hasUnsavedChanges();
+
+	void updateAutoCoordinates();
+	void updateRatioCoordinates();
+
+	void setMedianStartPoint(GeographicCoordinate median);
 };

@@ -23,6 +23,11 @@
 
 #include "HeatMapConfiguration.h"
 #include "Image.h"
+#include "MapQuestKeyGUI.h"
+#include "MapQuest.h"
+
+#include <fstream>
+#include <Windows.h>
 
 using namespace std;
 using namespace nana;
@@ -31,7 +36,12 @@ class MainGUI : public form {
 private:
 	place layout{ *this };
 	button renderButton{ *this };
-	button websiteButton{ *this };
+	button saveButton{ *this };
+	button loadButton{ *this };
+	label saveLoadLabel{ *this };
+	label websiteLabel{ *this };
+
+	label statusLabel{ *this };
 
 	timer nanaTime;
 
@@ -43,14 +53,21 @@ private:
 	FilterByActivityTypeGUI filterByActivityTypeGUI{ *this };
 
 	HeatMapConfiguration heatMapConfiguration;
+	HeatMapConfiguration previousConfiguration;
+
 	function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap;
 	future<Image*> fut;
 	atomic<unsigned int>* currentProgress;
 	atomic<bool>* shouldCancel;
 	atomic<bool>* progressKnown;
+	mutex* statusMutex;
+	string* statusString;
+
 	vector<Activity*> activities;
+
+	void setStatusLabel(int activitiesLoaded, int activitiesPastFilter, int activitiesOnScreen, int activitiesFullyOnScreen);
 
 public:
 	MainGUI();
-	void present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, vector<Activity*> activities);
+	void present(function<Image*(HeatMapConfiguration, vector<Activity*>)> renderHeatMap, atomic<unsigned int>* currentProgress, atomic<bool>* shouldCancel, atomic<bool>* progressKnown, mutex* statusMutex, string* statusString, vector<Activity*> activities);
 };

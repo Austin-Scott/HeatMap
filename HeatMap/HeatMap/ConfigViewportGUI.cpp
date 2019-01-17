@@ -10,88 +10,102 @@ void ConfigViewportGUI::setConfig(HeatMapConfiguration * config, vector<Activity
 ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 {
 	caption("Configure Viewport");
-	layout.div("<><weight=97% <<vert <><labelOne><<labelTwo><spinboxOne><labelThree><spinboxTwo>><labelFour><<labelFive><spinboxThree><labelSix><spinboxFour>><><<acceptChangesButton><discardChangesButton>><>>|<vert <><helpTextOne><<labelSeven><spinboxFive>><labelEight><<labelNine><spinboxSix><labelTen><spinboxSeven>><><buttonOne><>>|<vert <><weight=37.5% helpTextTwo><<spinboxEight><labelTwelve>><><buttonTwo><>>>><>");
+	layout.div("<><weight=97% <<vert <><manualOpt><labelOne><<labelTwo><spinboxOne><labelThree><spinboxTwo>><labelFour><<labelFive><spinboxThree><labelSix><spinboxFour>><weight=10%>>     <weight=3%>     <vert <><ratioOpt><helpTextOne><<labelSeven><spinboxFive>><labelEight><<labelNine><spinboxSix><labelTen><spinboxSeven>><weight=5%><weight=5%>>     <weight=3%>     <vert <><autoOpt><weight=35.5% helpTextTwo><weight=10% labelMedian><<spinboxEight><labelTwelve>><weight=5%><weight=5%>>>><>");
 
-	labelTwelve.caption("radius in kilometers");
+	rgroup.add(manualOpt);
+	manualOpt.caption("Manual");
+	manualOpt.transparent(true);
+	layout["manualOpt"] << manualOpt;
+
+	rgroup.add(ratioOpt);
+	ratioOpt.caption("Ratio");
+	ratioOpt.transparent(true);
+	ratioOpt.events().checked([&]() {
+		
+	});
+	layout["ratioOpt"] << ratioOpt;
+
+	rgroup.add(autoOpt);
+	autoOpt.caption("Automatic");
+	autoOpt.transparent(true);
+	autoOpt.events().checked([&]() {
+		
+	});
+	autoOpt.check(true);
+	layout["autoOpt"] << autoOpt;
+
+	labelMedian.caption("Latitude: 44.9345, Longitude: 93.6532");
+	labelMedian.text_align(align::center, align_v::top);
+	layout["labelMedian"] << labelMedian;
+
+	labelTwelve.caption(" radius in kilometers");
+	labelTwelve.text_align(align::left, align_v::center);
 	layout["labelTwelve"] << labelTwelve;
 	spinboxEight.range(1.0, 300.0, 0.1);
 	spinboxEight.value("10.0");
-	layout["spinboxEight"] << spinboxEight;
-	buttonTwo.caption("Compute");
-	buttonTwo.events().click([&]() {
-		vector<GeographicCoordinate> bounds = guessBounds(activities, *config, spinboxEight.to_double());
-		if (bounds.size() == 2) {
-			spinboxOne.value(to_string(bounds[0].getLat()));
-			spinboxTwo.value(to_string(bounds[0].getLon()));
-			spinboxThree.value(to_string(bounds[1].getLat()));
-			spinboxFour.value(to_string(bounds[1].getLon()));
-		}
-		else {
-			msgbox dialog(*this, "Failed to compute");
-			dialog.icon(msgbox::icon_information) << "Something went wrong. Please check your input and filter settings.";
-			dialog.show();
-		}
+	spinboxEight.events().text_changed([&]() {
+		updateAutoCoordinates();
 	});
-	layout["buttonTwo"] << buttonTwo;
+	layout["spinboxEight"] << spinboxEight;
 
-	helpTextOne.caption("Compute coordinates that maintain aspect ratio:");
+	helpTextOne.caption("<bold>Compute bounds that maintain aspect ratio:</>");
+	helpTextOne.format(true);
 	layout["helpTextOne"] << helpTextOne;
-	helpTextTwo.caption("Don't want to mess with coordinates? This tool will compute the viewport dimensions based on the bounds of activities that start within a specified radius of the median activity start point.");
+	helpTextTwo.caption("<bold>Don't want to mess with coordinates? Make all activities that start within a specified radius of the median start point completely visible.</>");
+	helpTextTwo.format(true);
 	layout["helpTextTwo"] << helpTextTwo;
 	
-	labelOne.caption("Coordinate of lower left corner:");
+	labelOne.caption("<bold>Coordinate of lower left corner:</>");
+	labelOne.format(true);
+	labelOne.text_align(align::left, align_v::bottom);
 	layout["labelOne"] << labelOne;
 	labelTwo.caption("Latitude: ");
-	labelTwo.text_align(align::right);
+	labelTwo.text_align(align::right, align_v::center);
 	layout["labelTwo"] << labelTwo;
 	labelThree.caption("Longitude: ");
-	labelThree.text_align(align::right);
+	labelThree.text_align(align::right, align_v::center);
 	layout["labelThree"] << labelThree;
-	labelFour.caption("Coordinate of upper right corner:");
+	labelFour.caption("<bold>Coordinate of upper right corner:</>");
+	labelFour.format(true);
+	labelFour.text_align(align::left, align_v::bottom);
 	layout["labelFour"] << labelFour;
 	labelFive.caption("Latitude: ");
-	labelFive.text_align(align::right);
+	labelFive.text_align(align::right, align_v::center);
 	layout["labelFive"] << labelFive;
 	labelSix.caption("Longitude: ");
-	labelSix.text_align(align::right);
+	labelSix.text_align(align::right, align_v::center);
 	layout["labelSix"] << labelSix;
 
 	labelSeven.caption("Highest latitude: ");
-	labelSeven.text_align(align::right);
+	labelSeven.text_align(align::right, align_v::center);
 	layout["labelSeven"] << labelSeven;
 	labelEight.caption("Coordinate of bottom center:");
+	labelEight.text_align(align::left, align_v::bottom);
 	layout["labelEight"] << labelEight;
 	labelNine.caption("Latitude: ");
-	labelNine.text_align(align::right);
+	labelNine.text_align(align::right, align_v::center);
 	layout["labelNine"] << labelNine;
 	labelTen.caption("Longitude: ");
-	labelTen.text_align(align::right);
+	labelTen.text_align(align::right, align_v::center);
 	layout["labelTen"] << labelTen;
 	spinboxFive.range(-90.0, 90.0, 0.01);
 	spinboxFive.caption("0.0");
+	spinboxFive.events().text_changed([&]() {
+		updateRatioCoordinates();
+	});
 	layout["spinboxFive"] << spinboxFive;
 	spinboxSix.range(-90.0, 90.0, 0.01);
 	spinboxSix.caption("0.0");
+	spinboxSix.events().text_changed([&]() {
+		updateRatioCoordinates();
+	});
 	layout["spinboxSix"] << spinboxSix;
 	spinboxSeven.range(-180.0, 180.0, 0.01);
 	spinboxSeven.caption("0.0");
-	layout["spinboxSeven"] << spinboxSeven;
-	buttonOne.caption("Compute");
-	buttonOne.events().click([&]() {
-		vector<GeographicCoordinate> bounds = computeBoundingBoxVertical(geoCoord(spinboxSix.to_double(), spinboxSeven.to_double()), *config, spinboxFive.to_double());
-		if (bounds.size() == 2) {
-			spinboxOne.value(to_string(bounds[0].getLat()));
-			spinboxTwo.value(to_string(bounds[0].getLon()));
-			spinboxThree.value(to_string(bounds[1].getLat()));
-			spinboxFour.value(to_string(bounds[1].getLon()));
-		}
-		else {
-			msgbox dialog(*this, "Failed to compute");
-			dialog.icon(msgbox::icon_information) << "Something went wrong. Please check your input.";
-			dialog.show();
-		}
+	spinboxSeven.events().text_changed([&]() {
+		updateRatioCoordinates();
 	});
-	layout["buttonOne"] << buttonOne;
+	layout["spinboxSeven"] << spinboxSeven;
 
 	spinboxOne.range(-90.0, 90.0, 0.01);
 	spinboxOne.caption("0.0");
@@ -110,30 +124,36 @@ ConfigViewportGUI::ConfigViewportGUI(form & frm) : group(frm)
 	spinboxFour.events().text_changed([&]() { unsavedChanges = true;  });
 	layout["spinboxFour"] << spinboxFour;
 
-	acceptChangesButton.caption("Apply");
-	acceptChangesButton.events().click([&]() {saveChanges(); });
-	layout["acceptChangesButton"] << acceptChangesButton;
-	discardChangesButton.caption("Discard");
-	discardChangesButton.events().click([&]() {discardChanges(); });
-	layout["discardChangesButton"] << discardChangesButton;
-
 	layout.collocate();
 
 	nanaTime.interval(100);
 	nanaTime.elapse([&]() {
-		if (unsavedChanges) {
-			if (!acceptChangesButton.enabled()) {
-				acceptChangesButton.enabled(true);
-				discardChangesButton.enabled(true);
-				caption("*Configure Viewport");
-			}
+		bool enableMan = false;
+		bool enableRat = false;
+		bool enableAut = false;
+		if (manualOpt.checked()) {
+			enableMan = true;
+		}
+		else if (ratioOpt.checked()) {
+			enableRat = true;
 		}
 		else {
-			if (acceptChangesButton.enabled()) {
-				acceptChangesButton.enabled(false);
-				discardChangesButton.enabled(false);
-				caption("Configure Viewport");
-			}
+			enableAut = true;
+		}
+
+		if (spinboxOne.enabled() != enableMan) {
+			spinboxOne.enabled(enableMan);
+			spinboxTwo.enabled(enableMan);
+			spinboxThree.enabled(enableMan);
+			spinboxFour.enabled(enableMan);
+		}
+		if (spinboxFive.enabled() != enableRat) {
+			spinboxFive.enabled(enableRat);
+			spinboxSix.enabled(enableRat);
+			spinboxSeven.enabled(enableRat);
+		}
+		if (spinboxEight.enabled() != enableAut) {
+			spinboxEight.enabled(enableAut);
 		}
 	});
 	nanaTime.start();
@@ -146,8 +166,22 @@ ConfigViewportGUI::~ConfigViewportGUI()
 
 void ConfigViewportGUI::saveChanges()
 {
-	this->config->lowerLeft = geoCoord(spinboxOne.to_double(), spinboxTwo.to_double());
-	this->config->upperRight = geoCoord(spinboxThree.to_double(), spinboxFour.to_double());
+	config->lowerLeft = geoCoord(spinboxOne.to_double(), spinboxTwo.to_double());
+	config->upperRight = geoCoord(spinboxThree.to_double(), spinboxFour.to_double());
+
+	if (manualOpt.checked()) {
+		config->viewportMode = 0;
+	}
+	else if (ratioOpt.checked()) {
+		config->viewportMode = 1;
+	}
+	else {
+		config->viewportMode = 2;
+	}
+
+	config->highestLatitude = spinboxFive.to_double();
+	config->bottomCenter = geoCoord(spinboxSix.to_double(), spinboxSeven.to_double());
+	config->radius = spinboxEight.to_double();
 
 	unsavedChanges = false;
 }
@@ -159,10 +193,58 @@ void ConfigViewportGUI::discardChanges()
 	spinboxThree.value(to_string(config->upperRight.getLat()));
 	spinboxFour.value(to_string(config->upperRight.getLon()));
 
+	if (config->viewportMode == 0) {
+		manualOpt.check(true);
+	}
+	else if (config->viewportMode == 1) {
+		ratioOpt.check(true);
+	}
+	else {
+		autoOpt.check(true);
+	}
+
+	spinboxFive.caption(to_string(config->highestLatitude));
+	spinboxSix.caption(to_string(config->bottomCenter.getLat()));
+	spinboxSeven.caption(to_string(config->bottomCenter.getLon()));
+	spinboxEight.caption(to_string(config->radius));
+
 	unsavedChanges = false;
 }
 
 bool ConfigViewportGUI::hasUnsavedChanges()
 {
 	return unsavedChanges;
+}
+
+void ConfigViewportGUI::updateAutoCoordinates()
+{
+	if (config == nullptr)
+		return;
+
+	vector<GeographicCoordinate> bounds = guessBounds(activities, *config, spinboxEight.to_double());
+	if (bounds.size() == 2) {
+		spinboxOne.value(to_string(bounds[0].getLat()));
+		spinboxTwo.value(to_string(bounds[0].getLon()));
+		spinboxThree.value(to_string(bounds[1].getLat()));
+		spinboxFour.value(to_string(bounds[1].getLon()));
+	}
+}
+
+void ConfigViewportGUI::updateRatioCoordinates()
+{
+	if (config == nullptr)
+		return;
+
+	vector<GeographicCoordinate> bounds = computeBoundingBoxVertical(geoCoord(spinboxSix.to_double(), spinboxSeven.to_double()), *config, spinboxFive.to_double());
+	if (bounds.size() == 2) {
+		spinboxOne.value(to_string(bounds[0].getLat()));
+		spinboxTwo.value(to_string(bounds[0].getLon()));
+		spinboxThree.value(to_string(bounds[1].getLat()));
+		spinboxFour.value(to_string(bounds[1].getLon()));
+	}
+}
+
+void ConfigViewportGUI::setMedianStartPoint(GeographicCoordinate median)
+{
+	labelMedian.caption(median.toString());
 }

@@ -53,6 +53,11 @@ double GeographicCoordinate::getKilometersTo(GeographicCoordinate other)
 	return radius * c;
 }
 
+bool GeographicCoordinate::operator==(GeographicCoordinate other)
+{
+	return latitude == other.getLat() && longitude == other.getLon() && isSet == other.getIsSet();
+}
+
 GeographicCoordinate geoCoord(double latitude, double longitude)
 {
 	return GeographicCoordinate(latitude, longitude);

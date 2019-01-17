@@ -38,6 +38,9 @@ void Speed::setSpeed(double speed, SpeedUnits units)
 
 double Speed::getSpeed(SpeedUnits units)
 {
+	if (!isSet)
+		return 0.0;
+
 	if (speedInMetersPerSecond == 0.0) {
 		return 0.0; //Prevent division by zero possibility
 	}
@@ -57,7 +60,14 @@ double Speed::getSpeed(SpeedUnits units)
 
 SpeedUnits Speed::getUnits()
 {
-	return setWithUnits;
+	if(isSet)
+		return setWithUnits;
+	return SpeedUnits::MetersPerSecond;
+}
+
+bool Speed::operator==(Speed other)
+{
+	return speedInMetersPerSecond==other.getSpeed()&&isSet==other.isSpeedSet();
 }
 
 bool Speed::isSpeedSet()

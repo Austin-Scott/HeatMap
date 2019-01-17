@@ -1,11 +1,10 @@
-# HeatMap
-![mapwithheatmap](***REMOVED***)
-*The background image is from OpenStreetMap.org and is © OpenStreetMap contributors.* 
+﻿# HeatMap
+
 
 Show your friends and family what you've accomplished on foot or by bike by creating a Heat Map summary of all of your activities on Strava, Garmin Connect, or other GPS fitness sites! Here is a Heat Map of everywhere I ran in 2018. The "hotter" the path the more times I have crossed that location!
 
 ## The Interface
-![gui](https://user-images.githubusercontent.com/12504656/50707304-ff071780-1025-11e9-95dd-b9266a6730ea.PNG)
+![gui](https://user-images.githubusercontent.com/12504656/51345474-b8231400-1a60-11e9-8c32-8b51808c47b2.PNG)
 
 ## Getting Started Guide
 ### For Strava Users

@@ -4,14 +4,44 @@
 
 using namespace std;
 
+double HeatMap::DEG2RAD(double a)
+{
+	return (a / (180.0 / M_PI));
+}
+
+double HeatMap::RAD2DEG(double a)
+{
+	return (a*(180.0 / M_PI));
+}
+
+double HeatMap::latToWorldY(double lat)
+{
+	return RAD2DEG(log(tan(DEG2RAD(lat) / 2.0 + M_PI / 4.0)));
+}
+
+double HeatMap::lonToWorldX(double lon)
+{
+	return lon;
+}
+
+double HeatMap::worldYToLat(double y)
+{
+	return RAD2DEG(atan(exp(DEG2RAD(y))) * 2.0 - M_PI / 2.0);
+}
+
+double HeatMap::worldXToLon(double x)
+{
+	return x;
+}
+
 double HeatMap::latToDoubleY(double lat)
 {
-	return (1.0-((lat - configuration.lowerLeft.getLat()) / (configuration.upperRight.getLat() - configuration.lowerLeft.getLat())))*(double)configuration.height;
+	return (1.0-((latToWorldY(lat) - latToWorldY(configuration.lowerLeft.getLat())) / (latToWorldY(configuration.upperRight.getLat()) - latToWorldY(configuration.lowerLeft.getLat()))))*(double)configuration.height;
 }
 
 double HeatMap::lonToDoubleX(double lon)
 {
-	return ((lon - configuration.lowerLeft.getLon()) / (configuration.upperRight.getLon() - configuration.lowerLeft.getLon()))*(double)configuration.width;
+	return ((lonToWorldX(lon) - lonToWorldX(configuration.lowerLeft.getLon())) / (lonToWorldX(configuration.upperRight.getLon()) - lonToWorldX(configuration.lowerLeft.getLon())))*(double)configuration.width;
 }
 
 int HeatMap::latToIntY(double lat)
@@ -128,71 +158,21 @@ void HeatMap::xiaolinWu(GeographicCoordinate from, GeographicCoordinate to)
 	}
 }
 
-void HeatMap::bresenham(GeographicCoordinate from, GeographicCoordinate to)
+long HeatMap::pascalValue(int row, int col)
 {
-	int x0 = (int)lonToDoubleX(from.getLon());
-	int y0 = (int)latToDoubleY(from.getLat());
-	int x1 = (int)lonToDoubleX(to.getLon());
-	int y1 = (int)latToDoubleY(to.getLat());
-
-	if (abs(y1 - y0) < abs(x1 - x0)) {
-		if (x0 > x1) {
-			plotLineLow(x1, y1, x0, y0);
-		}
-		else {
-			plotLineLow(x0, y0, x1, y1);
-		}
-	}
-	else {
-		if (y0 > y1) {
-			plotLineHigh(x1, y1, x0, y0);
-		}
-		else {
-			plotLineHigh(x0, y0, x1, y1);
-		}
-	}
+	if (row < 0) return 0;
+	if (col<0 || col>row) return 0;
+	if (col == 0 || col == row) return 1;
+	return pascalValue(row - 1, col - 1) + pascalValue(row - 1, col);
 }
 
-void HeatMap::plotLineLow(int x0, int y0, int x1, int y1)
+vector<long> HeatMap::getPascalTriangleRow(int length)
 {
-	int dx = x1 - x0;
-	int dy = y1 - y0;
-	int yi = 1;
-	if (dy < 0) {
-		yi = -1;
-		dy = -dy;
+	vector<long> result;
+	for (int i = 0; i < length; i++) {
+		result.push_back(pascalValue(length - 1, i));
 	}
-	int D = 2 * dy - dx;
-	int y = y0;
-	for (int x = x0; x < x1; x++) {
-		drawPoint(x, y, 1.0);
-		if (D > 0) {
-			y = y + yi;
-			D = D - (2 * dx);
-		}
-		D = D + (2 * dy);
-	}
-}
-
-void HeatMap::plotLineHigh(int x0, int y0, int x1, int y1)
-{
-	int dx = x1 - x0;
-	int dy = y1 - y0;
-	int xi = 1;
-	if (dx < 0) {
-		xi = -1;
-		dx = -dx;
-	}
-	int D = 2 * dx - dy;
-	int x = x0;
-	for (int y = y0; y < y1; y++) {
-		drawPoint(x, y, 1.0);
-		if (D > 0) {
-			x = x + xi;
-			D = D - 2 * dy;
-		}
-		D = D + 2 * dx;
-	}
+	return result;
 }
 
 HeatMap::HeatMap(HeatMapConfiguration configuration)
@@ -213,11 +193,16 @@ HeatMap::~HeatMap()
 	delete[] cells;
 }
 
-void HeatMap::addActivity(Activity & activity)
+void HeatMap::addActivity(Activity & activity, PrivacyZones* zones)
 {
 	if (includeActivity(activity, configuration) && activity.getTrack().size() > 1) {
 		for (int i = 0; i < activity.getTrack().size() - 1; i++) {
-			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], configuration.useAntiAliasing);
+			drawLine(activity.getTrack()[i], activity.getTrack()[i + 1], zones);
+		}
+	}
+	for (int x = 0; x < configuration.width; x++) {
+		for (int y = 0; y < configuration.height; y++) {
+			cells[x][y].incrementCounter();
 		}
 	}
 }
@@ -228,7 +213,7 @@ void HeatMap::normalizeMap()
 	for (int x = 0; x < configuration.width; x++) {
 		for (int y = 0; y < configuration.height; y++) {
 			HeatMapCell* currentCell = &cells[x][y];
-			if (currentCell->getValue() > 0.0) {
+			if (currentCell->getValue() > 0.0 && currentCell->getActivities()>1) {
 				nonZeroCells.push_back(currentCell);
 			}
 			else {
@@ -236,12 +221,12 @@ void HeatMap::normalizeMap()
 			}
 		}
 	}
-	sort(nonZeroCells.begin(), nonZeroCells.end(), [](HeatMapCell* a, HeatMapCell* b) {return a->getValue() < b->getValue(); });
+	sort(nonZeroCells.begin(), nonZeroCells.end(), [](HeatMapCell* a, HeatMapCell* b) {return a->getActivities() < b->getActivities(); });
 	int topOfTier = -1;
 	for (int i = 0; i < nonZeroCells.size(); i++) {
 		if (topOfTier < i) {
 			topOfTier = i;
-			while (topOfTier < nonZeroCells.size() - 1 && nonZeroCells[topOfTier] == nonZeroCells[topOfTier + 1]) {
+			while (topOfTier < nonZeroCells.size() - 1 && nonZeroCells[topOfTier]->getActivities() == nonZeroCells[topOfTier + 1]->getActivities()) {
 				topOfTier++;
 			}
 		}
@@ -257,17 +242,40 @@ Image* HeatMap::renderImage()
 	for (int y = 0; y < configuration.height; y++) {
 		for (int x = 0; x < configuration.width; x++) {
 			double normalizedValue = cells[x][y].getNormalizedValue();
-			if (normalizedValue <= 0.0) {
-				data[index] = configuration.backgroundColor.getR();
-				data[index+1] = configuration.backgroundColor.getG();
-				data[index+2] = configuration.backgroundColor.getB();
-				data[index+3] = configuration.backgroundColor.getA();
+			int activities = cells[x][y].getActivities();
+			double value = cells[x][y].getValue();
+			if (activities==0) {
+				data[index] = 0;
+				data[index + 1] = 0;
+				data[index + 2] = 0;
+				data[index + 3] = 0;
+			}
+			else if(activities>1) {
+				Color rawColor;
+				if (normalizedValue < 0.33) {
+					double alpha = normalizedValue / 0.33;
+					rawColor = configuration.minimumActivityColor.lerp(configuration.activity33Color, alpha);
+				}
+				else if (normalizedValue < 0.66) {
+					double alpha = (normalizedValue- 0.33) / 0.33;
+					rawColor = configuration.activity33Color.lerp(configuration.activity66Color, alpha);
+				}
+				else {
+					double alpha = (normalizedValue- 0.66) / 0.33;
+					rawColor = configuration.activity66Color.lerp(configuration.maximumActivityColor, alpha);
+				}
+
+				rawColor.setA(rawColor.getA()*(value / (double)activities));
+
+				data[index] = rawColor.getR();
+				data[index + 1] = rawColor.getG();
+				data[index + 2] = rawColor.getB();
+				data[index + 3] = rawColor.getA();
 			}
 			else {
-				Color rawColor = configuration.minimumActivityColor.lerp(configuration.maximumActivityColor, normalizedValue);
-				if (rawColor.getA() != 255) {
-					rawColor = rawColor.blend(configuration.backgroundColor);
-				}
+				double clampedValue = min(max(value, 0.0), 1.0);
+				Color rawColor = configuration.minimumActivityColor;
+				rawColor.setA(rawColor.getA()*clampedValue);
 				data[index] = rawColor.getR();
 				data[index + 1] = rawColor.getG();
 				data[index + 2] = rawColor.getB();
@@ -280,12 +288,79 @@ Image* HeatMap::renderImage()
 	return new Image(configuration.width, configuration.height, data);
 }
 
-void HeatMap::drawLine(GeographicCoordinate from, GeographicCoordinate to, bool smooth)
+Image * HeatMap::createGlowImage(Image * renderedImage, int diameter)
 {
-	if (smooth) {
-		xiaolinWu(from, to);
+	if (configuration.width != renderedImage->getWidth() || configuration.height != renderedImage->getHeight())
+		return nullptr;
+
+	unsigned char* result = new unsigned char[renderedImage->getWidth()*renderedImage->getHeight() * 4];
+	int width = diameter %2==1? diameter : diameter +1;
+	vector<long> pascalRow = getPascalTriangleRow(width);
+	vector<vector<long>> gaussianKernel(width, vector<long>(width, 0));
+	long long kernalSum = 0;
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < width; y++) {
+			long value = pascalRow[x] * pascalRow[y];
+			kernalSum += value;
+			gaussianKernel[x][y] = value;
+		}
 	}
-	else {
-		bresenham(from, to);
+	int index = 0;
+	int radius = diameter / 2;
+	for (int y = 0; y < configuration.height; y++) {
+		for (int x = 0; x < configuration.width; x++) {
+			long sumR = 0;
+			long sumG = 0;
+			long sumB = 0;
+			long sumA = 0;
+			for (int gx = 0; gx < diameter; gx++) {
+				for (int gy = 0; gy < diameter; gy++) {
+					int sampleX = (x - radius) + gx;
+					int sampleY = (y - radius) + gy;
+					Color sample = renderedImage->getPixel(sampleX, sampleY);
+					double weight = 0.0;
+					if (sampleX >= 0 && sampleX < configuration.width&&sampleY >= 0 && sampleY < configuration.height) {
+						weight = cells[sampleX][sampleY].getNormalizedValue();
+					}
+					/*
+					sumR += (int)((double)sample.getR()*(double)gaussianKernel[gx][gy] * weight);
+					sumG += (int)((double)sample.getG()*(double)gaussianKernel[gx][gy] * weight);
+					sumB += (int)((double)sample.getB()*(double)gaussianKernel[gx][gy] * weight);
+					sumA += (int)((double)sample.getA()*(double)gaussianKernel[gx][gy] * weight);
+					*/
+
+					/*
+					sumR += (int)((double)(sample.getR()*gaussianKernel[gx][gy]) * weight);
+					sumG += (int)((double)(sample.getG()*gaussianKernel[gx][gy]) * weight);
+					sumB += (int)((double)(sample.getB()*gaussianKernel[gx][gy]) * weight);
+					sumA += (int)((double)(sample.getA()*gaussianKernel[gx][gy]) * weight);
+					*/
+
+					sumR += ((sample.getR()*gaussianKernel[gx][gy]));
+					sumG += ((sample.getG()*gaussianKernel[gx][gy]));
+					sumB += ((sample.getB()*gaussianKernel[gx][gy]));
+					sumA += ((sample.getA()*gaussianKernel[gx][gy]));
+				}
+			}
+			if (sumR > 0) {
+				cout << "Break point ;)" << endl;
+			}
+			result[index] = (unsigned char)((double)sumR / (double)kernalSum);
+			result[index+1] = (unsigned char)((double)sumG / (double)kernalSum);
+			result[index+2] = (unsigned char)((double)sumB / (double)kernalSum);
+			result[index+3] = (unsigned char)((double)sumA / (double)kernalSum);
+
+			index += 4;
+		}
 	}
+	return new Image(configuration.width, configuration.height, result);
+}
+
+void HeatMap::drawLine(GeographicCoordinate from, GeographicCoordinate to, PrivacyZones* zones)
+{
+	if (zones != nullptr) {
+		if (zones->isPointInZones(from) || zones->isPointInZones(to))
+			return;
+	}
+	xiaolinWu(from, to);
 }
