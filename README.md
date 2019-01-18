@@ -60,5 +60,18 @@ When you first launch the program you will be greeted with a screen from where y
     * Width and Height specify the size of the resulting image.
     * The color values specify how heat appears on the map. Linear interpolation is used the smoothly adjust the heat color from the minimum to low to high and finally to maximum based on the number of activities to cross any point on the map. Background color is used when the "Download map from Map Quest" option is not selected to fill the background of the Heat Map. 
 
+## Dependencies
+### Application Dependencies
+The application must be run in the same folder as the included 7z.exe (used for decompressing gzip files) and curl.exe (used for downloading maps from Map Quest).
+### Source Dependencies
+  * [nana](http://nanapro.org/en-us/) is used for building the GUI
+    * Embedded as a git submodule
+  * [lodepng](https://lodev.org/lodepng/) is used for encoding and decoding png files
+    * Embedded as a git submodule
+  * [Fit SDK](https://www.thisisant.com/resources/fit) is used for reading fit files
+    * Must be downloaded and extracting into the "fit-sdk" folder yourself if you are building from source
+  * [rapidxml](http://rapidxml.sourceforge.net/) is used for reading and writing xml files
+    * Included with the repository
+
 ## Beta Testing
 Please note that this application is currently in Beta and there are probably bugs that I haven't caught yet. All feedback is accepted and encouraged!! Thank you for being a Beta tester!
