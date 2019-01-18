@@ -5,7 +5,7 @@ Show your friends and family what you've accomplished on foot or by bike by crea
 ## Getting Started Guide
 ### For Strava Users
 Download a complete archive of your account by going to the [Account Download and Deletion page](https://www.strava.com/athlete/delete_your_account). **Downloading an archive will not harm your account in any way.** Click on the "Request Your Archive" button under the second step. After a couple of hours Strava will send you an email with a link to download a Zip file containing all of the activities you have ever uploaded to your account. Unzip this archive somewhere you can easily find again. Then launch the Heat Map application and select the "activities" subfolder from the unzipped archive when you are prompted. Also, before selecting "Load Activities", make sure you have the "Automatically decompress .gz files" checkbox ticked. Strava tends to send activities that have been compressed with gzip and this option will let the application read these files as well. Select "Load Activities" and follow the on-screen instructions.
-### Garmin Connect users and anyone else
+### For Everyone Else
 Just download all of your GPS activity files in any of the supported formats below and save them inside of a folder. Perhaps a tool such as [tapiriik](https://tapiriik.com/) can help by mass transfering all of your activities to dropbox. However, I have not tested that service. Select the directory when you start the program and follow the on screen instructions!
 
 ## Privacy Zones
